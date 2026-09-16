@@ -1,0 +1,42 @@
+name: Release
+
+on:
+  push:
+    paths:
+      - ".changeset/**"
+      - "packages/**"
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # Steps after a failed composite step are skipped by default,
+      # so changesets only runs when all checks pass.
+      - name: Run checks (build, lint, types, test)
+        uses: ./.github/actions/checks
+
+      - name: Setup npmrc
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
+
+      - name: Create Release Pull Request or Publish to npm
+        uses: changesets/action@v2
+        with:
+          github-token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          version-script: bun run version
+          pr-title: "ci(changesets): :package: version packages"
+          commit-message: "ci(changesets): version packages"
+          publish-script: bun run release
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

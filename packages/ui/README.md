@@ -19,7 +19,11 @@ Prebuilt auth UI for Kumix products, on top of [better-auth](https://better-auth
 | `siwe/` `anonymous/`    | Sign in with Ethereum, anonymous sessions                                                         |
 | `agent-auth/`           | AI agent approval and authorizations                                                              |
 | `dash/` `billing/`      | Dashboard activity, billing settings                                                              |
+| `delete-user/`          | Danger zone, delete account                                                                       |
 | `device-authorization/` | Device authorization screens                                                                      |
+| `last-login-method/`    | Last-used login method badge                                                                      |
+| `theme/`                | Appearance settings, theme toggle                                                                 |
+| `user/`                 | User avatar, user button, user view                                                               |
 | `email/`                | react-email templates (verification, reset, OTP, invitation, magic link, new device, …)           |
 | `lib/`                  | Client plugins per feature: `organizationPlugin`, `adminPlugin`, `twoFactorPlugin`, …             |
 

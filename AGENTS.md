@@ -45,7 +45,7 @@ Per-package scripts: `cd packages/<name> && bun run <script>` (`build`, `types:c
 - UI primitives come from `@kumix/ui` (`import { Button } from "@kumix/ui/ui/button"`); utilities from `@kumix/utils` (`cn`).
 - Toasts use `@kumix/ui/custom/toast` (`toastSuccess` / `toastError`, object arg `{ message }`); never `sonner`.
 - Internal imports are **relative** (`../lib/organization-plugin`), never `@/` aliases.
-- Layout: root `src/*.tsx` = auth views; feature folders (`organization/`, `settings/`, `two-factor/`, `api-key/`, …); `src/lib/` = client plugins; `src/email/` = react-email templates.
+- Layout: root `src/*.tsx` = auth views; feature folders (`organization/`, `settings/`, `two-factor/`, `passkey/`, `api-key/`, `admin/`, `oauth-provider/`, `multi-session/`, `email-otp/`, `siwe/`, `anonymous/`, `agent-auth/`, `dash/`, `billing/`, `delete-user/`, `device-authorization/`, `last-login-method/`, `username/`, `theme/`, `user/`); `src/lib/` = client plugins; `src/email/` = react-email templates.
 
 ## Verification gates
 

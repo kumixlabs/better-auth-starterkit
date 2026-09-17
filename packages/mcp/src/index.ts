@@ -208,7 +208,7 @@ class KumixUiMCPServer {
                   views:
                     "Root-level auth views: auth (router view), sign-in, sign-up, sign-out, verify-email, forgot-password, reset-password, magic-link, reauthentication",
                   features:
-                    "Feature folders: organization, settings, two-factor, passkey, api-key, admin, oauth-provider, multi-session, email-otp, siwe, anonymous, agent-auth, dash, billing, delete-user, device-authorization, last-login-method, username",
+                    "Feature folders: organization, settings, two-factor, passkey, api-key, admin, oauth-provider, multi-session, email-otp, siwe, anonymous, agent-auth, dash, billing, delete-user, device-authorization, last-login-method, username, theme, user",
                   lib: "Client plugins: @kumix/better-auth-ui/lib/organization-plugin, lib/admin-plugin, lib/two-factor-plugin, …",
                   email:
                     "react-email templates: email/email-verification, email/reset-password, email/otp-email, email/organization-invitation, …",

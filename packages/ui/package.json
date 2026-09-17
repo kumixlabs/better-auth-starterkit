@@ -1,6 +1,6 @@
 {
   "name": "@kumix/better-auth-ui",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Kumix better-auth UI kit: prebuilt auth views, client plugins, and react-email templates for better-auth, styled with @kumix/ui (shadcn/ui, Base UI). Per-file ESM exports.",
   "author": "Kumix Labs <hai@kumix.io>",
   "license": "MIT",

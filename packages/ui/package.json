@@ -77,6 +77,7 @@
     "input-otp": "^1.5.0",
     "lucide-react": "^1.46.0",
     "react": "^19.3.0",
+    "react-day-picker": "^10.0.1",
     "react-email": "^6.9.5",
     "tsdown": "^0.23.0",
     "typescript": "catalog:"
@@ -98,6 +99,7 @@
     "input-otp": ">=1.5.0",
     "lucide-react": ">=1.46.0",
     "react": ">=18.0.0 || >=19.0.0-rc.0",
+    "react-day-picker": ">=10.0.0",
     "react-email": ">=6.9.0"
   },
   "publishConfig": {

@@ -1,104 +1,59 @@
-# Bun Package Template
+# Better Auth Starterkit
 
-**A minimal, production-ready Bun monorepo template for building and publishing TypeScript/Node packages.**
+Kumix monorepo for **[@kumix/better-auth-ui](./packages/ui)** — prebuilt auth UI for [better-auth](https://www.better-auth.com): sign-in/sign-up, organizations, two-factor, passkeys, API keys, admin, settings, and react-email templates, styled with [@kumix/ui](https://www.npmjs.com/package/@kumix/ui) (shadcn/ui, Base UI). Ships as ESM with per-file exports (no barrel).
 
-This template provides a ready-to-use setup for multi-package repositories with Bun as the package manager, Turborepo for task orchestration, Biome for linting/formatting, Changesets for versioning and releases, and GitHub Actions for CI.
+## Packages
 
-## Features
+| Package                                  | Path           | Description                                                                                         |
+| ---------------------------------------- | -------------- | --------------------------------------------------------------------------------------------------- |
+| [`@kumix/better-auth-ui`](./packages/ui) | `packages/ui`  | Prebuilt better-auth views, client plugins, and react-email templates                               |
+| [`@kumix/mcp`](./packages/mcp)           | `packages/mcp` | Private MCP server: package metadata, component search, source reads, import examples for AI agents |
 
-- Monorepo workspaces: `packages/**`, `apps/**`, `examples/**`
-- Bun-first workflows: `bun install`, `bun run <script>`
-- Turborepo pipelines for `dev`, `build`, `start`, `types:check`, `test`, `test:watch`, `test:coverage`, `clean`
-- Biome-based lint and format with consistent project style
-- Vitest for unit testing with coverage thresholds
-- Versioning and publishing via Changesets
-- CI workflows for linting and releases
-
-## Getting Started
+## Usage
 
 ```bash
-# Install dependencies
-bun install
+bun add @kumix/better-auth-ui
+```
 
-# Development
-bun run dev
+```tsx
+import { AuthProvider } from "@kumix/better-auth-ui/auth-provider";
+import { Auth } from "@kumix/better-auth-ui/auth";
+import { ToastContainer } from "@kumix/ui/custom/toast";
+import { authClient } from "./auth-client";
 
-# Build all workspaces
-bun run build
+export function App() {
+  return (
+    <AuthProvider
+      authClient={authClient}
+      navigate={({ to, replace }) => router.push(to, { replace })}
+    >
+      <Auth path={pathname} />
+      <ToastContainer />
+    </AuthProvider>
+  );
+}
+```
 
-# Type-check
+Full docs — views, feature folders, plugins, email templates, peers — in [packages/ui/README.md](./packages/ui/README.md).
+
+## Development
+
+Requires bun ≥ 1.4 and Node ≥ 24.
+
+```bash
+bun install       # setup
+bun run build     # build all packages (turbo)
+bun run dev       # watch builds
 bun run types:check
-
-# Lint (check)
-bun run lint
-
-# Lint (auto-fix)
-bun run lint:fix
-
-# Format code
-bun run format
-
-# Run tests
-bun run test
-
-# Run tests with coverage
-bun run test:coverage
-
-# Watch mode tests
-bun run test:watch
-
-# Clean build artifacts
-bun run clean
-
-# Deep clean (removes node_modules, lockfile, etc.)
-bun run clean:all
+bun run lint      # biome
 ```
 
-## Workspace Layout
-
-- `packages/` – Each published or internal package lives here
-- `apps/` – Applications (e.g., docs, demos) consuming packages
-- `examples/` – Example implementations (e.g., Next.js, Vite)
-
-Example package structure:
-
-```
-packages/your-package/
-├── src/
-│   ├── index.ts
-│   └── ...
-├── package.json
-├── tsconfig.json  # builds with tsc
-└── README.md
-```
-
-## Releases
-
-This template uses Changesets with `changesets/action@v2` in CI. On merge to `main`, CI either opens a "Version Packages" PR or publishes to npm (skipping versions already on the registry), pushes git tags, and creates GitHub Releases automatically.
-
-```bash
-# Create a changeset describing your changes
-bunx changeset
-
-# Version packages (CI will also do this)
-bun run version
-
-# Publish updated packages (CI release workflow)
-bun run release
-```
-
-Ensure `NPM_TOKEN` (npm publish) and optionally `GH_PAT` (release PRs) are configured in CI.
+Releases go through [Changesets](https://github.com/changesets/changesets) on `main` (`bun run version` → `bun run release`).
 
 ## Contributing
 
-Contributions are welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md) and follow the [Code of Conduct](./CODE_OF_CONDUCT.md).
-
-## Security
-
-Please report vulnerabilities privately as described in [SECURITY.md](./SECURITY.md). Replace the contact email with your own when using this template.
+See [CONTRIBUTING.md](./CONTRIBUTING.md). Agent instructions live in [AGENTS.md](./AGENTS.md).
 
 ## License
 
-MIT License – see [LICENSE](./LICENSE).
-
-By contributing to this template, you agree that your contributions will be licensed under the MIT License.
+[MIT](./LICENSE) © Kumix Labs

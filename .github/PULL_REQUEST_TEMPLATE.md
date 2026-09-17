@@ -17,7 +17,6 @@
 - [ ] Code follows the project's style guidelines (`bun run lint`)
 - [ ] Type-check passes (`bun run types:check`)
 - [ ] Build succeeds (`bun run build`)
-- [ ] Tests pass (`bun run test`)
 - [ ] Commit messages follow conventional commits
 - [ ] Documentation updated (if needed)
 - [ ] Changeset added with `bunx changeset` (if user-facing)

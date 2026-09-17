@@ -2,13 +2,13 @@
   "name": "@kumix/mcp",
   "version": "0.0.0",
   "private": true,
-  "description": "MCP server for Kumix Template documentation and code assistance",
+  "description": "Private MCP server for @kumix/better-auth-ui: package metadata, component search, source, and per-file import examples",
   "author": "Kumix Labs <hai@kumix.io>",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {
-    "kumix-mcp-template": "dist/index.js"
+    "kumix-mcp-better-auth-ui": "dist/index.js"
   },
   "scripts": {
     "clean": "rimraf dist",
@@ -16,8 +16,7 @@
     "build": "tsc",
     "dev": "bun src/index.ts",
     "start": "node dist/index.js",
-    "types:check": "tsc --noEmit",
-    "test": "node dist/index.js --test"
+    "types:check": "tsc --noEmit"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",

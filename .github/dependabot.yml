@@ -26,17 +26,7 @@ updates:
 
   # Per-package dependencies
   - package-ecosystem: "npm"
-    directory: "/packages/core"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 3
-    commit-message:
-      prefix: "build(deps)"
-    labels:
-      - "dependencies"
-
-  - package-ecosystem: "npm"
-    directory: "/packages/main"
+    directory: "/packages/ui"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 3

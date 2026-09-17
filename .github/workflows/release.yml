@@ -23,7 +23,7 @@ jobs:
 
       # Steps after a failed composite step are skipped by default,
       # so changesets only runs when all checks pass.
-      - name: Run checks (build, lint, types, test)
+      - name: Run checks (build, lint, types)
         uses: ./.github/actions/checks
 
       - name: Setup npmrc

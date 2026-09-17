@@ -1,18 +1,10 @@
-# Contributing to Bun Package Template
+# Contributing to Better Auth Starterkit
 
-Thank you for your interest in contributing! This template aims to provide a clean, production-ready Bun monorepo setup for building and publishing TypeScript/Node packages.
+Thank you for your interest in contributing! This repo publishes **`@kumix/better-auth-ui`** — prebuilt better-auth views, client plugins, and react-email templates styled with `@kumix/ui`.
 
 ## Code of Conduct
 
-This project and everyone participating in it is governed by our [Code of Conduct](./CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to the maintainers via email (replace with your contact email).
-
-## Why Contribute?
-
-This template is community-driven. Your contributions help:
-
-- Improve developer experience and documentation
-- Fix issues and enhance reliability
-- Extend tooling and workflow capabilities
+This project and everyone participating in it is governed by our [Code of Conduct](./CODE_OF_CONDUCT.md). By participating, you are expected to uphold that code. Please report unacceptable behavior to [hai@kumix.io](mailto:hai@kumix.io).
 
 ## Getting Started
 
@@ -27,8 +19,8 @@ This template is community-driven. Your contributions help:
 1. Fork the repository on GitHub
 2. Clone your fork locally:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
-   cd YOUR_REPOSITORY
+   git clone https://github.com/YOUR_USERNAME/better-auth-starterkit.git
+   cd better-auth-starterkit
    ```
 3. Install dependencies:
    ```bash
@@ -36,248 +28,86 @@ This template is community-driven. Your contributions help:
    ```
 4. Create a new branch for your changes:
    ```bash
-   git checkout -b feature/your-feature-name
+   git checkout -b feat/your-feature-name
    ```
 
 ## Development Workflow
 
-### Running the Project
+### Commands
+
+Run from the repo root:
 
 ```bash
-# Run all workspaces in development mode
-bun run dev
-
-# Build all workspaces
-bun run build
-
-# Type-check all workspaces
-bun run types:check
-
-# Lint (check)
-bun run lint
-
-# Lint (auto-fix)
-bun run lint:fix
-
-# Format code
-bun run format
+bun run dev           # watch builds
+bun run build         # build all packages (turbo)
+bun run types:check   # tsc --noEmit per package
+bun run lint          # biome check
+bun run lint:fix      # biome check --write --unsafe
+bun run format        # biome format --write
 ```
 
-### Working on a Specific Package
+Per-package: `cd packages/<name> && bun run <script>`.
 
-```bash
-# Navigate to a package directory
-cd packages/your-package
+### Working on `@kumix/better-auth-ui`
 
-# Run package-specific commands (if defined in that package)
-bun run dev            # Development with watch mode
-bun run build          # Build the package
-bun run types:check    # Type-check the package
-```
+See [AGENTS.md](./AGENTS.md) for the full conventions. The short version:
 
-## Code Style
-
-This project uses [Biome](https://biomejs.dev/) for linting and formatting to ensure consistent code quality.
-
-### Code Standards
-
-- **Indentation**: 2 spaces
-- **Line Width**: 100 characters
-- **Quotes**: Double quotes for JavaScript/TypeScript
-- **Semicolons**: Always required
-- **Trailing Commas**: All
-- **Arrow Parentheses**: Always
-
-### Lint and Format
-
-Before committing, always run:
-
-```bash
-# Lint (check)
-bun run lint
-
-# Lint (auto-fix)
-bun run lint:fix
-
-# Format only
-bun run format
-```
+- Per-file ESM exports, no root barrel (`@kumix/better-auth-ui/sign-in`, `…/lib/organization-plugin`).
+- UI primitives from `@kumix/ui`, utilities from `@kumix/utils` (`cn`), toasts from `@kumix/ui/custom/toast` — never `sonner`.
+- Internal imports are relative (`../lib/organization-plugin`), never `@/` aliases.
 
 ## Making Changes
 
-### Branch Naming
-
-Use descriptive branch names:
-
-- `feature/add-new-capability` - For new features
-- `fix/build-script-bug` - For bug fixes
-- `docs/update-readme` - For documentation
-- `refactor/simplify-structure` - For refactoring
-
 ### Commit Messages
 
-Follow [Conventional Commits](https://www.conventionalcommits.org/):
+Follow [Conventional Commits](https://www.conventionalcommits.org/) — commitlint enforces:
 
 ```
-feat(template): add package scaffolding script
-fix(ci): correct bun run command in workflow
-docs(readme): clarify release process
+feat(ui): add passkey enrollment view
+fix(mcp): resolve import path for email templates
+docs(readme): clarify peer dependencies
 refactor(workspace): simplify outputs in turbo.json
-test(package): add basic type check script
 ```
 
-**Format**: `type(scope): description`
+Allowed types: `feat`, `feature`, `fix`, `refactor`, `docs`, `build`, `test`, `ci`, `chore`.
 
-**Types**:
+### Verification
 
-- `feat` or `feature`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation changes
-- `refactor`: Code refactoring
-- `test`: Adding or updating tests
-- `build`: Build system changes
-- `ci`: CI configuration changes
-- `chore`: Maintenance tasks
-
-### Writing Code
-
-1. **Follow existing patterns**: Look at existing code for consistency
-2. **Write TypeScript**: All code should be properly typed
-3. **Keep it simple**: Avoid over-engineering solutions
-4. **Add comments**: Only where the code isn't self-explanatory
-5. **Export cleanly**: Follow the existing export patterns in each package
-
-### Testing
-
-**All changes must pass the following checks** before submitting:
+All changes must pass these checks before submitting:
 
 ```bash
-# Type-check all workspaces
 bun run types:check
-
-# Build to ensure no build errors
 bun run build
-
-# Lint (check)
 bun run lint
-
-# Format code
-bun run format
 ```
-
-Make sure:
-
-- All TypeScript types are correct
-- No build errors or warnings
-- Code follows the style guide
-- Existing functionality is not broken
 
 ## Submitting Changes
 
-### Pull Request Process
-
-1. **Update your branch** with the latest changes from main:
-
+1. Update your branch with the latest changes from main:
    ```bash
    git fetch upstream
    git rebase upstream/main
    ```
+2. Push your changes and open a Pull Request targeting `main`
+3. Fill in the PR template — clear title, description, breaking changes, related issues, and screenshots for UI changes
 
-2. **Push your changes** to your fork:
+Keep PRs focused: one feature or fix per PR is much easier to review.
 
-   ```bash
-   git push origin feature/your-feature-name
-   ```
+## Releasing (Maintainers Only)
 
-3. **Create a Pull Request** on GitHub targeting the `main` branch
+This project uses [Changesets](https://github.com/changesets/changesets):
 
-4. **Fill in the PR template** with:
-   - **Clear title**: Use conventional commit format (e.g., "feat(animation): add text reveal component")
-   - **Description**: Explain what changed and why
-   - **Breaking changes**: Clearly document any breaking changes
-   - **Related issues**: Reference issues (e.g., "Fixes #123", "Closes #456")
-   - **Screenshots/videos**: Add visual proof for UI changes
-   - **Testing**: Describe how you tested the changes
-
-5. **Wait for review**: Maintainers will review your PR and may request changes
-
-**Keep PRs focused**: Large pull requests are harder to review. Try to keep changes focused on a single feature or fix.
-
-### Pull Request Checklist
-
-- [ ] Code follows the project's style guidelines
-- [ ] All checks pass (`bun run types:check`)
-- [ ] Build succeeds (`bun run build`)
-- [ ] Code is properly formatted (`bun run format`)
-- [ ] Commit messages follow conventional commits
-- [ ] Documentation is updated (if needed)
-- [ ] No breaking changes (or clearly documented if necessary)
-
-## Package Development
-
-### Adding a New Package
-
-1. Create a new directory in `packages/`
-2. Copy the structure from an existing package (e.g., `packages/core`)
-3. Update `package.json` with appropriate metadata
-4. Add a `tsconfig.json` extending `@kumix/tsconfig/node`
-5. Ensure the package is included in the workspace
-
-### Package Structure
-
-```
-packages/your-package/
-├── src/
-│   ├── index.ts          # Main exports
-│   ├── types.ts          # Type definitions
-│   └── ...
-├── package.json          # Package metadata
-├── tsconfig.json         # TypeScript configuration (builds with tsc)
-└── README.md             # Package documentation
-```
-
-### Publishing Packages (Maintainers Only)
-
-This project uses [Changesets](https://github.com/changesets/changesets) for version management:
-
-1. **Create a changeset**:
-
+1. **Create a changeset** on your branch:
    ```bash
    bunx changeset
    ```
-
-   Follow the prompts to describe your changes.
-
-2. **Version packages**:
-
-   ```bash
-   bun run version
-   ```
-
-   This updates package versions and changelogs.
-
-3. **Publish to npm**:
-
-   ```bash
-   bun run release
-   ```
-
-   Runs `scripts/publish.sh` — publishes changed packages (idempotent; skips versions already on npm) and creates git tags. CI builds before publishing.
+2. Merge to `main` — CI opens a "version packages" PR
+3. Merging that PR publishes to npm via `scripts/publish.sh` (skips private packages, idempotent)
 
 ## Security
 
-If you discover a security vulnerability, please report it privately as described in [SECURITY.md](./SECURITY.md). Replace the contact email with your own when using this template.
-
-**Do not report security issues through public GitHub issues.**
-
-## Questions and Support
-
-If you have questions or need help:
-
-- Check the [documentation](./README.md) and package READMEs
-- Open an issue in your repository
-- Start a discussion in your repository
+If you discover a security vulnerability, please report it privately as described in [SECURITY.md](./SECURITY.md) — do not open a public issue.
 
 ## License
 
-By contributing to this template, you agree that your contributions will be licensed under the MIT License.
+By contributing, you agree that your contributions will be licensed under the MIT License.

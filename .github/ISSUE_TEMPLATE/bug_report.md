@@ -7,7 +7,7 @@ assignees: ""
 ---
 
 **Package**
-Which package is affected? (e.g., "package-name")
+Which package is affected? (e.g., "@kumix/better-auth-ui")
 
 **Describe the bug**
 A clear and concise description of what the bug is.

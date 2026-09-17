@@ -16,6 +16,6 @@ assignees: ""
 
 ## Environment (if relevant)
 
-- Package(s): <!-- e.g. @kumix/core -->
+- Package(s): <!-- e.g. @kumix/better-auth-ui -->
 - Version:
 - Bun / Node version:

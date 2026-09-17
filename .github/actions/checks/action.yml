@@ -1,11 +1,11 @@
 name: "Checks"
-description: "Setup Bun (pinned), install, build, lint, types, test"
+description: "Setup Bun (pinned), install, build, lint, types"
 
 inputs:
   bun-version:
     description: "Pinned Bun version (keep in sync with packageManager in package.json)"
     required: false
-    default: "1.4.0"
+    default: "1.4.2"
 
 runs:
   using: "composite"
@@ -38,7 +38,3 @@ runs:
     - name: Check Types
       shell: bash
       run: bun run types:check
-
-    - name: Test
-      shell: bash
-      run: bun run test

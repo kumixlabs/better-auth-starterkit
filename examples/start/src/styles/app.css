@@ -1,0 +1,27 @@
+@import "tailwindcss";
+@import "shadcn/tailwind.css";
+@import "@kumix/ui/theme";
+@import "@kumix/better-auth-ui/css";
+@import "@fontsource-variable/geist";
+
+/** Theme and custom color styles **/
+/* :root {
+  --primary: oklch(0.586 0.253 17.585);
+} */
+
+/* .dark {
+  --primary: oklch(0.645 0.246 16.439);
+} */
+
+/** Custom Font Size **/
+@theme {
+  --font-heading: var(--font-sans);
+  --font-sans: "Geist Variable", sans-serif;
+}
+
+/** Smooth scroll **/
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}

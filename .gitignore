@@ -137,7 +137,8 @@ dist
 next-env.d.ts
 .vscode/folder.jsonc
 
-# generated content
-.contentlayer
-.content-collections
-.source
+dist-ssr
+.nitro
+.tanstack
+.wrangler
+.output

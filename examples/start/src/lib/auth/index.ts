@@ -10,6 +10,7 @@ import {
   twoFactor,
   username,
 } from "better-auth/plugins";
+import { tanstackStartCookies } from "better-auth/tanstack-start";
 
 import { db } from "@/lib/db";
 import * as schema from "@/lib/db/schema";
@@ -72,6 +73,7 @@ export const auth = betterAuth({
         await sendMagicLinkEmail({ to: email, url });
       },
     }),
+    tanstackStartCookies(),
   ],
   session: {
     cookieCache: {

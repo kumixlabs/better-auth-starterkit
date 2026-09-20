@@ -15,7 +15,7 @@ import {
 import type { Invitation } from "better-auth/client";
 import { Filter, Search, X } from "lucide-react";
 
-import { toastError, toastSuccess } from "@kumix/ui/custom/toast";
+import { toastSuccess } from "@kumix/ui/custom/toast";
 import { Badge } from "@kumix/ui/ui/badge";
 import { Button, buttonVariants } from "@kumix/ui/ui/button";
 import { Card } from "@kumix/ui/ui/card";
@@ -130,7 +130,6 @@ export function OrganizationInvitations({
       ),
     );
     const canceledCount = results.filter((result) => result.status === "fulfilled").length;
-    const failed = results.find((result) => result.status === "rejected");
 
     if (canceledCount > 0) {
       toastSuccess({
@@ -138,11 +137,6 @@ export function OrganizationInvitations({
           "{{count}}",
           String(canceledCount),
         ),
-      });
-    }
-    if (failed?.status === "rejected") {
-      toastError({
-        message: failed.reason instanceof Error ? failed.reason.message : String(failed.reason),
       });
     }
     table.resetRowSelection(true);
@@ -156,7 +150,7 @@ export function OrganizationInvitations({
 
       <div className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center gap-3">
-          <InputGroup className="min-w-0 sm:w-[220px]">
+          <InputGroup className="min-w-0 sm:w-55">
             <InputGroupInput
               type="search"
               value={globalFilter}

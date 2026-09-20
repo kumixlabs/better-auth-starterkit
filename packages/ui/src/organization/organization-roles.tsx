@@ -181,16 +181,10 @@ export function OrganizationRoles({ organizationId }: { organizationId: string }
       ),
     );
     const deletedCount = results.filter((result) => result.status === "fulfilled").length;
-    const failed = results.find((result) => result.status === "rejected");
 
     if (deletedCount > 0) {
       toastSuccess({
         message: localization.rolesDeleted.replace("{{count}}", String(deletedCount)),
-      });
-    }
-    if (failed?.status === "rejected") {
-      toastError({
-        message: failed.reason instanceof Error ? failed.reason.message : String(failed.reason),
       });
     }
     table.resetRowSelection(true);
@@ -212,7 +206,7 @@ export function OrganizationRoles({ organizationId }: { organizationId: string }
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <InputGroup className="min-w-0 sm:w-[220px]">
+        <InputGroup className="min-w-0 sm:w-55">
           <InputGroupInput
             aria-label={localization.search}
             disabled={roles.isLoading}
@@ -421,7 +415,6 @@ function OrganizationRoleRow({
       setDeleteOpen(false);
       toastSuccess({ message: localization.roleDeleted });
     },
-    onError: (error) => toastError({ message: error.message }),
   });
   const assignments = useListOrganizationMembers(authClient, {
     query: {
@@ -495,7 +488,7 @@ function OrganizationRoleRow({
                     {localization.deleteRoleDescription}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <p className="break-words font-medium text-sm">{role.role}</p>
+                <p className="wrap-break-word font-medium text-sm">{role.role}</p>
                 <AlertDialogFooter>
                   <AlertDialogCancel disabled={deleteRole.isPending}>
                     {authLocalization.settings.cancel}

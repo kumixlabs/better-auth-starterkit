@@ -34,8 +34,10 @@ export function NewApiKeyDialog({ open, onOpenChange, name, secretKey }: NewApiK
   const { localization: apiKeyLocalization } = useAuthPlugin(apiKeyPlugin);
 
   const { copied, copy, reset } = useCopyToClipboard({
-    onError: (error) =>
-      toastError({ message: error instanceof Error ? error.message : String(error) }),
+    onError: (error) => {
+      console.error("[Better Auth UI] Copy failed", error);
+      toastError({ message: localization.errors.copyFailed });
+    },
   });
 
   const handleOpenChange = (nextOpen: boolean) => {

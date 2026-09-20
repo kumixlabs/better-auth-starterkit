@@ -18,7 +18,7 @@ import { keepPreviousData } from "@tanstack/react-query";
 import type { Member, User } from "better-auth/client";
 import { Filter, Search, X } from "lucide-react";
 
-import { toastError, toastSuccess } from "@kumix/ui/custom/toast";
+import { toastSuccess } from "@kumix/ui/custom/toast";
 import { Badge } from "@kumix/ui/ui/badge";
 import { Button, buttonVariants } from "@kumix/ui/ui/button";
 import { Card } from "@kumix/ui/ui/card";
@@ -270,16 +270,10 @@ export function OrganizationMembers({
       ),
     );
     const removedCount = results.filter((result) => result.status === "fulfilled").length;
-    const failed = results.find((result) => result.status === "rejected");
 
     if (removedCount > 0) {
       toastSuccess({
         message: organizationLocalization.membersRemoved.replace("{{count}}", String(removedCount)),
-      });
-    }
-    if (failed?.status === "rejected") {
-      toastError({
-        message: failed.reason instanceof Error ? failed.reason.message : String(failed.reason),
       });
     }
     table.resetRowSelection(true);
@@ -309,7 +303,7 @@ export function OrganizationMembers({
           {/* list-members has no search parameter, so a search box would
               only ever filter the page in front of you. */}
           {!paged && (
-            <InputGroup className="min-w-0 sm:w-[220px]">
+            <InputGroup className="min-w-0 sm:w-55">
               <InputGroupInput
                 type="search"
                 value={globalFilter}

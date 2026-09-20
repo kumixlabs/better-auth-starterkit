@@ -2,16 +2,19 @@ import { useEffect } from "react";
 import {
   authMutationKeys,
   authQueryKeys,
+  getAuthErrorCode,
+  getAuthErrorMessage,
   getAuthErrorPresentation,
   isPasswordCompromisedError,
 } from "@better-auth-ui/core";
 import { oneTapMutationKeys } from "@better-auth-ui/core/plugins/one-tap";
+import { useAuth } from "@better-auth-ui/react";
 import { matchMutation, matchQuery, useQueryClient } from "@tanstack/react-query";
-import type { BetterFetchError } from "better-auth/react";
 
 import { toastError } from "@kumix/ui/custom/toast";
 
 export function ErrorToaster() {
+  const { localization } = useAuth();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -24,9 +27,12 @@ export function ErrorToaster() {
       if (!matchQuery({ queryKey: authQueryKeys.all }, query)) return;
       if (getAuthErrorPresentation(query.meta) !== "toast") return;
 
-      const err = error as BetterFetchError;
-      if (err?.error?.code === "EMAIL_NOT_VERIFIED") return;
-      if (err?.error) toastError({ message: err.error.message });
+      if (getAuthErrorCode(error) === "EMAIL_NOT_VERIFIED") return;
+      const message = getAuthErrorMessage(error, localization);
+      if (message) {
+        console.error("[Better Auth UI]", error);
+        toastError({ message });
+      }
     };
 
     const mutationCache = queryClient.getMutationCache();
@@ -43,21 +49,24 @@ export function ErrorToaster() {
       // password field, so a toast would just repeat it.
       if (isPasswordCompromisedError(error)) return;
 
-      const err = error as BetterFetchError;
       if (
-        err.error?.code === "EMAIL_NOT_VERIFIED" &&
+        getAuthErrorCode(error) === "EMAIL_NOT_VERIFIED" &&
         !matchMutation({ mutationKey: oneTapMutationKeys.prompt }, mutation)
       ) {
         return;
       }
-      toastError({ message: err.error?.message || err.message });
+      const message = getAuthErrorMessage(error, localization, mutation.options.mutationKey);
+      if (message) {
+        console.error("[Better Auth UI]", error);
+        toastError({ message });
+      }
     };
 
     return () => {
       queryCache.config.onError = previousQueryOnError;
       mutationCache.config.onError = previousMutationOnError;
     };
-  }, [queryClient]);
+  }, [queryClient, localization]);
 
   return null;
 }

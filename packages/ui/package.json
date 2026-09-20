@@ -59,8 +59,8 @@
     "base-ui"
   ],
   "devDependencies": {
-    "@better-auth-ui/core": "^1.7.24",
-    "@better-auth-ui/react": "^1.7.24",
+    "@better-auth-ui/core": "^1.7.26",
+    "@better-auth-ui/react": "^1.7.26",
     "@kumix/tsconfig": "^0.1.0",
     "@kumix/ui": "^0.3.16",
     "@kumix/utils": "^0.3.0",

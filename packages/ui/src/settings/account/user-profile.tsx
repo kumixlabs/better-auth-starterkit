@@ -34,7 +34,8 @@ export type UserProfileProps = {
  * @returns A JSX element containing the profile card with avatar upload and editable name/username fields
  */
 export function UserProfile({ className }: UserProfileProps) {
-  const { additionalFields, authClient, localization } = useAuth<UsernameAuthClient>();
+  const { additionalFields, authClient, avatar, localization, profile } =
+    useAuth<UsernameAuthClient>();
   const { data: session } = useSession(authClient);
 
   const { mutateAsync: updateUser, isPending } = useUpdateUser(authClient, {
@@ -45,6 +46,8 @@ export function UserProfile({ className }: UserProfileProps) {
     () => additionalFields?.filter((field) => field.profile !== false) ?? [],
     [additionalFields],
   );
+  const hasProfileFields =
+    profile.name || profileFields.some((field) => field.inputType !== "hidden");
   const form = useAuthForm({
     defaultValues: {
       additionalFields: getAdditionalFieldDefaultValues(profileFields),
@@ -52,7 +55,7 @@ export function UserProfile({ className }: UserProfileProps) {
     },
     onSubmit: async ({ value }) => {
       await updateUser({
-        name: value.name,
+        ...(profile.name && { name: value.name }),
         ...getAdditionalFieldSubmitValues(profileFields, value.additionalFields),
       });
     },
@@ -68,6 +71,8 @@ export function UserProfile({ className }: UserProfileProps) {
     });
   }, [form, profileFields, session]);
 
+  if (!avatar.enabled && !hasProfileFields) return null;
+
   return (
     <div>
       <h2 className="mb-3 font-semibold text-sm">{localization.settings.userProfile}</h2>
@@ -78,46 +83,48 @@ export function UserProfile({ className }: UserProfileProps) {
             <CardContent className="flex flex-col gap-6">
               <ChangeAvatar />
 
-              <form.AppField
-                name="name"
-                validators={{
-                  onChange: ({ value }) =>
-                    validateStringLength(value, {
-                      requiredMessage: localization.auth.fieldRequired,
-                      trim: true,
-                    }),
-                }}
-              >
-                {(field) => {
-                  const isInvalid = isAuthFormFieldInvalid(field.state.meta);
+              {profile.name && (
+                <form.AppField
+                  name="name"
+                  validators={{
+                    onChange: ({ value }) =>
+                      validateStringLength(value, {
+                        requiredMessage: localization.auth.fieldRequired,
+                        trim: true,
+                      }),
+                  }}
+                >
+                  {(field) => {
+                    const isInvalid = isAuthFormFieldInvalid(field.state.meta);
 
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor="name">{localization.auth.name}</FieldLabel>
+                    return (
+                      <Field data-invalid={isInvalid}>
+                        <FieldLabel htmlFor="name">{localization.auth.name}</FieldLabel>
 
-                      {session ? (
-                        <Input
-                          id="name"
-                          name={field.name}
-                          autoComplete="name"
-                          placeholder={localization.auth.name}
-                          disabled={isPending}
-                          value={field.state.value}
-                          onBlur={field.handleBlur}
-                          onChange={(event) => field.handleChange(event.target.value)}
-                          aria-invalid={isInvalid}
-                        />
-                      ) : (
-                        <Skeleton>
-                          <Input className="invisible" />
-                        </Skeleton>
-                      )}
+                        {session ? (
+                          <Input
+                            id="name"
+                            name={field.name}
+                            autoComplete="name"
+                            placeholder={localization.auth.name}
+                            disabled={isPending}
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={(event) => field.handleChange(event.target.value)}
+                            aria-invalid={isInvalid}
+                          />
+                        ) : (
+                          <Skeleton>
+                            <Input className="invisible" />
+                          </Skeleton>
+                        )}
 
-                      <field.AuthFormFieldError />
-                    </Field>
-                  );
-                }}
-              </form.AppField>
+                        <field.AuthFormFieldError />
+                      </Field>
+                    );
+                  }}
+                </form.AppField>
+              )}
 
               {profileFields.map((configuredField) => {
                 if (!session) {
@@ -152,11 +159,13 @@ export function UserProfile({ className }: UserProfileProps) {
               })}
             </CardContent>
 
-            <CardFooter>
-              <form.AuthFormSubmitButton size="sm" disabled={isPending || !session}>
-                {localization.settings.saveChanges}
-              </form.AuthFormSubmitButton>
-            </CardFooter>
+            {hasProfileFields && (
+              <CardFooter>
+                <form.AuthFormSubmitButton size="sm" disabled={isPending || !session}>
+                  {localization.settings.saveChanges}
+                </form.AuthFormSubmitButton>
+              </CardFooter>
+            )}
           </Card>
         </form.AuthFormRoot>
       </form.AppForm>

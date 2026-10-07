@@ -298,10 +298,7 @@ export function InviteMemberDialog({ open, onOpenChange }: InviteMemberDialogPro
                                   key={key}
                                   checked={checked}
                                   disabled={checked && selectedRoles.length === 1}
-                                  onSelect={(event) => {
-                                    event.preventDefault();
-                                    toggleRole(key);
-                                  }}
+                                  onCheckedChange={() => toggleRole(key)}
                                 >
                                   {label}
                                 </DropdownMenuCheckboxItem>

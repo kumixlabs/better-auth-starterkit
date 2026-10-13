@@ -1,5 +1,11 @@
 # @kumix/better-auth-ui
 
+## 0.1.3
+
+### Patch Changes
+
+- [`ee00d8b`](https://github.com/kumixlabs/better-auth-starterkit/commit/ee00d8b915462572aa5346656d89f8792f2ab5af) Thanks [@kumixio](https://github.com/kumixio)! - Fix upstream imports to Kumix conventions (`@kumix/ui/ui/*`, `@kumix/utils`, relative paths), sync upstream UI updates (agent-approval, device-authorization, oauth-consent, oauth-select-account, accept-invitation, authorized-application), bump dependencies, and add missing `username/` entry in README.
+
 ## 0.1.2
 
 ### Patch Changes

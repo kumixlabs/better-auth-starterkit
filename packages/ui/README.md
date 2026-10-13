@@ -23,6 +23,7 @@ Prebuilt auth UI for Kumix products, on top of [better-auth](https://better-auth
 | `device-authorization/` | Device authorization screens                                                                      |
 | `last-login-method/`    | Last-used login method badge                                                                      |
 | `theme/`                | Appearance settings, theme toggle                                                                 |
+| `username/`             | Username sign-in, username field                                                                  |
 | `user/`                 | User avatar, user button, user view                                                               |
 | `email/`                | react-email templates (verification, reset, OTP, invitation, magic link, new device, …)           |
 | `lib/`                  | Client plugins per feature: `organizationPlugin`, `adminPlugin`, `twoFactorPlugin`, …             |

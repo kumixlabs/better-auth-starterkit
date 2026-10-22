@@ -56,7 +56,6 @@ Per-package: `cd packages/<name> && bun run <script>`.
 ### Working on `@kumix/better-auth-ui`
 
 See [AGENTS.md](./AGENTS.md) for the full conventions. The short version:
-
 - Per-file ESM exports, no root barrel (`@kumix/better-auth-ui/sign-in`, `…/lib/organization-plugin`).
 - UI primitives from `@kumix/ui`, utilities from `@kumix/utils` (`cn`), toasts from `@kumix/ui/custom/toast` — never `sonner`.
 - Internal imports are relative (`../lib/organization-plugin`), never `@/` aliases.
@@ -103,7 +102,6 @@ Keep PRs focused: one feature or fix per PR is much easier to review.
 ## Releasing (Maintainers Only)
 
 This project uses [Changesets](https://github.com/changesets/changesets):
-
 1. **Create a changeset** on your branch:
 
    ```bash

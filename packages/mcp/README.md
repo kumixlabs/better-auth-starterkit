@@ -46,9 +46,7 @@ bun run build
   "mcpServers": {
     "Kumix Better Auth UI": {
       "command": "node",
-      "args": [
-        "/absolute/path/to/better-auth-starterkit/packages/mcp/dist/index.js"
-      ],
+      "args": ["/absolute/path/to/better-auth-starterkit/packages/mcp/dist/index.js"],
       "cwd": "/absolute/path/to/better-auth-starterkit"
     }
   }

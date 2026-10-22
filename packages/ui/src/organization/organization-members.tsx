@@ -284,7 +284,7 @@ export function OrganizationMembers({
   return (
     <div className={cn("flex flex-col gap-3", className)} {...props}>
       <div className="flex items-end justify-between gap-3">
-        <h3 className="truncate font-semibold text-sm">{organizationLocalization.members}</h3>
+        <h3 className="truncate text-sm font-semibold">{organizationLocalization.members}</h3>
 
         {(canInvite.isPending || canInvite.data?.success) && (
           <Button
@@ -387,7 +387,7 @@ export function OrganizationMembers({
             <span className="capitalize">{roles?.[roleFilter] ?? roleFilter}</span>
             <Button
               aria-label={organizationLocalization.clear}
-              className="size-4 rounded-sm text-muted-foreground"
+              className="text-muted-foreground size-4 rounded-sm"
               onClick={() => table.getColumn("role")?.setFilterValue(undefined)}
               size="icon-xs"
               type="button"

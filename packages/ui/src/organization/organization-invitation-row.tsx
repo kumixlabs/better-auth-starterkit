@@ -104,7 +104,7 @@ export function OrganizationInvitationRow({
       {showEmail && (
         <TableCell>
           <div className="flex flex-col gap-1">
-            <span className="font-medium text-sm">{invitation.email}</span>
+            <span className="text-sm font-medium">{invitation.email}</span>
             {invitationFields.map((field) => {
               const value = formatAdditionalFieldValue(
                 (invitation as unknown as Record<string, unknown>)[field.name],
@@ -120,7 +120,7 @@ export function OrganizationInvitationRow({
       )}
 
       {showCreatedAt && (
-        <TableCell className="whitespace-nowrap text-muted-foreground text-xs tabular-nums">
+        <TableCell className="text-muted-foreground text-xs whitespace-nowrap tabular-nums">
           {new Date(invitation.createdAt).toLocaleString(undefined, {
             dateStyle: "short",
             timeStyle: "short",
@@ -170,7 +170,7 @@ export function OrganizationInvitationRow({
             <Button
               size="icon"
               variant="outline"
-              className="size-8 text-destructive"
+              className="text-destructive size-8"
               disabled={cancelPending}
               onClick={() => cancelInvitation({ invitationId: invitation.id })}
               aria-label={organizationLocalization.cancelInvitation}

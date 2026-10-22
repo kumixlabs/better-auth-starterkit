@@ -150,7 +150,7 @@ export function UserButton({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        className="min-w-40 max-w-[48svw] md:min-w-56"
+        className="max-w-[48svw] min-w-40 md:min-w-56"
         side={side}
         sideOffset={sideOffset}
         align={align}
@@ -158,7 +158,7 @@ export function UserButton({
         {session && (
           <>
             <DropdownMenuGroup>
-              <DropdownMenuLabel className="font-normal text-sm">
+              <DropdownMenuLabel className="text-sm font-normal">
                 <UserView />
               </DropdownMenuLabel>
             </DropdownMenuGroup>

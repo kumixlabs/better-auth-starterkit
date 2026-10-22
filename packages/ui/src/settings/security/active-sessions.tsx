@@ -39,14 +39,14 @@ export function ActiveSessions({ className }: ActiveSessionsProps) {
 
   return (
     <div>
-      <h2 className="mb-3 font-semibold text-sm">{localization.settings.activeSessions}</h2>
+      <h2 className="mb-3 text-sm font-semibold">{localization.settings.activeSessions}</h2>
 
       <Card className={cn("gap-0 p-0", className)}>
         <CardContent className="p-0">
           {isReauthenticationRequiredError(error) ? (
             <ReauthenticationAction />
           ) : error ? (
-            <div className="p-4 text-destructive text-sm">{error.message}</div>
+            <div className="text-destructive p-4 text-sm">{error.message}</div>
           ) : isPending ? (
             <SessionRowSkeleton />
           ) : (

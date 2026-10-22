@@ -134,13 +134,13 @@ export function OAuthSelectAccount({ className }: OAuthSelectAccountProps) {
             <Skeleton className="size-16 rounded-full" />
           )}
           {client ? (
-            <p className="max-w-full break-words font-medium text-base">{clientName}</p>
+            <p className="max-w-full text-base font-medium break-words">{clientName}</p>
           ) : (
             <Skeleton className="h-5 w-36" />
           )}
         </div>
         <div className="grid gap-1">
-          <CardTitle className="font-semibold text-xl">{localization.selectAccount}</CardTitle>
+          <CardTitle className="text-xl font-semibold">{localization.selectAccount}</CardTitle>
           <CardDescription>
             {interpolateClient(localization.selectAccountDescription, clientName)}
           </CardDescription>
@@ -148,7 +148,7 @@ export function OAuthSelectAccount({ className }: OAuthSelectAccountProps) {
       </CardHeader>
       <CardContent className="px-4 pb-6 sm:px-6">
         {isDeviceSessionsPending ? (
-          <div className="flex items-center gap-3 rounded-lg bg-muted/50 p-4">
+          <div className="bg-muted/50 flex items-center gap-3 rounded-lg p-4">
             <UserAvatar isPending />
             <div className="grid flex-1 gap-2">
               <Skeleton className="h-4 w-28" />
@@ -157,13 +157,13 @@ export function OAuthSelectAccount({ className }: OAuthSelectAccountProps) {
           </div>
         ) : !deviceSessions?.length ? (
           <div className="grid justify-items-center gap-1 py-6 text-center">
-            <p className="font-semibold text-sm">{localization.noAccounts}</p>
+            <p className="text-sm font-semibold">{localization.noAccounts}</p>
             <p className="text-muted-foreground text-sm">
               {interpolateClient(localization.noAccountsDescription, clientName)}
             </p>
           </div>
         ) : (
-          <ul className="divide-y divide-border overflow-hidden rounded-lg bg-muted/50">
+          <ul className="divide-border bg-muted/50 divide-y overflow-hidden rounded-lg">
             {deviceSessions.map(
               (deviceSession: ListDeviceSession<OAuthProviderMultiSessionAuthClient>) => {
                 const isCurrent = deviceSession.session.id === session?.session.id;
@@ -171,7 +171,7 @@ export function OAuthSelectAccount({ className }: OAuthSelectAccountProps) {
                 return (
                   <li key={deviceSession.session.id}>
                     <Button
-                      className="h-auto min-h-20 w-full justify-start gap-3 whitespace-normal rounded-none p-4 text-left"
+                      className="h-auto min-h-20 w-full justify-start gap-3 rounded-none p-4 text-left whitespace-normal"
                       variant="ghost"
                       disabled={isBusy || !client || isSessionPending}
                       aria-label={`${localization.continue}: ${deviceSession.user.name || deviceSession.user.email} (${deviceSession.user.email})`}
@@ -179,11 +179,11 @@ export function OAuthSelectAccount({ className }: OAuthSelectAccountProps) {
                     >
                       <UserAvatar className="size-10 shrink-0" user={deviceSession.user} />
                       <span className="grid min-w-0 flex-1 gap-0.5">
-                        <span className="break-words font-medium text-base">
+                        <span className="text-base font-medium break-words">
                           {deviceSession.user.name || deviceSession.user.email}
                         </span>
                         {deviceSession.user.name ? (
-                          <span className="break-all text-muted-foreground text-sm">
+                          <span className="text-muted-foreground text-sm break-all">
                             {deviceSession.user.email}
                           </span>
                         ) : null}
@@ -198,7 +198,7 @@ export function OAuthSelectAccount({ className }: OAuthSelectAccountProps) {
                       ) : (
                         <ChevronRight
                           aria-hidden="true"
-                          className="size-4 shrink-0 text-muted-foreground"
+                          className="text-muted-foreground size-4 shrink-0"
                         />
                       )}
                     </Button>

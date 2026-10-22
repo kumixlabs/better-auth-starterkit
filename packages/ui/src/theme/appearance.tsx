@@ -37,7 +37,7 @@ export function Appearance({ className }: AppearanceProps) {
 
   return (
     <div>
-      <h2 className="mb-3 font-semibold text-sm">{localization.appearance}</h2>
+      <h2 className="mb-3 text-sm font-semibold">{localization.appearance}</h2>
 
       <Card className={cn(className)}>
         <CardContent>
@@ -56,7 +56,7 @@ export function Appearance({ className }: AppearanceProps) {
                     <FieldContent className="gap-2">
                       <div className="flex items-center justify-between gap-2">
                         <FieldTitle>
-                          <Monitor className="size-4 text-muted-foreground" />
+                          <Monitor className="text-muted-foreground size-4" />
 
                           {localization.system}
                         </FieldTitle>
@@ -76,7 +76,7 @@ export function Appearance({ className }: AppearanceProps) {
                     <FieldContent className="gap-2">
                       <div className="flex items-center justify-between gap-2">
                         <FieldTitle>
-                          <Sun className="size-4 text-muted-foreground" />
+                          <Sun className="text-muted-foreground size-4" />
 
                           {localization.light}
                         </FieldTitle>
@@ -96,7 +96,7 @@ export function Appearance({ className }: AppearanceProps) {
                     <FieldContent className="gap-2">
                       <div className="flex items-center justify-between gap-2">
                         <FieldTitle>
-                          <Moon className="size-4 text-muted-foreground" />
+                          <Moon className="text-muted-foreground size-4" />
 
                           {localization.dark}
                         </FieldTitle>

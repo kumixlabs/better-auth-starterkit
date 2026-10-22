@@ -90,11 +90,11 @@ export function AcceptInvitation({ className }: AcceptInvitationProps) {
   return (
     <Card className={cn("w-full max-w-lg gap-0 overflow-hidden p-0", className)}>
       <CardHeader className="grid justify-items-center gap-5 p-6 text-center">
-        <div className="flex size-16 items-center justify-center rounded-full bg-muted/50">
+        <div className="bg-muted/50 flex size-16 items-center justify-center rounded-full">
           <BriefcaseBusiness aria-hidden="true" className="size-7" />
         </div>
         <div className="grid gap-1">
-          <CardTitle className="wrap-break-word max-w-full font-semibold text-xl">
+          <CardTitle className="max-w-full text-xl font-semibold wrap-break-word">
             {isLoading ? (
               <Skeleton className="h-6 w-48" />
             ) : isAvailable ? (
@@ -107,7 +107,7 @@ export function AcceptInvitation({ className }: AcceptInvitationProps) {
         </div>
       </CardHeader>
       <CardContent className="px-4 pb-6 sm:px-6">
-        <div className="grid gap-5 rounded-lg bg-muted/50 p-5">
+        <div className="bg-muted/50 grid gap-5 rounded-lg p-5">
           {isLoading ? (
             <Skeleton className="h-10 w-full" />
           ) : isAvailable ? (
@@ -119,7 +119,7 @@ export function AcceptInvitation({ className }: AcceptInvitationProps) {
               </FieldDescription>
               <dl className="grid gap-1">
                 <dt className="text-muted-foreground text-sm">{localization.role}</dt>
-                <dd className="font-medium text-base">{role}</dd>
+                <dd className="text-base font-medium">{role}</dd>
               </dl>
             </>
           ) : (
@@ -129,11 +129,11 @@ export function AcceptInvitation({ className }: AcceptInvitationProps) {
             <UserAvatar user={session.data?.user} isPending={session.isPending} />
             {session.data ? (
               <div className="grid min-w-0 gap-0.5">
-                <p className="wrap-break-word font-medium text-sm">
+                <p className="text-sm font-medium wrap-break-word">
                   {session.data.user.name || session.data.user.email}
                 </p>
                 {session.data.user.name ? (
-                  <p className="break-all text-muted-foreground text-sm">
+                  <p className="text-muted-foreground text-sm break-all">
                     {session.data.user.email}
                   </p>
                 ) : null}

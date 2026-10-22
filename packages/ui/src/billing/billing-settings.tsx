@@ -118,10 +118,10 @@ function PlanCard({
       </CardHeader>
       <CardContent className="flex flex-1 flex-col gap-4">
         <div>
-          <span className="font-semibold text-2xl tracking-tight">
+          <span className="text-2xl font-semibold tracking-tight">
             {formatPrice(price.amount, price.currency)}
           </span>
-          <span className="ml-1 text-muted-foreground text-xs">{suffix}</span>
+          <span className="text-muted-foreground ml-1 text-xs">{suffix}</span>
         </div>
         {plan.features?.length ? (
           <ul className="flex flex-col gap-2 text-sm">
@@ -224,7 +224,7 @@ export function BillingSettings({ adapter, scope, className }: BillingSettingsPr
   return (
     <div className={cn("flex flex-col gap-6", className)}>
       <div className="flex flex-col gap-1">
-        <h2 className="font-semibold text-base">{localization.billing}</h2>
+        <h2 className="text-base font-semibold">{localization.billing}</h2>
         <p className="text-muted-foreground text-sm">{localization.billingDescription}</p>
       </div>
 
@@ -332,7 +332,7 @@ export function BillingSettings({ adapter, scope, className }: BillingSettingsPr
 
       <section className="flex flex-col gap-3" aria-labelledby="billing-plans-heading">
         <div className="flex items-end justify-between gap-3">
-          <h3 id="billing-plans-heading" className="font-semibold text-sm">
+          <h3 id="billing-plans-heading" className="text-sm font-semibold">
             {localization.plans}
           </h3>
           {intervals.length > 1 && (

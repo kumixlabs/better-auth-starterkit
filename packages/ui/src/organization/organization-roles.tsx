@@ -194,7 +194,7 @@ export function OrganizationRoles({ organizationId }: { organizationId: string }
     <div className="flex flex-col gap-4">
       <div className="flex items-end justify-between gap-3">
         <div>
-          <h2 className="font-semibold text-sm">{localization.roles}</h2>
+          <h2 className="text-sm font-semibold">{localization.roles}</h2>
           <p className="text-muted-foreground text-sm">{localization.rolesDescription}</p>
         </div>
         {(canCreate.isPending || canCreate.data?.success) && (
@@ -273,7 +273,7 @@ export function OrganizationRoles({ organizationId }: { organizationId: string }
           {dynamicAccessControl?.permissions[permissionFilter]?.label ?? permissionFilter}
           <Button
             aria-label={localization.clear}
-            className="size-4 rounded-sm text-muted-foreground"
+            className="text-muted-foreground size-4 rounded-sm"
             onClick={() => table.getColumn("permissionResources")?.setFilterValue(undefined)}
             size="icon-xs"
             type="button"
@@ -349,7 +349,7 @@ export function OrganizationRoles({ organizationId }: { organizationId: string }
       ) : (
         <Card>
           <CardContent className="flex flex-col gap-1">
-            <p className="font-medium text-sm">{localization.noRoles}</p>
+            <p className="text-sm font-medium">{localization.noRoles}</p>
             <p className="text-muted-foreground text-sm">{localization.noRolesDescription}</p>
           </CardContent>
         </Card>
@@ -488,7 +488,7 @@ function OrganizationRoleRow({
                     {localization.deleteRoleDescription}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <p className="wrap-break-word font-medium text-sm">{role.role}</p>
+                <p className="text-sm font-medium wrap-break-word">{role.role}</p>
                 <AlertDialogFooter>
                   <AlertDialogCancel disabled={deleteRole.isPending}>
                     {authLocalization.settings.cancel}
@@ -685,10 +685,10 @@ function RoleDialog({
             <form.AppField name="permission">
               {(field) => (
                 <fieldset className="flex flex-col gap-4">
-                  <legend className="font-medium text-sm">{localization.permissions}</legend>
+                  <legend className="text-sm font-medium">{localization.permissions}</legend>
                   {Object.entries(registry).map(([resource, definition]) => (
                     <div className="flex flex-col gap-2" key={resource}>
-                      <p className="font-medium text-sm">{definition.label ?? resource}</p>
+                      <p className="text-sm font-medium">{definition.label ?? resource}</p>
                       <div className="grid gap-3 sm:grid-cols-2">
                         {Object.entries(definition.actions).map(([action, label]) => (
                           <RolePermissionCheckbox

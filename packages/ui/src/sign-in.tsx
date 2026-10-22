@@ -110,7 +110,7 @@ export function SignIn({ className, socialLayout, socialPosition = "bottom" }: S
       <AuthPrompts view="signIn" />
       <ReauthenticationNotice />
       <CardHeader>
-        <CardTitle className="font-semibold text-xl">{localization.auth.signIn}</CardTitle>
+        <CardTitle className="text-xl font-semibold">{localization.auth.signIn}</CardTitle>
       </CardHeader>
 
       <CardContent>
@@ -122,7 +122,7 @@ export function SignIn({ className, socialLayout, socialPosition = "bottom" }: S
               )}
 
               {showSeparator && (
-                <FieldSeparator className="m-0 flex items-center text-xs *:data-[slot=field-separator-content]:bg-card">
+                <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card m-0 flex items-center text-xs">
                   {localization.auth.or}
                 </FieldSeparator>
               )}
@@ -256,7 +256,7 @@ export function SignIn({ className, socialLayout, socialPosition = "bottom" }: S
 
                             <FieldLabel
                               htmlFor="rememberMe"
-                              className="cursor-pointer font-normal text-sm"
+                              className="cursor-pointer text-sm font-normal"
                             >
                               {localization.auth.rememberMe}
                             </FieldLabel>
@@ -293,7 +293,7 @@ export function SignIn({ className, socialLayout, socialPosition = "bottom" }: S
           {socialPosition === "bottom" && (
             <>
               {showSeparator && (
-                <FieldSeparator className="flex items-center text-xs *:data-[slot=field-separator-content]:bg-card">
+                <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card flex items-center text-xs">
                   {localization.auth.or}
                 </FieldSeparator>
               )}

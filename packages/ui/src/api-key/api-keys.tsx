@@ -133,7 +133,7 @@ export function ApiKeys({
   return (
     <div className={cn("flex flex-col gap-3", className)}>
       <div className="flex items-end justify-between gap-3">
-        <h2 className="truncate font-semibold text-sm">{apiKeyLocalization.apiKeys}</h2>
+        <h2 className="truncate text-sm font-semibold">{apiKeyLocalization.apiKeys}</h2>
 
         {!hideCreate && (
           <Button

@@ -38,7 +38,7 @@ export function BackupCodes({ codes }: BackupCodesProps) {
         {twoFactorLocalization.backupCodesDescription}
       </p>
 
-      <ul className="grid grid-cols-2 gap-2 rounded-md border bg-muted/40 p-4 font-mono text-sm">
+      <ul className="bg-muted/40 grid grid-cols-2 gap-2 rounded-md border p-4 font-mono text-sm">
         {codes.map((backupCode) => (
           <li className="tracking-wide" key={backupCode}>
             {backupCode}

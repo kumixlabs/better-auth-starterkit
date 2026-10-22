@@ -75,7 +75,7 @@ export function UserProfile({ className }: UserProfileProps) {
 
   return (
     <div>
-      <h2 className="mb-3 font-semibold text-sm">{localization.settings.userProfile}</h2>
+      <h2 className="mb-3 text-sm font-semibold">{localization.settings.userProfile}</h2>
 
       <form.AppForm>
         <form.AuthFormRoot>

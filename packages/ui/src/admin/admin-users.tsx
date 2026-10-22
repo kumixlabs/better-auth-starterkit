@@ -286,7 +286,7 @@ export function AdminUsers({
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-1">
-            <h1 className="font-semibold text-xl tracking-tight">{localization.users}</h1>
+            <h1 className="text-xl font-semibold tracking-tight">{localization.users}</h1>
             <p className="text-muted-foreground text-sm">{localization.usersDescription}</p>
           </div>
           {canCreate.isPending ? (
@@ -461,7 +461,7 @@ export function AdminUsers({
                               ) : (
                                 <span className="truncate">{user.name}</span>
                               )}
-                              <div className="truncate text-muted-foreground text-xs">
+                              <div className="text-muted-foreground truncate text-xs">
                                 {user.email}
                               </div>
                             </div>
@@ -475,7 +475,7 @@ export function AdminUsers({
                             {user.banned ? localization.banned : localization.active}
                           </Badge>
                         </TableCell>
-                        <TableCell className="hidden text-muted-foreground lg:table-cell">
+                        <TableCell className="text-muted-foreground hidden lg:table-cell">
                           {formatDate(user.createdAt)}
                         </TableCell>
                       </TableRow>
@@ -496,7 +496,7 @@ export function AdminUsers({
           </div>
         )}
 
-        <div className="flex items-center justify-between gap-3 text-muted-foreground text-sm">
+        <div className="text-muted-foreground flex items-center justify-between gap-3 text-sm">
           <span>
             {localization.usersPaginationRange
               .replace("{{from}}", String(from))
@@ -548,7 +548,7 @@ function SortButton({
 }) {
   return (
     <button
-      className="inline-flex items-center gap-1 hover:text-foreground"
+      className="hover:text-foreground inline-flex items-center gap-1"
       onClick={onClick}
       type="button"
     >
@@ -574,7 +574,7 @@ function AdminState({
       <span className="text-muted-foreground [&>svg]:size-8">{icon}</span>
       <div className="flex flex-col gap-1">
         <h2 className="font-medium">{title}</h2>
-        <p className="max-w-md text-muted-foreground text-sm">{description}</p>
+        <p className="text-muted-foreground max-w-md text-sm">{description}</p>
       </div>
       {action}
     </div>
@@ -1428,7 +1428,7 @@ function UserInspector({
                         ) : null}
                       </section>
                     </div>
-                    <div className="flex flex-col-reverse gap-2 border-t bg-muted/50 px-6 py-4 sm:flex-row sm:justify-end">
+                    <div className="bg-muted/50 flex flex-col-reverse gap-2 border-t px-6 py-4 sm:flex-row sm:justify-end">
                       <Button onClick={() => onOpenChange(false)} type="button" variant="outline">
                         {config.localization.cancel}
                       </Button>
@@ -1488,7 +1488,7 @@ function UserInspector({
                               {formatDate(item.createdAt)} · {formatDate(item.expiresAt)}
                             </div>
                             {config.showIpAddress && item.ipAddress ? (
-                              <div className="mt-1 font-mono text-muted-foreground text-xs">
+                              <div className="text-muted-foreground mt-1 font-mono text-xs">
                                 {item.ipAddress}
                               </div>
                             ) : null}
@@ -1511,7 +1511,7 @@ function UserInspector({
                       ))}
                     </>
                   ) : (
-                    <p className="py-8 text-center text-muted-foreground text-sm">
+                    <p className="text-muted-foreground py-8 text-center text-sm">
                       {config.localization.noSessions}
                     </p>
                   )}

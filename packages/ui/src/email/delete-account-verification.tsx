@@ -133,7 +133,7 @@ export const DeleteAccountVerificationEmail = ({
           <Container className={cn("mx-auto my-auto max-w-xl px-2 py-10", classNames?.container)}>
             <Section
               className={cn(
-                "rounded-none border border-border bg-card p-8 text-card-foreground",
+                "border-border bg-card text-card-foreground rounded-none border p-8",
                 classNames?.card,
               )}
             >
@@ -165,7 +165,7 @@ export const DeleteAccountVerificationEmail = ({
                   </>
                 ))}
 
-              <Heading className={cn("m-0 mb-5 font-semibold text-2xl", classNames?.title)}>
+              <Heading className={cn("m-0 mb-5 text-2xl font-semibold", classNames?.title)}>
                 {localization.CONFIRM_ACCOUNT_DELETION}
               </Heading>
 
@@ -173,30 +173,30 @@ export const DeleteAccountVerificationEmail = ({
 
               {email && (
                 <Section
-                  className={cn("my-6 border border-border bg-muted p-4", classNames?.codeBlock)}
+                  className={cn("border-border bg-muted my-6 border p-4", classNames?.codeBlock)}
                 >
                   <Text
                     className={cn(
-                      "m-0 mb-2 text-muted-foreground text-xs",
+                      "text-muted-foreground m-0 mb-2 text-xs",
                       classNames?.description,
                     )}
                   >
                     {localization.ACCOUNT}
                   </Text>
-                  <Text className={cn("m-0 font-semibold text-sm", classNames?.content)}>
+                  <Text className={cn("m-0 text-sm font-semibold", classNames?.content)}>
                     {email}
                   </Text>
                 </Section>
               )}
 
-              <Text className={cn("font-semibold text-sm", classNames?.content)}>
+              <Text className={cn("text-sm font-semibold", classNames?.content)}>
                 {localization.DELETION_IS_PERMANENT}
               </Text>
 
               <Section className="my-6">
                 <Button
                   className={cn(
-                    "inline-block whitespace-nowrap rounded-none bg-primary px-6 py-2.5 font-medium text-primary-foreground text-sm no-underline",
+                    "bg-primary text-primary-foreground inline-block rounded-none px-6 py-2.5 text-sm font-medium whitespace-nowrap no-underline",
                     classNames?.button,
                   )}
                   href={url}
@@ -206,24 +206,24 @@ export const DeleteAccountVerificationEmail = ({
               </Section>
 
               <Text
-                className={cn("m-0 mb-3 text-muted-foreground text-xs", classNames?.description)}
+                className={cn("text-muted-foreground m-0 mb-3 text-xs", classNames?.description)}
               >
                 {localization.OR_COPY_AND_PASTE_URL}
               </Text>
 
-              <Link className={cn("break-all text-primary text-xs", classNames?.link)} href={url}>
+              <Link className={cn("text-primary text-xs break-all", classNames?.link)} href={url}>
                 {url}
               </Link>
 
               <Hr
                 className={cn(
-                  "my-6 w-full border border-border border-solid",
+                  "border-border my-6 w-full border border-solid",
                   classNames?.separator,
                 )}
               />
 
               <Text
-                className={cn("m-0 mb-3 text-muted-foreground text-xs", classNames?.description)}
+                className={cn("text-muted-foreground m-0 mb-3 text-xs", classNames?.description)}
               >
                 {localization.THIS_LINK_EXPIRES_IN_HOURS.replace(
                   "{expirationHours}",
@@ -232,14 +232,14 @@ export const DeleteAccountVerificationEmail = ({
                 {appName && ` ${localization.EMAIL_SENT_BY.replace("{appName}", appName)}`}
               </Text>
 
-              <Text className={cn("m-0 text-muted-foreground text-xs", classNames?.description)}>
+              <Text className={cn("text-muted-foreground m-0 text-xs", classNames?.description)}>
                 {localization.IF_YOU_DIDNT_REQUEST_ACCOUNT_DELETION}
               </Text>
 
               {poweredBy && (
                 <Text
                   className={cn(
-                    "m-0 mt-4 text-center text-[11px] text-muted-foreground",
+                    "text-muted-foreground m-0 mt-4 text-center text-[11px]",
                     classNames?.poweredBy,
                   )}
                 >

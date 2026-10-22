@@ -46,7 +46,7 @@ export function UserAvatar({ className, user, isPending, fallback }: UserAvatarP
     .toUpperCase();
 
   return (
-    <Avatar className={cn("size-8 rounded-full bg-muted text-foreground text-sm", className)}>
+    <Avatar className={cn("bg-muted text-foreground size-8 rounded-full text-sm", className)}>
       <AvatarImage
         src={resolvedUser?.image ?? undefined}
         alt={resolvedUser?.displayUsername || resolvedUser?.name || resolvedUser?.email}

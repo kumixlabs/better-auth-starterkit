@@ -67,10 +67,10 @@ export function Admin({ className, hideNav, path, view }: AdminProps) {
         <contributedView.component />
       ) : (
         <div className="flex min-h-64 flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-8 text-center">
-          <ShieldAlertIcon className="size-8 text-muted-foreground" />
+          <ShieldAlertIcon className="text-muted-foreground size-8" />
           <div className="flex flex-col gap-1">
             <h2 className="font-medium">{localization.unknownView}</h2>
-            <p className="max-w-md text-muted-foreground text-sm">
+            <p className="text-muted-foreground max-w-md text-sm">
               {localization.unknownViewDescription} &quot;{path ?? view}&quot;
             </p>
           </div>

@@ -101,7 +101,7 @@ export function AgentApproval({ className }: AgentApprovalProps) {
           {approved ? (
             <CircleCheckIcon className="size-10 text-emerald-600" />
           ) : (
-            <CircleXIcon className="size-10 text-muted-foreground" />
+            <CircleXIcon className="text-muted-foreground size-10" />
           )}
           <div className="flex flex-col gap-1">
             <h1 className="font-semibold">
@@ -126,16 +126,16 @@ export function AgentApproval({ className }: AgentApprovalProps) {
       )}
     >
       <div
-        className="min-h-0 overflow-y-auto overscroll-contain focus-visible:outline-2 focus-visible:outline-ring focus-visible:-outline-offset-2"
+        className="focus-visible:outline-ring min-h-0 overflow-y-auto overscroll-contain focus-visible:outline-2 focus-visible:-outline-offset-2"
         role="region"
         aria-label={plugin.localization.approvalTitle}
       >
         <CardHeader className="flex flex-col items-stretch gap-5 p-6">
           <div className="flex items-center justify-center gap-5">
-            <div className="flex size-16 shrink-0 items-center justify-center rounded-full bg-muted/50">
+            <div className="bg-muted/50 flex size-16 shrink-0 items-center justify-center rounded-full">
               <BotIcon aria-hidden="true" className="size-7" />
             </div>
-            <EllipsisIcon aria-hidden="true" className="size-5 text-muted-foreground" />
+            <EllipsisIcon aria-hidden="true" className="text-muted-foreground size-5" />
             <UserAvatar
               className="size-16"
               user={session.data?.user}
@@ -143,7 +143,7 @@ export function AgentApproval({ className }: AgentApprovalProps) {
             />
           </div>
           <div className="grid justify-items-center gap-1 text-center">
-            <CardTitle className="wrap-break-word max-w-full font-semibold text-xl">
+            <CardTitle className="max-w-full text-xl font-semibold wrap-break-word">
               {approval.data ? (
                 approval.data.name
               ) : approval.isPending ? (
@@ -163,10 +163,10 @@ export function AgentApproval({ className }: AgentApprovalProps) {
             ) : approval.isPending ? (
               <Skeleton className="h-4 w-48" />
             ) : null}
-            <div className="mt-2 flex max-w-full flex-wrap justify-center gap-x-1 text-muted-foreground text-sm">
+            <div className="text-muted-foreground mt-2 flex max-w-full flex-wrap justify-center gap-x-1 text-sm">
               <span>{plugin.localization.signedInAs}</span>
               {session.data ? (
-                <span className="break-all font-medium text-foreground">
+                <span className="text-foreground font-medium break-all">
                   {session.data.user.name || session.data.user.email}
                 </span>
               ) : session.isPending ? (
@@ -176,8 +176,8 @@ export function AgentApproval({ className }: AgentApprovalProps) {
           </div>
         </CardHeader>
         <CardContent className="px-4 pb-6 sm:px-6">
-          <div className="grid gap-4 rounded-lg bg-muted/50 p-5">
-            <h2 className="font-medium text-sm">{plugin.localization.requestedCapabilities}</h2>
+          <div className="bg-muted/50 grid gap-4 rounded-lg p-5">
+            <h2 className="text-sm font-medium">{plugin.localization.requestedCapabilities}</h2>
             {approval.isError ? (
               <p className="text-destructive text-sm">{plugin.localization.approvalError}</p>
             ) : approval.isPending || session.isPending ? (
@@ -205,7 +205,7 @@ export function AgentApproval({ className }: AgentApprovalProps) {
                     <div className="grid min-w-0 flex-1 gap-1">
                       <label
                         htmlFor={`agent-capability-${grant.capability}`}
-                        className="wrap-break-word cursor-pointer text-base leading-6"
+                        className="cursor-pointer text-base leading-6 wrap-break-word"
                       >
                         {grant.capability}
                       </label>
@@ -220,7 +220,7 @@ export function AgentApproval({ className }: AgentApprovalProps) {
                         </p>
                       ) : null}
                       {grant.approvalStrength !== "none" ? (
-                        <p className="flex items-center gap-1.5 text-muted-foreground text-sm">
+                        <p className="text-muted-foreground flex items-center gap-1.5 text-sm">
                           {grant.approvalStrength === "webauthn" ? (
                             <>
                               <FingerprintIcon aria-hidden="true" className="size-4" />
@@ -232,11 +232,11 @@ export function AgentApproval({ className }: AgentApprovalProps) {
                         </p>
                       ) : null}
                       {grant.constraints ? (
-                        <details className="mt-1 text-muted-foreground text-sm">
-                          <summary className="w-fit cursor-pointer rounded-sm focus-visible:outline-2 focus-visible:outline-ring">
+                        <details className="text-muted-foreground mt-1 text-sm">
+                          <summary className="focus-visible:outline-ring w-fit cursor-pointer rounded-sm focus-visible:outline-2">
                             {plugin.localization.constraints}
                           </summary>
-                          <pre className="mt-2 max-w-full overflow-x-auto rounded-md bg-background/50 p-3 text-xs">
+                          <pre className="bg-background/50 mt-2 max-w-full overflow-x-auto rounded-md p-3 text-xs">
                             {JSON.stringify(grant.constraints, null, 2)}
                           </pre>
                         </details>

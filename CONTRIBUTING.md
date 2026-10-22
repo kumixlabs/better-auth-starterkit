@@ -18,15 +18,20 @@ This project and everyone participating in it is governed by our [Code of Conduc
 
 1. Fork the repository on GitHub
 2. Clone your fork locally:
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/better-auth-starterkit.git
    cd better-auth-starterkit
    ```
+
 3. Install dependencies:
+
    ```bash
    bun install
    ```
+
 4. Create a new branch for your changes:
+
    ```bash
    git checkout -b feat/your-feature-name
    ```
@@ -84,10 +89,12 @@ bun run lint
 ## Submitting Changes
 
 1. Update your branch with the latest changes from main:
+
    ```bash
    git fetch upstream
    git rebase upstream/main
    ```
+
 2. Push your changes and open a Pull Request targeting `main`
 3. Fill in the PR template — clear title, description, breaking changes, related issues, and screenshots for UI changes
 
@@ -98,9 +105,11 @@ Keep PRs focused: one feature or fix per PR is much easier to review.
 This project uses [Changesets](https://github.com/changesets/changesets):
 
 1. **Create a changeset** on your branch:
+
    ```bash
    bunx changeset
    ```
+
 2. Merge to `main` — CI opens a "version packages" PR
 3. Merging that PR publishes to npm via `scripts/publish.sh` (skips private packages, idempotent)
 

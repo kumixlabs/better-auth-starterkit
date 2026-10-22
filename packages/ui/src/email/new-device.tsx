@@ -162,7 +162,7 @@ export const NewDeviceEmail = ({
           <Container className={cn("mx-auto my-auto max-w-xl px-2 py-10", classNames?.container)}>
             <Section
               className={cn(
-                "rounded-none border border-border bg-card p-8 text-card-foreground",
+                "border-border bg-card text-card-foreground rounded-none border p-8",
                 classNames?.card,
               )}
             >
@@ -194,11 +194,11 @@ export const NewDeviceEmail = ({
                   </>
                 ))}
 
-              <Heading className={cn("m-0 mb-5 font-semibold text-2xl", classNames?.title)}>
+              <Heading className={cn("m-0 mb-5 text-2xl font-semibold", classNames?.title)}>
                 {localization.NEW_SIGN_IN_DETECTED}
               </Heading>
 
-              <Text className={cn("font-normal text-sm", classNames?.content)}>
+              <Text className={cn("text-sm font-normal", classNames?.content)}>
                 {(() => {
                   const textWithAppName = localization.NEW_SIGN_IN_TO_YOUR_ACCOUNT.replace(
                     "{appName}",
@@ -213,7 +213,7 @@ export const NewDeviceEmail = ({
                     <>
                       {beforeUserEmail}
 
-                      <Link href={`mailto:${userEmail}`} className="font-medium text-primary">
+                      <Link href={`mailto:${userEmail}`} className="text-primary font-medium">
                         {userEmail}
                       </Link>
 
@@ -230,11 +230,11 @@ export const NewDeviceEmail = ({
 
               {deviceInfo && (
                 <Section
-                  className={cn("my-6 border border-border bg-muted p-4", classNames?.codeBlock)}
+                  className={cn("border-border bg-muted my-6 border p-4", classNames?.codeBlock)}
                 >
                   <Text
                     className={cn(
-                      "m-0 mb-3 text-muted-foreground text-xs",
+                      "text-muted-foreground m-0 mb-3 text-xs",
                       classNames?.description,
                     )}
                   >
@@ -278,7 +278,7 @@ export const NewDeviceEmail = ({
                 </Section>
               )}
 
-              <Text className={cn("font-normal text-sm", classNames?.content)}>
+              <Text className={cn("text-sm font-normal", classNames?.content)}>
                 {localization.IF_THIS_WAS_YOU}
               </Text>
 
@@ -287,7 +287,7 @@ export const NewDeviceEmail = ({
                   <Button
                     href={secureAccountLink}
                     className={cn(
-                      "inline-block whitespace-nowrap rounded-none bg-primary px-6 py-2.5 font-medium text-primary-foreground text-sm no-underline",
+                      "bg-primary text-primary-foreground inline-block rounded-none px-6 py-2.5 text-sm font-medium whitespace-nowrap no-underline",
                       classNames?.button,
                     )}
                   >
@@ -298,18 +298,18 @@ export const NewDeviceEmail = ({
 
               <Hr
                 className={cn(
-                  "my-6 w-full border border-border border-solid",
+                  "border-border my-6 w-full border border-solid",
                   classNames?.separator,
                 )}
               />
 
               {appName && (
-                <Text className={cn("mb-3 text-muted-foreground text-xs", classNames?.description)}>
+                <Text className={cn("text-muted-foreground mb-3 text-xs", classNames?.description)}>
                   {localization.EMAIL_SENT_BY.replace("{appName}", appName)}
                 </Text>
               )}
 
-              <Text className={cn("mt-3 text-muted-foreground text-xs", classNames?.description)}>
+              <Text className={cn("text-muted-foreground mt-3 text-xs", classNames?.description)}>
                 {(() => {
                   const [beforeSupportEmail, afterSupportEmail] =
                     localization.IF_YOU_DIDNT_SIGN_IN.split("{supportEmail}");
@@ -336,7 +336,7 @@ export const NewDeviceEmail = ({
               {poweredBy && (
                 <Text
                   className={cn(
-                    "mt-4 mb-0 text-center text-[11px] text-muted-foreground",
+                    "text-muted-foreground mt-4 mb-0 text-center text-[11px]",
                     classNames?.poweredBy,
                   )}
                 >

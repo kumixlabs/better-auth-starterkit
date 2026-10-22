@@ -161,7 +161,7 @@ export function ChangeEmailOtp({ className }: ChangeEmailOtpProps) {
 
   return (
     <div>
-      <h2 className="mb-3 font-semibold text-sm">{localization.settings.changeEmail}</h2>
+      <h2 className="mb-3 text-sm font-semibold">{localization.settings.changeEmail}</h2>
 
       <form.AppForm>
         <form.AuthFormRoot>

@@ -101,7 +101,7 @@ export function MagicLink({ className, socialLayout, socialPosition = "bottom" }
               )}
 
               {showSeparator && (
-                <FieldSeparator className="m-0 flex items-center text-xs *:data-[slot=field-separator-content]:bg-card">
+                <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card m-0 flex items-center text-xs">
                   {localization.auth.or}
                 </FieldSeparator>
               )}
@@ -166,7 +166,7 @@ export function MagicLink({ className, socialLayout, socialPosition = "bottom" }
           {socialPosition === "bottom" && (
             <>
               {showSeparator && (
-                <FieldSeparator className="flex items-center text-xs *:data-[slot=field-separator-content]:bg-card">
+                <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card flex items-center text-xs">
                   {localization.auth.or}
                 </FieldSeparator>
               )}

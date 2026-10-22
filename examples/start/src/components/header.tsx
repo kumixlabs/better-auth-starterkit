@@ -6,7 +6,7 @@ import { Logo } from "./logo";
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-10 border-b bg-background">
+    <header className="bg-background sticky top-0 z-10 border-b">
       <div className="mx-auto flex items-center justify-between px-4 py-3 md:px-6">
         <Link to="/" className="flex items-center gap-2.5">
           <Logo />

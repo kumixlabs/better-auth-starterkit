@@ -186,7 +186,7 @@ export function OAuthClients({ manager, owner, ownerKey, className }: OAuthClien
     <div className={cn("flex flex-col gap-3", className)}>
       <div className="flex items-end justify-between gap-3">
         <div className="flex min-w-0 flex-col gap-1">
-          <h2 className="truncate font-semibold text-sm">{oauthLocalization.oauthClients}</h2>
+          <h2 className="truncate text-sm font-semibold">{oauthLocalization.oauthClients}</h2>
           <p className="text-muted-foreground text-sm">
             {oauthLocalization.oauthClientsDescription}
           </p>
@@ -211,22 +211,22 @@ export function OAuthClients({ manager, owner, ownerKey, className }: OAuthClien
                 className="flex flex-col gap-3 border-b border-dashed p-4 last:border-0 sm:flex-row sm:items-start sm:justify-between"
               >
                 <div className="flex min-w-0 gap-3">
-                  <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted">
+                  <div className="bg-muted mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg">
                     <Code2 className="size-4" />
                   </div>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="truncate font-medium text-sm">
+                      <p className="truncate text-sm font-medium">
                         {client.client_name || oauthLocalization.application}
                       </p>
                       <Badge variant={client.disabled ? "destructive" : "secondary"}>
                         {client.disabled ? oauthLocalization.disabled : oauthLocalization.enabled}
                       </Badge>
                     </div>
-                    <p className="mt-1 truncate font-mono text-muted-foreground text-xs">
+                    <p className="text-muted-foreground mt-1 truncate font-mono text-xs">
                       {client.client_id}
                     </p>
-                    <p className="mt-1 text-muted-foreground text-xs">
+                    <p className="text-muted-foreground mt-1 text-xs">
                       {client.redirect_uris.length} {oauthLocalization.redirectUrls.toLowerCase()}
                     </p>
                   </div>
@@ -281,11 +281,11 @@ export function OAuthClients({ manager, owner, ownerKey, className }: OAuthClien
             ))
           ) : (
             <div className="flex min-h-40 flex-col items-center justify-center gap-3 p-6 text-center">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-muted">
+              <div className="bg-muted flex size-10 items-center justify-center rounded-xl">
                 <Code2 />
               </div>
               <div className="flex max-w-sm flex-col gap-1">
-                <p className="font-medium text-sm">{oauthLocalization.noOAuthClients}</p>
+                <p className="text-sm font-medium">{oauthLocalization.noOAuthClients}</p>
                 <p className="text-muted-foreground text-sm">
                   {oauthLocalization.noOAuthClientsDescription}
                 </p>

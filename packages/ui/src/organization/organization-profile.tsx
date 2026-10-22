@@ -94,7 +94,7 @@ export function OrganizationProfile({
 
   return (
     <div>
-      <h2 className={cn("mb-3 font-semibold text-sm")}>
+      <h2 className={cn("mb-3 text-sm font-semibold")}>
         {organizationLocalization.organizationProfile}
       </h2>
 

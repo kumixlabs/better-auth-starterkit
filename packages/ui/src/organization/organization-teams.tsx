@@ -95,7 +95,7 @@ export function OrganizationTeams() {
     <div className="flex flex-col gap-4">
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
         <div>
-          <h2 className="font-semibold text-sm">{localization.teams}</h2>
+          <h2 className="text-sm font-semibold">{localization.teams}</h2>
           <p className="text-muted-foreground text-sm">{localization.teamsDescription}</p>
         </div>
         {(canCreate.isPending || canCreate.data?.success) && (
@@ -127,7 +127,7 @@ export function OrganizationTeams() {
                 key={team.id}
               >
                 <div className="min-w-0">
-                  <p className="truncate font-medium text-sm">{team.name}</p>
+                  <p className="truncate text-sm font-medium">{team.name}</p>
                   <p className="text-muted-foreground text-sm">{localization.team}</p>
                 </div>
                 <Button onClick={() => setDialogTeam(team)} size="sm" variant="outline">
@@ -141,7 +141,7 @@ export function OrganizationTeams() {
       ) : (
         <Card>
           <CardContent className="flex flex-col gap-1">
-            <p className="font-medium text-sm">{localization.noTeams}</p>
+            <p className="text-sm font-medium">{localization.noTeams}</p>
             <p className="text-muted-foreground text-sm">{localization.noTeamsDescription}</p>
           </CardContent>
         </Card>
@@ -365,7 +365,7 @@ function TeamDialog({
             {team && canListMembers && (
               <div className="flex flex-col gap-4 border-t pt-5">
                 <div>
-                  <h3 className="font-medium text-sm">{localization.teamMembers}</h3>
+                  <h3 className="text-sm font-medium">{localization.teamMembers}</h3>
                   <p className="text-muted-foreground text-sm">{localization.addTeamMember}</p>
                 </div>
 

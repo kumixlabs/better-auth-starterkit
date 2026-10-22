@@ -184,14 +184,14 @@ function ActivityRow({ event }: { event: DashAuditLog }) {
 
   return (
     <li className="flex items-start gap-3 py-4 first:pt-0 last:pb-0">
-      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+      <div className="bg-muted text-muted-foreground flex size-9 shrink-0 items-center justify-center rounded-lg">
         <Icon className="size-4" />
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
-          <p className="truncate font-medium text-sm">{title}</p>
+          <p className="truncate text-sm font-medium">{title}</p>
           <time
-            className="shrink-0 text-muted-foreground text-xs"
+            className="text-muted-foreground shrink-0 text-xs"
             dateTime={event.createdAt}
             title={absoluteTime}
           >
@@ -199,7 +199,7 @@ function ActivityRow({ event }: { event: DashAuditLog }) {
           </time>
         </div>
         {(detail || location) && (
-          <p className="truncate text-muted-foreground text-xs">
+          <p className="text-muted-foreground truncate text-xs">
             {[detail, location].filter(Boolean).join(" · ")}
           </p>
         )}

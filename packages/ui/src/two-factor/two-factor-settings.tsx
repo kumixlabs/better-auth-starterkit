@@ -51,7 +51,7 @@ export function TwoFactorSettings({ className }: TwoFactorSettingsProps) {
   return (
     <div className={cn("flex flex-col gap-3", className)}>
       <div className="flex items-end justify-between gap-3">
-        <h2 className="truncate font-semibold text-sm">{twoFactorLocalization.twoFactor}</h2>
+        <h2 className="truncate text-sm font-semibold">{twoFactorLocalization.twoFactor}</h2>
 
         <Button
           className="shrink-0"
@@ -91,7 +91,7 @@ export function TwoFactorSettings({ className }: TwoFactorSettingsProps) {
             {isPending ? (
               <Skeleton className="h-5 w-48" />
             ) : (
-              <p className="font-medium text-sm">{twoFactorLocalization.twoFactorEnabled}</p>
+              <p className="text-sm font-medium">{twoFactorLocalization.twoFactorEnabled}</p>
             )}
 
             <p className="text-muted-foreground text-sm">

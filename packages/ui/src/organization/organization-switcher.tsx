@@ -127,7 +127,7 @@ export function OrganizationSwitcher({
               />
             )}
 
-            <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" />
+            <ChevronsUpDown className="text-muted-foreground size-4 shrink-0" />
           </DropdownMenuTrigger>
         )}
 
@@ -135,7 +135,7 @@ export function OrganizationSwitcher({
           align={align}
           side={side}
           sideOffset={sideOffset}
-          className="min-w-64 max-w-svw"
+          className="max-w-svw min-w-64"
         >
           {activeOrganization ? (
             <div className="flex items-center justify-between gap-4 px-2 py-2">

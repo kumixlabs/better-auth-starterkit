@@ -97,7 +97,7 @@ export function OAuthConsent({ className, oauthQuery }: OAuthConsentProps) {
   return (
     <Card className={cn("max-h-[calc(100dvh-2rem)] w-full max-w-lg gap-0 py-0", className)}>
       <div
-        className="min-h-0 overflow-y-auto overscroll-contain focus-visible:outline-2 focus-visible:outline-ring focus-visible:-outline-offset-2"
+        className="focus-visible:outline-ring min-h-0 overflow-y-auto overscroll-contain focus-visible:outline-2 focus-visible:-outline-offset-2"
         role="region"
         aria-label={interpolateClient(localization.authorize, clientName)}
       >
@@ -113,22 +113,22 @@ export function OAuthConsent({ className, oauthQuery }: OAuthConsentProps) {
             ) : (
               <Skeleton className="size-16 rounded-full" />
             )}
-            <Ellipsis aria-hidden="true" className="size-5 text-muted-foreground" />
+            <Ellipsis aria-hidden="true" className="text-muted-foreground size-5" />
             <UserAvatar className="size-16" isPending={isSessionPending} user={session?.user} />
           </div>
           <div className="grid justify-items-center gap-1 text-center">
             <CardTitle
               role="heading"
               aria-level={2}
-              className="max-w-full break-words font-semibold text-xl"
+              className="max-w-full text-xl font-semibold break-words"
             >
               {client ? clientName : <Skeleton className="h-6 w-36" />}
             </CardTitle>
             <CardDescription>{localization.authorizationRequest}</CardDescription>
-            <div className="mt-2 flex max-w-full flex-wrap justify-center gap-x-1 text-muted-foreground text-sm">
+            <div className="text-muted-foreground mt-2 flex max-w-full flex-wrap justify-center gap-x-1 text-sm">
               <span>{localization.signedInAs}</span>
               {session ? (
-                <span className="break-all font-medium text-foreground">
+                <span className="text-foreground font-medium break-all">
                   {session.user.name || session.user.email}
                 </span>
               ) : (
@@ -139,9 +139,9 @@ export function OAuthConsent({ className, oauthQuery }: OAuthConsentProps) {
         </CardHeader>
 
         <CardContent className="px-4 pb-6 sm:px-6">
-          <div className="flex flex-col gap-5 rounded-lg bg-muted/50 p-5">
+          <div className="bg-muted/50 flex flex-col gap-5 rounded-lg p-5">
             <div className="grid gap-3">
-              <p className="font-medium text-sm">
+              <p className="text-sm font-medium">
                 {interpolateClient(localization.requestedPermissions, clientName)}
               </p>
 
@@ -157,10 +157,10 @@ export function OAuthConsent({ className, oauthQuery }: OAuthConsentProps) {
                       <li className="flex gap-3" key={scope}>
                         <Check
                           aria-hidden="true"
-                          className="mt-0.5 size-5 shrink-0 text-muted-foreground"
+                          className="text-muted-foreground mt-0.5 size-5 shrink-0"
                         />
                         <div className="grid min-w-0 gap-1">
-                          <p className="break-words text-base leading-6">{metadata.label}</p>
+                          <p className="text-base leading-6 break-words">{metadata.label}</p>
                           {metadata.description ? (
                             <p className="text-muted-foreground text-sm leading-5">
                               {metadata.description}
@@ -185,11 +185,11 @@ export function OAuthConsent({ className, oauthQuery }: OAuthConsentProps) {
             <Separator />
 
             {destination ? (
-              <div className="flex gap-3 text-muted-foreground text-sm leading-5">
+              <div className="text-muted-foreground flex gap-3 text-sm leading-5">
                 <LinkIcon aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
                 <p>
                   {localization.redirectTo}{" "}
-                  <span className="block break-all font-medium text-foreground">{destination}</span>
+                  <span className="text-foreground block font-medium break-all">{destination}</span>
                 </p>
               </div>
             ) : null}
@@ -217,7 +217,7 @@ export function OAuthConsent({ className, oauthQuery }: OAuthConsentProps) {
                 ) : null}
               </div>
             ) : null}
-            <div className="flex gap-3 text-muted-foreground text-sm leading-5">
+            <div className="text-muted-foreground flex gap-3 text-sm leading-5">
               <Shield aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
               <p>{localization.applicationInformation}</p>
             </div>

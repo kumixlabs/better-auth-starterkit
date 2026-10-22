@@ -189,7 +189,7 @@ export function OrganizationMemberRow({
             <Button
               size="icon"
               variant="outline"
-              className="size-8 text-destructive"
+              className="text-destructive size-8"
               aria-label={organizationLocalization.leaveOrganization}
               disabled={onlyOwnerActionDisabled}
               title={
@@ -204,7 +204,7 @@ export function OrganizationMemberRow({
           ) : canManageTarget && deletePermissionPending ? (
             <Button
               aria-label={organizationLocalization.removeMember}
-              className="size-8 text-destructive"
+              className="text-destructive size-8"
               disabled
               size="icon"
               variant="outline"
@@ -215,7 +215,7 @@ export function OrganizationMemberRow({
             <Button
               size="icon"
               variant="outline"
-              className="size-8 text-destructive"
+              className="text-destructive size-8"
               aria-label={organizationLocalization.removeMember}
               disabled={onlyOwnerActionDisabled}
               title={

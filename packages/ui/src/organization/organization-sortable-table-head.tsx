@@ -48,7 +48,7 @@ export function OrganizationSortableTableHead<TData extends RowData>({
                     sortDirection === "desc" && "rotate-180",
                   )}
                 />
-                <span className="text-[10px] text-muted-foreground tabular-nums">
+                <span className="text-muted-foreground text-[10px] tabular-nums">
                   {sortIndex + 1}
                 </span>
               </>

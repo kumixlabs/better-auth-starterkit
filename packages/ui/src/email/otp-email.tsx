@@ -132,7 +132,7 @@ export const OtpEmail = ({
           <Container className={cn("mx-auto my-auto max-w-xl px-2 py-10", classNames?.container)}>
             <Section
               className={cn(
-                "rounded-none border border-border bg-card p-8 text-card-foreground",
+                "border-border bg-card text-card-foreground rounded-none border p-8",
                 classNames?.card,
               )}
             >
@@ -164,11 +164,11 @@ export const OtpEmail = ({
                   </>
                 ))}
 
-              <Heading className={cn("mb-5 font-semibold text-2xl", classNames?.title)}>
+              <Heading className={cn("mb-5 text-2xl font-semibold", classNames?.title)}>
                 {localization.VERIFY_YOUR_EMAIL}
               </Heading>
 
-              <Text className={cn("font-normal text-sm", classNames?.content)}>
+              <Text className={cn("text-sm font-normal", classNames?.content)}>
                 {(() => {
                   const textWithAppName = localization.WE_NEED_TO_VERIFY_YOUR_EMAIL_ADDRESS.replace(
                     "{appName}",
@@ -183,7 +183,7 @@ export const OtpEmail = ({
                     <>
                       {beforeEmail}
 
-                      <Link href={`mailto:${email}`} className="font-medium text-primary">
+                      <Link href={`mailto:${email}`} className="text-primary font-medium">
                         {email}
                       </Link>
 
@@ -199,11 +199,11 @@ export const OtpEmail = ({
               </Text>
 
               <Section
-                className={cn("my-6 border border-border bg-muted p-6", classNames?.codeBlock)}
+                className={cn("border-border bg-muted my-6 border p-6", classNames?.codeBlock)}
               >
                 <Text
                   className={cn(
-                    "m-0 text-center font-semibold text-4xl tracking-widest",
+                    "m-0 text-center text-4xl font-semibold tracking-widest",
                     classNames?.title,
                   )}
                 >
@@ -213,12 +213,12 @@ export const OtpEmail = ({
 
               <Hr
                 className={cn(
-                  "my-6 w-full border border-border border-solid",
+                  "border-border my-6 w-full border border-solid",
                   classNames?.separator,
                 )}
               />
 
-              <Text className={cn("mb-3 text-muted-foreground text-xs", classNames?.description)}>
+              <Text className={cn("text-muted-foreground mb-3 text-xs", classNames?.description)}>
                 {localization.THIS_CODE_EXPIRES_IN_MINUTES.replace(
                   "{expirationMinutes}",
                   expirationMinutes.toString(),
@@ -226,14 +226,14 @@ export const OtpEmail = ({
                 {appName && <> {localization.EMAIL_SENT_BY.replace("{appName}", appName)}</>}
               </Text>
 
-              <Text className={cn("mt-3 text-muted-foreground text-xs", classNames?.description)}>
+              <Text className={cn("text-muted-foreground mt-3 text-xs", classNames?.description)}>
                 {localization.IF_YOU_DIDNT_REQUEST_THIS_EMAIL}
               </Text>
 
               {poweredBy && (
                 <Text
                   className={cn(
-                    "mt-4 mb-0 text-center text-[11px] text-muted-foreground",
+                    "text-muted-foreground mt-4 mb-0 text-center text-[11px]",
                     classNames?.poweredBy,
                   )}
                 >

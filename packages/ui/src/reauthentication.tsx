@@ -45,7 +45,7 @@ export function ReauthenticationAction({
     <div className={cn("flex flex-col items-start gap-3 p-4", className)}>
       <div className="flex flex-col gap-1">
         {showTitle ? (
-          <h3 className="font-medium text-sm">
+          <h3 className="text-sm font-medium">
             {auth.localization.settings.reauthenticationTitle}
           </h3>
         ) : null}

@@ -98,11 +98,11 @@ export function DeleteAccount({ className }: DeleteAccountProps) {
     <Card className={cn("border-destructive", className)}>
       <CardContent className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="font-medium text-sm leading-tight">
+          <p className="text-sm leading-tight font-medium">
             {deleteUserLocalization.deleteAccount}
           </p>
 
-          <p className="mt-0.5 text-muted-foreground text-xs">
+          <p className="text-muted-foreground mt-0.5 text-xs">
             {deleteUserLocalization.deleteAccountDescription}
           </p>
         </div>

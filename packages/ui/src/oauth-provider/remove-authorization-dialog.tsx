@@ -86,7 +86,7 @@ export function RemoveAuthorizationDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <p className="font-medium text-sm">{clientName}</p>
+        <p className="text-sm font-medium">{clientName}</p>
 
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isRemoving}>

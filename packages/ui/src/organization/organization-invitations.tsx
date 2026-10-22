@@ -146,7 +146,7 @@ export function OrganizationInvitations({
 
   return (
     <div className={cn("flex flex-col gap-3", className)} {...props}>
-      <h3 className="truncate font-semibold text-sm">{organizationLocalization.invitations}</h3>
+      <h3 className="truncate text-sm font-semibold">{organizationLocalization.invitations}</h3>
 
       <div className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center gap-3">
@@ -267,7 +267,7 @@ export function OrganizationInvitations({
                 <span className="capitalize">{roles?.[roleFilter] ?? roleFilter}</span>
                 <Button
                   aria-label={organizationLocalization.clear}
-                  className="size-4 rounded-sm text-muted-foreground"
+                  className="text-muted-foreground size-4 rounded-sm"
                   onClick={() => table.getColumn("role")?.setFilterValue(undefined)}
                   size="icon-xs"
                   type="button"
@@ -285,7 +285,7 @@ export function OrganizationInvitations({
                   statusFilter}
                 <Button
                   aria-label={organizationLocalization.clear}
-                  className="size-4 rounded-sm text-muted-foreground"
+                  className="text-muted-foreground size-4 rounded-sm"
                   onClick={() => table.getColumn("status")?.setFilterValue(undefined)}
                   size="icon-xs"
                   type="button"

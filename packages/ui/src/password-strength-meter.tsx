@@ -56,7 +56,7 @@ export function PasswordStrengthMeter({ password, className }: PasswordStrengthM
           <span
             key={segment}
             className={cn(
-              "h-1 flex-1 rounded-full bg-muted transition-colors",
+              "bg-muted h-1 flex-1 rounded-full transition-colors",
               segment <= score && segmentColors[level],
             )}
           />
@@ -65,7 +65,7 @@ export function PasswordStrengthMeter({ password, className }: PasswordStrengthM
 
       <p aria-live="polite" className="text-muted-foreground text-xs">
         {localization.auth.passwordStrength}:{" "}
-        <span className="font-medium text-foreground">{levelLabels[level]}</span>
+        <span className="text-foreground font-medium">{levelLabels[level]}</span>
       </p>
     </div>
   );

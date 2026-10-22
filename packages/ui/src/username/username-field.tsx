@@ -125,9 +125,9 @@ export function UsernameField({
             }
           >
             {availability?.available ? (
-              <Check className="size-4 text-foreground" />
+              <Check className="text-foreground size-4" />
             ) : availabilityError || availability?.available === false ? (
-              <X className="size-4 text-destructive" />
+              <X className="text-destructive size-4" />
             ) : (
               <Spinner />
             )}

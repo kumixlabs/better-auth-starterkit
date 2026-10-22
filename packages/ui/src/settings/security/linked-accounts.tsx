@@ -61,7 +61,7 @@ export function LinkedAccounts({ className }: LinkedAccountsProps) {
 
   return (
     <div>
-      <h2 className="mb-3 font-semibold text-sm">{localization.settings.linkedAccounts}</h2>
+      <h2 className="mb-3 text-sm font-semibold">{localization.settings.linkedAccounts}</h2>
 
       <Card className={cn("p-0", className)}>
         <CardContent className="p-0">

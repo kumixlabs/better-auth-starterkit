@@ -49,7 +49,7 @@ export function ManageAccounts({ className }: ManageAccountsProps) {
 
   return (
     <div>
-      <h2 className="mb-3 font-semibold text-sm">{multiSessionLocalization.manageAccounts}</h2>
+      <h2 className="mb-3 text-sm font-semibold">{multiSessionLocalization.manageAccounts}</h2>
 
       <Card className={cn("p-0", className)}>
         <CardContent className="p-0">

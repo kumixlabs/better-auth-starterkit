@@ -43,7 +43,7 @@ export function Organizations({ className }: OrganizationsProps) {
       <div className={className}>
         <div className="flex flex-col gap-3">
           <div className="flex items-end justify-between gap-3">
-            <h2 className="truncate font-semibold text-sm">
+            <h2 className="truncate text-sm font-semibold">
               {organizationLocalization.organizations}
             </h2>
 

@@ -75,7 +75,7 @@ export function AuthorizedApplication({ application }: AuthorizedApplicationProp
         {websiteUrl ? (
           <ItemDescription>
             <a
-              className="truncate text-muted-foreground text-xs underline-offset-4 hover:underline"
+              className="text-muted-foreground truncate text-xs underline-offset-4 hover:underline"
               href={websiteUrl}
               rel="noreferrer"
               target="_blank"
@@ -107,14 +107,14 @@ export function AuthorizedApplication({ application }: AuthorizedApplicationProp
       </ItemActions>
       {application.scopes.length > 0 ? (
         <details className="group/permissions col-span-full sm:col-span-2 sm:col-start-2">
-          <summary className="flex w-fit cursor-pointer list-none items-center gap-2 rounded-sm text-muted-foreground text-sm focus-visible:outline-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
+          <summary className="text-muted-foreground focus-visible:outline-ring flex w-fit cursor-pointer list-none items-center gap-2 rounded-sm text-sm focus-visible:outline-2 [&::-webkit-details-marker]:hidden">
             <ChevronRight
               aria-hidden="true"
               className="size-4 shrink-0 group-open/permissions:rotate-90"
             />
             {localization.permissions} <span>({application.scopes.length})</span>
           </summary>
-          <ul className="mt-3 grid gap-3 rounded-lg bg-muted/50 p-4">
+          <ul className="bg-muted/50 mt-3 grid gap-3 rounded-lg p-4">
             {application.scopes.map((scope) => {
               const details = resolveOAuthScopeMetadata(scopeMetadata, scope, {
                 clientId: application.clientId,
@@ -124,10 +124,10 @@ export function AuthorizedApplication({ application }: AuthorizedApplicationProp
                 <li key={scope} className="flex gap-3">
                   <Check
                     aria-hidden="true"
-                    className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                    className="text-muted-foreground mt-0.5 size-4 shrink-0"
                   />
                   <div className="grid min-w-0 gap-1">
-                    <p className="break-words font-medium text-sm">{details.label}</p>
+                    <p className="text-sm font-medium break-words">{details.label}</p>
                     {details.description ? (
                       <p className="text-muted-foreground text-sm leading-5">
                         {details.description}

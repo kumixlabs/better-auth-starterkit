@@ -98,14 +98,14 @@ function SetPassword({ className }: { className?: string }) {
 
   return (
     <div>
-      <h2 className="mb-3 font-semibold text-sm">{localization.settings.changePassword}</h2>
+      <h2 className="mb-3 text-sm font-semibold">{localization.settings.changePassword}</h2>
 
       <Card className={cn(className)}>
         <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="font-medium text-sm leading-tight">{localization.settings.setPassword}</p>
+            <p className="text-sm leading-tight font-medium">{localization.settings.setPassword}</p>
 
-            <p className="mt-0.5 text-muted-foreground text-xs">
+            <p className="text-muted-foreground mt-0.5 text-xs">
               {localization.settings.setPasswordDescription}
             </p>
           </div>
@@ -190,7 +190,7 @@ function ChangePasswordForm({
 
   return (
     <div>
-      <h2 className="mb-3 font-semibold text-sm">{localization.settings.changePassword}</h2>
+      <h2 className="mb-3 text-sm font-semibold">{localization.settings.changePassword}</h2>
 
       <form.AppForm>
         <form.AuthFormRoot>

@@ -37,7 +37,7 @@ export function AuthorizedApplications({ className }: AuthorizedApplicationsProp
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
-      <h2 className="truncate font-semibold text-sm">{localization.connectedApplications}</h2>
+      <h2 className="truncate text-sm font-semibold">{localization.connectedApplications}</h2>
 
       <Card className="p-0">
         <CardContent className="p-0">

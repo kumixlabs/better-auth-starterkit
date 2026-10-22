@@ -49,7 +49,7 @@ export function AgentAuthorizations({ className }: AgentAuthorizationsProps) {
   return (
     <div className={cn("flex flex-col gap-3", className)}>
       <div className="flex flex-col gap-1">
-        <h2 className="font-semibold text-sm">{plugin.localization.agents}</h2>
+        <h2 className="text-sm font-semibold">{plugin.localization.agents}</h2>
         <p className="text-muted-foreground text-xs">{plugin.localization.agentsDescription}</p>
       </div>
       <Card className="p-0">
@@ -63,12 +63,12 @@ export function AgentAuthorizations({ className }: AgentAuthorizationsProps) {
             agents.data.map((agent) => (
               <div key={agent.id} className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted">
+                  <div className="bg-muted flex size-10 shrink-0 items-center justify-center rounded-xl">
                     <BotIcon className="size-4" />
                   </div>
                   <div className="flex min-w-0 flex-1 flex-col">
-                    <span className="truncate font-semibold text-sm">{agent.name}</span>
-                    <span className="truncate text-muted-foreground text-xs">
+                    <span className="truncate text-sm font-semibold">{agent.name}</span>
+                    <span className="text-muted-foreground truncate text-xs">
                       {agent.hostName ?? agent.hostId}
                     </span>
                   </div>
@@ -84,7 +84,7 @@ export function AgentAuthorizations({ className }: AgentAuthorizationsProps) {
                       <div className="flex min-w-0 flex-1 flex-col">
                         <span className="truncate text-sm">{grant.capability}</span>
                         {grant.description && (
-                          <span className="truncate text-muted-foreground text-xs">
+                          <span className="text-muted-foreground truncate text-xs">
                             {grant.description}
                           </span>
                         )}
@@ -107,7 +107,7 @@ export function AgentAuthorizations({ className }: AgentAuthorizationsProps) {
               </div>
             ))
           ) : (
-            <div className="flex items-center gap-3 text-muted-foreground">
+            <div className="text-muted-foreground flex items-center gap-3">
               <BotIcon className="size-5" />
               <p className="text-sm">{plugin.localization.noAgents}</p>
             </div>
@@ -129,7 +129,7 @@ export function AgentAuthorizations({ className }: AgentAuthorizationsProps) {
             <AlertDialogTitle>{plugin.localization.revokeTitle}</AlertDialogTitle>
             <AlertDialogDescription>{plugin.localization.revokeDescription}</AlertDialogDescription>
           </AlertDialogHeader>
-          <code className="rounded-lg bg-muted p-3 text-xs">{target?.grant.capability}</code>
+          <code className="bg-muted rounded-lg p-3 text-xs">{target?.grant.capability}</code>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={revoke.isPending}>
               {localization.settings.cancel}

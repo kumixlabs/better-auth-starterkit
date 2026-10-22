@@ -33,7 +33,7 @@ export function UserInvitations({ className }: UserInvitationsProps) {
   return (
     <div className={className}>
       <div className="flex flex-col gap-3">
-        <h2 className="truncate font-semibold text-sm">{organizationLocalization.invitations}</h2>
+        <h2 className="truncate text-sm font-semibold">{organizationLocalization.invitations}</h2>
 
         <Card className="p-0">
           <CardContent className="p-0">

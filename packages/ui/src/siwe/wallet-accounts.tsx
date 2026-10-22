@@ -51,12 +51,12 @@ function WalletRow({ wallet }: { wallet: SiweWalletAccount }) {
 
   return (
     <div className="flex flex-wrap items-center gap-3 rounded-lg p-3">
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
+      <div className="bg-muted flex size-10 shrink-0 items-center justify-center rounded-lg">
         <Wallet className="size-4" />
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <div className="flex items-center gap-2">
-          <span className="truncate font-medium font-mono text-sm" title={wallet.address}>
+          <span className="truncate font-mono text-sm font-medium" title={wallet.address}>
             {shortAddress(wallet.address)}
           </span>
           {wallet.isPrimary && <Badge variant="secondary">{plugin.localization.primary}</Badge>}
@@ -97,7 +97,7 @@ function WalletRow({ wallet }: { wallet: SiweWalletAccount }) {
               {plugin.localization.removeWalletWarning}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <code className="break-all rounded-lg bg-muted p-3 text-xs">{wallet.address}</code>
+          <code className="bg-muted rounded-lg p-3 text-xs break-all">{wallet.address}</code>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={unlink.isPending}>
               {localization.settings.cancel}
@@ -135,7 +135,7 @@ export function WalletAccounts({ className }: WalletAccountsProps) {
     <div className={cn("flex flex-col gap-3", className)}>
       <div className="flex items-end justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <h2 className="font-semibold text-sm">{plugin.localization.wallets}</h2>
+          <h2 className="text-sm font-semibold">{plugin.localization.wallets}</h2>
           <p className="text-muted-foreground text-xs">{plugin.localization.walletsDescription}</p>
         </div>
         <Button type="button" size="sm" disabled={link.isPending} onClick={() => link.mutate()}>
@@ -156,7 +156,7 @@ export function WalletAccounts({ className }: WalletAccountsProps) {
           ) : wallets.data?.length ? (
             wallets.data.map((wallet) => <WalletRow key={wallet.id} wallet={wallet} />)
           ) : (
-            <div className="flex items-center gap-3 p-4 text-muted-foreground">
+            <div className="text-muted-foreground flex items-center gap-3 p-4">
               <Wallet className="size-5" />
               <p className="text-sm">{plugin.localization.noWallets}</p>
             </div>

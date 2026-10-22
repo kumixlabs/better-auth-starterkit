@@ -406,19 +406,19 @@ function DeviceApproval({
       <CardHeader className="grid justify-items-center gap-5 p-6 text-center">
         <UserAvatar className="size-16" user={user} />
         <div className="grid gap-1">
-          <CardTitle className="font-semibold text-xl">{localization.approveDevice}</CardTitle>
+          <CardTitle className="text-xl font-semibold">{localization.approveDevice}</CardTitle>
           <CardDescription>{localization.approveDeviceDescription}</CardDescription>
         </div>
-        <div className="grid max-w-full gap-1 text-muted-foreground text-sm">
+        <div className="text-muted-foreground grid max-w-full gap-1 text-sm">
           <span>{localization.signedInAs}</span>
-          <span className="break-all font-medium text-foreground">{user.name || user.email}</span>
+          <span className="text-foreground font-medium break-all">{user.name || user.email}</span>
           {user.name ? <span className="break-all">{user.email}</span> : null}
         </div>
       </CardHeader>
       <CardContent className="px-4 pb-6 sm:px-6">
-        <div className="grid justify-items-center gap-2 rounded-lg bg-muted/50 p-5">
+        <div className="bg-muted/50 grid justify-items-center gap-2 rounded-lg p-5">
           <p className="text-muted-foreground text-sm">{localization.deviceCode}</p>
-          <p className="font-mono font-semibold text-2xl tracking-widest">{userCode}</p>
+          <p className="font-mono text-2xl font-semibold tracking-widest">{userCode}</p>
         </div>
       </CardContent>
       <CardFooter className="grid grid-cols-2 gap-3 p-4 sm:p-6">

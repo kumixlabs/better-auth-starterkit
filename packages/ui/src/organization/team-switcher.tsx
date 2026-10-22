@@ -69,14 +69,14 @@ export function TeamSwitcher({
           disabled={teams.isPending || setActiveTeam.isPending}
         >
           <span className="flex min-w-0 items-center gap-2">
-            <Users className="size-4 shrink-0 text-muted-foreground" />
+            <Users className="text-muted-foreground size-4 shrink-0" />
             {teams.isPending ? (
               <Skeleton className="h-4 w-24" />
             ) : (
               <span className="truncate">{selectedTeam?.name ?? localization.selectTeam}</span>
             )}
           </span>
-          <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" />
+          <ChevronsUpDown className="text-muted-foreground size-4 shrink-0" />
         </DropdownMenuTrigger>
       )}
       <DropdownMenuContent align={align} className="min-w-56">
@@ -93,7 +93,7 @@ export function TeamSwitcher({
           </DropdownMenuItem>
         ))}
         {!teams.isPending && teams.data?.length === 0 && (
-          <div className="px-2 py-1.5 text-muted-foreground text-sm">{localization.noTeams}</div>
+          <div className="text-muted-foreground px-2 py-1.5 text-sm">{localization.noTeams}</div>
         )}
       </DropdownMenuContent>
     </DropdownMenu>

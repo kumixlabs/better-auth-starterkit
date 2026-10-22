@@ -138,7 +138,7 @@ export const PasswordChangedEmail = ({
           <Container className={cn("mx-auto my-auto max-w-xl px-2 py-10", classNames?.container)}>
             <Section
               className={cn(
-                "rounded-none border border-border bg-card p-8 text-card-foreground",
+                "border-border bg-card text-card-foreground rounded-none border p-8",
                 classNames?.card,
               )}
             >
@@ -170,11 +170,11 @@ export const PasswordChangedEmail = ({
                   </>
                 ))}
 
-              <Heading className={cn("m-0 mb-5 font-semibold text-2xl", classNames?.title)}>
+              <Heading className={cn("m-0 mb-5 text-2xl font-semibold", classNames?.title)}>
                 {localization.PASSWORD_CHANGED_SUCCESSFULLY}
               </Heading>
 
-              <Text className={cn("font-normal text-sm", classNames?.content)}>
+              <Text className={cn("text-sm font-normal", classNames?.content)}>
                 {(() => {
                   const textWithAppName = localization.PASSWORD_FOR_YOUR_ACCOUNT_CHANGED.replace(
                     "{appName}",
@@ -189,7 +189,7 @@ export const PasswordChangedEmail = ({
                     <>
                       {beforeUserEmail}
 
-                      <Link href={`mailto:${email}`} className="font-medium text-primary">
+                      <Link href={`mailto:${email}`} className="text-primary font-medium">
                         {email}
                       </Link>
 
@@ -206,23 +206,23 @@ export const PasswordChangedEmail = ({
 
               {timestamp && (
                 <Section
-                  className={cn("my-6 border border-border bg-muted p-4", classNames?.codeBlock)}
+                  className={cn("border-border bg-muted my-6 border p-4", classNames?.codeBlock)}
                 >
                   <Text
                     className={cn(
-                      "m-0 mb-2 text-muted-foreground text-xs",
+                      "text-muted-foreground m-0 mb-2 text-xs",
                       classNames?.description,
                     )}
                   >
                     {localization.CHANGED_AT}:
                   </Text>
-                  <Text className={cn("m-0 font-semibold text-sm", classNames?.content)}>
+                  <Text className={cn("m-0 text-sm font-semibold", classNames?.content)}>
                     {timestamp}
                   </Text>
                 </Section>
               )}
 
-              <Text className={cn("font-normal text-sm", classNames?.content)}>
+              <Text className={cn("text-sm font-normal", classNames?.content)}>
                 {localization.IF_YOU_MADE_THIS_CHANGE}
               </Text>
 
@@ -231,7 +231,7 @@ export const PasswordChangedEmail = ({
                   <Button
                     href={secureAccountURL}
                     className={cn(
-                      "inline-block whitespace-nowrap rounded-none bg-primary px-6 py-2.5 font-medium text-primary-foreground text-sm no-underline",
+                      "bg-primary text-primary-foreground inline-block rounded-none px-6 py-2.5 text-sm font-medium whitespace-nowrap no-underline",
                       classNames?.button,
                     )}
                   >
@@ -242,18 +242,18 @@ export const PasswordChangedEmail = ({
 
               <Hr
                 className={cn(
-                  "my-6 w-full border border-border border-solid",
+                  "border-border my-6 w-full border border-solid",
                   classNames?.separator,
                 )}
               />
 
               {appName && (
-                <Text className={cn("mb-3 text-muted-foreground text-xs", classNames?.description)}>
+                <Text className={cn("text-muted-foreground mb-3 text-xs", classNames?.description)}>
                   {localization.EMAIL_SENT_BY.replace("{appName}", appName)}
                 </Text>
               )}
 
-              <Text className={cn("mt-3 text-muted-foreground text-xs", classNames?.description)}>
+              <Text className={cn("text-muted-foreground mt-3 text-xs", classNames?.description)}>
                 {(() => {
                   const [beforeSupportEmail, afterSupportEmail] =
                     localization.IF_YOU_DIDNT_AUTHORIZE_THIS_CHANGE.split("{supportEmail}");
@@ -280,7 +280,7 @@ export const PasswordChangedEmail = ({
               {poweredBy && (
                 <Text
                   className={cn(
-                    "mt-4 mb-0 text-center text-[11px] text-muted-foreground",
+                    "text-muted-foreground mt-4 mb-0 text-center text-[11px]",
                     classNames?.poweredBy,
                   )}
                 >

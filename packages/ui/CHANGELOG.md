@@ -1,5 +1,11 @@
 # @kumix/better-auth-ui
 
+## 0.1.4
+
+### Patch Changes
+
+- [`c48f42d`](https://github.com/kumixlabs/better-auth-starterkit/commit/c48f42d57638ee68c539d52b17a886873ef6e5e2) Thanks [@kumixio](https://github.com/kumixio)! - Sync latest upstream view updates (email-otp, magic-link, provider-button, change-password, linked-account, sign-in, two-factor dialog, sign-in-username, verify-email) and rewrite imports to Kumix conventions: `@kumix/ui/ui/*`, `@kumix/utils`, `@kumix/ui/custom/toast` replacing `sonner`, relative lib paths, and `useHydrated` from `@kumix/ui/hooks/use-hydrated`.
+
 ## 0.1.3
 
 ### Patch Changes

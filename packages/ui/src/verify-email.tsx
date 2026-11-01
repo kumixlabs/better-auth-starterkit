@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { getAuthCallbackURL } from "@better-auth-ui/core";
 import { useAuth, useSendVerificationEmail } from "@better-auth-ui/react";
 
 import { toastSuccess } from "@kumix/ui/custom/toast";
@@ -84,7 +85,7 @@ export function VerifyEmail({ className }: VerifyEmailProps) {
                 onClick={() =>
                   sendVerificationEmail({
                     email,
-                    callbackURL: `${baseURL}${redirectTo}`,
+                    callbackURL: getAuthCallbackURL(baseURL, redirectTo),
                   })
                 }
               >

@@ -115,7 +115,8 @@ export function EnableTwoFactorDialog({ open, onOpenChange }: EnableTwoFactorDia
     onError: () => form.setFieldValue("code", ""),
     onSuccess: () => {
       toastSuccess({ message: twoFactorLocalization.twoFactorEnabled });
-      setStep("backupCodes");
+      if (backupCodes.length) setStep("backupCodes");
+      else handleOpenChange(false);
     },
   });
 

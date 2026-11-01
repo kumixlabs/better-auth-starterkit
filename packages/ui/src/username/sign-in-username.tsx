@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { authMutationKeys, validateStringLength } from "@better-auth-ui/core";
+import { authMutationKeys, getAuthLinkURL, validateStringLength } from "@better-auth-ui/core";
 import {
   isPasskeyAutoFillEnabled,
   withPasskeyAutoFill,
@@ -69,6 +69,7 @@ export function SignInUsername({
     localization,
     plugins,
     socialProviders,
+    redirectTo,
     viewPaths,
     navigate,
     Link,
@@ -86,7 +87,7 @@ export function SignInUsername({
       if (error.error?.code === "EMAIL_NOT_VERIFIED") {
         sessionStorage.setItem("better-auth-ui.verify-email", email);
         navigate({
-          to: `${basePaths.auth}/${viewPaths.auth.verifyEmail}`,
+          to: getAuthLinkURL(`${basePaths.auth}/${viewPaths.auth.verifyEmail}`, redirectTo),
         });
       }
 
@@ -108,7 +109,7 @@ export function SignInUsername({
           sessionStorage.removeItem("better-auth-ui.verify-email");
 
           navigate({
-            to: `${basePaths.auth}/${viewPaths.auth.verifyEmail}`,
+            to: getAuthLinkURL(`${basePaths.auth}/${viewPaths.auth.verifyEmail}`, redirectTo),
           });
         }
 

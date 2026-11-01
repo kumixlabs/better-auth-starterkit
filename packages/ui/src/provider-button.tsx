@@ -5,6 +5,7 @@ import {
   type AuthSocialProvider,
   type AuthView,
   authMutationKeys,
+  getAuthCallbackURL,
   getProviderId,
   getProviderName,
   type OAuthPopupAuthClient,
@@ -45,7 +46,7 @@ export function ProviderButton({
 }: ProviderButtonProps) {
   const { authClient, baseURL, localization, navigate, redirectTo, socialSignInMode } = useAuth();
 
-  const callbackURL = `${baseURL}${redirectTo}`;
+  const callbackURL = getAuthCallbackURL(baseURL, redirectTo);
   const { fetchOptions, resetFetchOptions } = useFetchOptions();
 
   const { mutate: signInSocial, isPending: signInSocialPending } = useSignInSocial(authClient, {

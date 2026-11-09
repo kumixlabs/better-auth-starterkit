@@ -85,7 +85,7 @@
     },
     "packages/ui": {
       "name": "@kumix/better-auth-ui",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "devDependencies": {
         "@better-auth-ui/core": "^1.7.33",
         "@better-auth-ui/react": "^1.7.33",

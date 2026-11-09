@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import { getViewURL, validateEmailAddress } from "@better-auth-ui/core";
 import { useAuth, useFetchOptions, useRequestPasswordReset } from "@better-auth-ui/react";
 
@@ -26,12 +27,14 @@ export type ForgotPasswordProps = {
  * @returns The forgot-password form UI as a JSX element
  */
 export function ForgotPassword({ className }: ForgotPasswordProps) {
+  const emailErrorId = useId();
   const { authClient, baseURL, basePaths, localization, navigate, plugins, viewPaths, Link } =
     useAuth();
 
   const { fetchOptions, resetFetchOptions } = useFetchOptions();
 
   const { mutateAsync: requestPasswordReset, isPending } = useRequestPasswordReset(authClient, {
+    meta: { errorPresentation: "inline" },
     onError: () => {
       resetFetchOptions();
     },
@@ -61,7 +64,7 @@ export function ForgotPassword({ className }: ForgotPasswordProps) {
 
       <CardContent>
         <form.AppForm>
-          <form.AuthFormRoot>
+          <form.AuthFormRoot noValidate serverErrorMessage={localization.errors.generic}>
             <FieldGroup>
               <form.AppField
                 name="email"
@@ -80,6 +83,7 @@ export function ForgotPassword({ className }: ForgotPasswordProps) {
                       <FieldLabel htmlFor="email">{localization.auth.email}</FieldLabel>
                       <Input
                         id="email"
+                        aria-describedby={isInvalid ? emailErrorId : undefined}
                         name={field.name}
                         type="email"
                         autoComplete="email"
@@ -91,7 +95,7 @@ export function ForgotPassword({ className }: ForgotPasswordProps) {
                         onChange={(event) => field.handleChange(event.target.value)}
                         aria-invalid={isInvalid}
                       />
-                      <field.AuthFormFieldError />
+                      <field.AuthFormFieldError id={emailErrorId} />
                     </Field>
                   );
                 }}
@@ -104,6 +108,7 @@ export function ForgotPassword({ className }: ForgotPasswordProps) {
                   {localization.auth.sendResetLink}
                 </form.AuthFormSubmitButton>
               </div>
+              <form.AuthFormServerError />
             </FieldGroup>
           </form.AuthFormRoot>
         </form.AppForm>

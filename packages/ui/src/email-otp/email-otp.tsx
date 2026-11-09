@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { authMutationKeys } from "@better-auth-ui/core";
+import { useId, useState } from "react";
+import { authMutationKeys, validateEmailAddress } from "@better-auth-ui/core";
 import type { EmailOtpAuthClient } from "@better-auth-ui/core/plugins/email-otp";
 import { getSsoFallbackEmail } from "@better-auth-ui/core/plugins/sso";
 import { useAuth, useAuthPlugin, useFetchOptions } from "@better-auth-ui/react";
@@ -20,7 +20,12 @@ import {
 } from "@kumix/ui/ui/field";
 import { Input } from "@kumix/ui/ui/input";
 import { cn } from "@kumix/utils";
-import { runAuthFormAction, submitAuthForm, useAuthForm } from "../auth-form";
+import {
+  isAuthFormFieldInvalid,
+  runAuthFormAction,
+  submitAuthForm,
+  useAuthForm,
+} from "../auth-form";
 import { emailOtpPlugin } from "../lib/email-otp-plugin";
 import { useResendCooldown } from "../lib/use-resend-cooldown";
 import { useSignInContinuation } from "../lib/use-sign-in-continuation";
@@ -46,6 +51,7 @@ export type EmailOtpProps = {
  * @param socialPosition - `"top"` or `"bottom"`. Defaults to `"bottom"`.
  */
 export function EmailOtp({ className, socialLayout, socialPosition = "bottom" }: EmailOtpProps) {
+  const emailErrorId = useId();
   const {
     authClient,
     basePaths,
@@ -160,7 +166,7 @@ export function EmailOtp({ className, socialLayout, socialPosition = "bottom" }:
           )}
 
           <form.AppForm>
-            <form.AuthFormRoot>
+            <form.AuthFormRoot noValidate>
               <FieldGroup>
                 {codeSent ? (
                   <form.AppField name="code">
@@ -178,13 +184,26 @@ export function EmailOtp({ className, socialLayout, socialPosition = "bottom" }:
                     )}
                   </form.AppField>
                 ) : (
-                  <form.AppField name="email">
+                  <form.AppField
+                    name="email"
+                    validators={{
+                      onChange: ({ value }) =>
+                        validateEmailAddress(value, {
+                          invalidMessage: localization.auth.invalidEmail,
+                          requiredMessage: localization.auth.fieldRequired,
+                        }),
+                    }}
+                  >
                     {(field) => (
-                      <Field>
+                      <Field data-invalid={isAuthFormFieldInvalid(field.state.meta)}>
                         <FieldLabel htmlFor="email">{localization.auth.email}</FieldLabel>
                         <Input
                           id="email"
+                          aria-describedby={
+                            isAuthFormFieldInvalid(field.state.meta) ? emailErrorId : undefined
+                          }
                           name={field.name}
+                          aria-invalid={isAuthFormFieldInvalid(field.state.meta)}
                           type="email"
                           autoComplete="email"
                           value={field.state.value}
@@ -194,7 +213,7 @@ export function EmailOtp({ className, socialLayout, socialPosition = "bottom" }:
                           required
                           disabled={isPending}
                         />
-                        <field.AuthFormFieldError />
+                        <field.AuthFormFieldError id={emailErrorId} />
                       </Field>
                     )}
                   </form.AppField>

@@ -43,14 +43,16 @@ export function ChangeAvatar({ className }: ChangeAvatarProps) {
     setIsUploading(true);
 
     try {
-      const resized = (await avatar.resize?.(file, avatar.size, avatar.extension)) || file;
+      const resized = await avatar.resize(file, avatar.size, avatar.extension);
 
       const image = (await avatar.upload?.(resized)) || (await fileToAvatarDataUrl(resized));
 
       updateUser(
         { image },
         {
-          onSuccess: () => toastSuccess({ message: localization.settings.avatarChangedSuccess }),
+          onSuccess: () => {
+            toastSuccess({ message: localization.settings.avatarChangedSuccess });
+          },
         },
       );
     } catch (error) {
@@ -61,23 +63,29 @@ export function ChangeAvatar({ className }: ChangeAvatarProps) {
     setIsUploading(false);
   }
 
-  async function handleDelete() {
+  function handleDelete() {
     const currentImage = session?.user.image;
 
     updateUser(
       { image: null },
       {
-        onSuccess: async () => {
-          if (currentImage) {
-            setIsDeleting(true);
-            try {
-              await avatar.delete?.(currentImage);
-            } finally {
-              setIsDeleting(false);
+        onSuccess: () => {
+          void (async () => {
+            if (currentImage) {
+              setIsDeleting(true);
+              try {
+                await avatar.delete?.(currentImage);
+              } catch (error) {
+                console.error("[Better Auth UI] Image operation failed", error);
+                toastError({ message: localization.errors.imageDeleteFailed });
+                return;
+              } finally {
+                setIsDeleting(false);
+              }
             }
-          }
 
-          toastSuccess({ message: localization.settings.avatarDeletedSuccess });
+            toastSuccess({ message: localization.settings.avatarDeletedSuccess });
+          })();
         },
       },
     );
@@ -92,14 +100,14 @@ export function ChangeAvatar({ className }: ChangeAvatarProps) {
         type="file"
         accept="image/*"
         className="hidden"
-        onChange={handleFileChange}
+        onChange={(e) => void handleFileChange(e)}
       />
 
       <div className="flex items-center gap-4">
         <Button
           type="button"
           variant="ghost"
-          className="h-auto w-auto rounded-full p-0"
+          className="size-auto rounded-full p-0"
           disabled={isPending}
           onClick={() => fileInputRef.current?.click()}
         >
@@ -126,7 +134,9 @@ export function ChangeAvatar({ className }: ChangeAvatarProps) {
             <DropdownMenuItem
               variant="destructive"
               disabled={!session?.user.image}
-              onClick={handleDelete}
+              onClick={() => {
+                handleDelete();
+              }}
             >
               <Trash2 />
 

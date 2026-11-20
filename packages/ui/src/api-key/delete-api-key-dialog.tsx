@@ -1,6 +1,7 @@
 "use client";
 
 import type { ApiKeyAuthClient, ListedApiKey } from "@better-auth-ui/core/plugins/api-key";
+import { apiKeyPlugin } from "@better-auth-ui/core/plugins/api-key";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useDeleteApiKey } from "@better-auth-ui/react/plugins/api-key";
 import { Key } from "lucide-react";
@@ -19,7 +20,6 @@ import { Button } from "@kumix/ui/ui/button";
 import { Field, FieldLabel } from "@kumix/ui/ui/field";
 import { Input } from "@kumix/ui/ui/input";
 import { Spinner } from "@kumix/ui/ui/spinner";
-import { apiKeyPlugin } from "../lib/api-key-plugin";
 
 export type DeleteApiKeyDialogProps = {
   open: boolean;
@@ -40,7 +40,9 @@ export function DeleteApiKeyDialog({
   const preview = `${apiKey.start}${"*".repeat(16)}`;
   const previewId = `delete-api-key-preview-${apiKey.id}`;
   const { mutate: deleteApiKey, isPending: isDeleting } = useDeleteApiKey(authClient, {
-    onSuccess: () => onOpenChange(false),
+    onSuccess: () => {
+      onOpenChange(false);
+    },
   });
 
   return (
@@ -71,12 +73,12 @@ export function DeleteApiKeyDialog({
             type="button"
             variant="destructive"
             disabled={isDeleting}
-            onClick={() =>
+            onClick={() => {
               deleteApiKey({
                 keyId: apiKey.id,
                 ...(organizationId ? { configId: "organization" } : {}),
-              })
-            }
+              });
+            }}
           >
             {isDeleting && <Spinner />}
 

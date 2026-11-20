@@ -1,5 +1,6 @@
 "use client";
 
+import { apiKeyPlugin } from "@better-auth-ui/core/plugins/api-key";
 import { useAuthPlugin } from "@better-auth-ui/react";
 import { Key } from "lucide-react";
 
@@ -12,7 +13,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@kumix/ui/ui/empty";
-import { apiKeyPlugin } from "../lib/api-key-plugin";
 
 export type ApiKeysEmptyProps = {
   onCreatePress: () => void;

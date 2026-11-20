@@ -2,6 +2,7 @@
 
 import { Fragment, useState } from "react";
 import type { PasskeyAuthClient } from "@better-auth-ui/core/plugins/passkey";
+import { passkeyPlugin } from "@better-auth-ui/core/plugins/passkey";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useListPasskeys } from "@better-auth-ui/react/plugins/passkey";
 
@@ -9,7 +10,6 @@ import { Button } from "@kumix/ui/ui/button";
 import { Card, CardContent } from "@kumix/ui/ui/card";
 import { ItemGroup, ItemSeparator } from "@kumix/ui/ui/item";
 import { cn } from "@kumix/utils";
-import { passkeyPlugin } from "../lib/passkey-plugin";
 import { AddPasskeyDialog } from "./add-passkey-dialog";
 import { Passkey } from "./passkey";
 import { PasskeySkeleton } from "./passkey-skeleton";
@@ -36,7 +36,9 @@ export function Passkeys({ className }: PasskeysProps) {
           className="shrink-0"
           size="sm"
           disabled={isPending}
-          onClick={() => setAddOpen(true)}
+          onClick={() => {
+            setAddOpen(true);
+          }}
         >
           {passkeyLocalization.addPasskey}
         </Button>
@@ -47,7 +49,11 @@ export function Passkeys({ className }: PasskeysProps) {
           {isPending ? (
             <PasskeySkeleton />
           ) : !passkeys?.length ? (
-            <PasskeysEmpty onAddPress={() => setAddOpen(true)} />
+            <PasskeysEmpty
+              onAddPress={() => {
+                setAddOpen(true);
+              }}
+            />
           ) : (
             <ItemGroup className="gap-0">
               {passkeys.map((passkey, index) => (

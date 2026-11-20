@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { JSX, ReactNode } from "react";
 import {
   Body,
   Button,
@@ -46,7 +46,7 @@ export type DeleteAccountVerificationEmailLocalization =
 /**
  * Props for the DeleteAccountVerificationEmail component.
  */
-export interface DeleteAccountVerificationEmailProps {
+export type DeleteAccountVerificationEmailProps = {
   /** Account deletion verification URL sent by Better Auth */
   url: string;
   /** Email address of the account scheduled for deletion */
@@ -72,7 +72,7 @@ export interface DeleteAccountVerificationEmailProps {
    * @remarks `DeleteAccountVerificationEmailLocalization`
    */
   localization?: Partial<DeleteAccountVerificationEmailLocalization>;
-}
+};
 
 /**
  * Email template for verifying a permanent account deletion request.
@@ -102,7 +102,7 @@ export const DeleteAccountVerificationEmail = ({
   poweredBy,
   head,
   ...props
-}: DeleteAccountVerificationEmailProps) => {
+}: DeleteAccountVerificationEmailProps): JSX.Element => {
   const localization = {
     ...DeleteAccountVerificationEmail.localization,
     ...props.localization,
@@ -112,7 +112,7 @@ export const DeleteAccountVerificationEmail = ({
     "{appName}",
     appName || "",
   )
-    .replace(/\s{2,}/g, " ")
+    .replaceAll(/\s{2}/gu, " ")
     .replace(" .", ".");
 
   return (
@@ -130,7 +130,7 @@ export const DeleteAccountVerificationEmail = ({
 
       <Tailwind config={{ presets: [pixelBasedPreset] }}>
         <Body className={cn("bg-background font-sans", classNames?.body)}>
-          <Container className={cn("mx-auto my-auto max-w-xl px-2 py-10", classNames?.container)}>
+          <Container className={cn("m-auto max-w-xl px-2 py-10", classNames?.container)}>
             <Section
               className={cn(
                 "border-border bg-card text-card-foreground rounded-none border p-8",

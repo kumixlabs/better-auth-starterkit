@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { JSX, ReactNode } from "react";
 import {
   Body,
   Button,
@@ -44,7 +44,7 @@ export type ChangeEmailConfirmationEmailLocalization =
 /**
  * Props for the ChangeEmailConfirmationEmail component.
  */
-export interface ChangeEmailConfirmationEmailProps {
+export type ChangeEmailConfirmationEmailProps = {
   /** Confirmation URL sent by Better Auth to the user's current email address */
   url: string;
   /** User's current email address */
@@ -72,7 +72,7 @@ export interface ChangeEmailConfirmationEmailProps {
    * @remarks `ChangeEmailConfirmationEmailLocalization`
    */
   localization?: Partial<ChangeEmailConfirmationEmailLocalization>;
-}
+};
 
 /**
  * Email template for approving an email change from the current address.
@@ -105,14 +105,14 @@ export const ChangeEmailConfirmationEmail = ({
   poweredBy,
   head,
   ...props
-}: ChangeEmailConfirmationEmailProps) => {
+}: ChangeEmailConfirmationEmailProps): JSX.Element => {
   const localization = {
     ...ChangeEmailConfirmationEmail.localization,
     ...props.localization,
   };
 
   const requestText = localization.EMAIL_CHANGE_REQUESTED.replace("{appName}", appName || "")
-    .replace(/\s{2,}/g, " ")
+    .replaceAll(/\s{2}/gu, " ")
     .replace(" .", ".");
 
   return (
@@ -130,7 +130,7 @@ export const ChangeEmailConfirmationEmail = ({
 
       <Tailwind config={{ presets: [pixelBasedPreset] }}>
         <Body className={cn("bg-background font-sans", classNames?.body)}>
-          <Container className={cn("mx-auto my-auto max-w-xl px-2 py-10", classNames?.container)}>
+          <Container className={cn("m-auto max-w-xl px-2 py-10", classNames?.container)}>
             <Section
               className={cn(
                 "border-border bg-card text-card-foreground rounded-none border p-8",

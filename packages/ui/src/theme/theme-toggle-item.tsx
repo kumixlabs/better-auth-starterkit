@@ -6,24 +6,25 @@ import { Monitor, Moon, PaletteIcon, Sun } from "lucide-react";
 
 import { DropdownMenuItem } from "@kumix/ui/ui/dropdown-menu";
 import { Tabs, TabsList, TabsTrigger } from "@kumix/ui/ui/tabs";
-import { themePlugin } from "../lib/theme-plugin";
+import { themePluginBase } from "../lib/theme-plugin-base";
 
 /**
  * Theme toggle dropdown item used inside `UserButton`. Callers are responsible
  * for ensuring theming is configured before rendering this component.
  */
 export function ThemeToggleItem() {
-  const { useTheme, localization } = useAuthPlugin(themePlugin);
+  const { useTheme, localization } = useAuthPlugin(themePluginBase);
   const { theme, setTheme, themes = [] } = useTheme();
   const tabsListRef = useRef<HTMLDivElement>(null);
 
   // The TabsTriggers aren't part of the menu's roving focus group, so
   // arrow-key navigation can't reach them on its own. When the wrapper
   // menu item receives focus we delegate focus to the active TabsTrigger
-  // inside, letting the user move between themes with Left/Right arrows
-  // and activate one with Enter or Space.
+  // inside, letting the user switch themes with Left/Right arrows.
   const focusActiveTab = () => {
-    const activeTab = tabsListRef.current?.querySelector<HTMLElement>('[role="tab"][data-active]');
+    const activeTab = tabsListRef.current?.querySelector<HTMLElement>(
+      '[role="tab"][data-state="active"]',
+    );
     activeTab?.focus({ preventScroll: true });
   };
 
@@ -32,8 +33,8 @@ export function ThemeToggleItem() {
   const handleTabsKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
 
-    const target = event.target as HTMLElement;
-    if (target.getAttribute("role") !== "tab") return;
+    const target = event.target;
+    if (!(target instanceof HTMLElement) || target.getAttribute("role") !== "tab") return;
 
     const wrapper = target.closest<HTMLElement>('[role="menuitem"]');
     const content = wrapper?.closest<HTMLElement>('[data-slot="dropdown-menu-content"]');
@@ -53,7 +54,9 @@ export function ThemeToggleItem() {
 
   return (
     <DropdownMenuItem
-      closeOnClick={false}
+      onSelect={(e) => {
+        e.preventDefault();
+      }}
       onFocus={(e) => {
         // onFocus bubbles in React, so guard against re-entry from focus
         // events fired by the inner TabsTrigger.

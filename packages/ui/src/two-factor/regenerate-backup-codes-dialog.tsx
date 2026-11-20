@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { TwoFactorAuthClient } from "@better-auth-ui/core/plugins/two-factor";
+import { twoFactorPlugin } from "@better-auth-ui/core/plugins/two-factor";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useGenerateBackupCodes } from "@better-auth-ui/react/plugins/two-factor";
 import { KeyRound } from "lucide-react";
@@ -20,7 +21,6 @@ import {
 import { Field, FieldError, FieldLabel } from "@kumix/ui/ui/field";
 import { Input } from "@kumix/ui/ui/input";
 import { useAuthForm } from "../auth-form";
-import { twoFactorPlugin } from "../lib/two-factor-plugin";
 import { useTwoFactorPasswordRequirement } from "../lib/use-two-factor-password";
 import { BackupCodes } from "./backup-codes";
 
@@ -42,7 +42,7 @@ export function RegenerateBackupCodesDialog({
   open,
   onOpenChange,
 }: RegenerateBackupCodesDialogProps) {
-  const { authClient, localization } = useAuth();
+  const { authClient, localization } = useAuth<TwoFactorAuthClient>();
   const { localization: twoFactorLocalization } = useAuthPlugin(twoFactorPlugin);
   const { isPending: isResolvingPasswordRequirement, requiresPassword } =
     useTwoFactorPasswordRequirement();
@@ -53,7 +53,7 @@ export function RegenerateBackupCodesDialog({
     mutateAsync: generateBackupCodes,
     isPending: isGenerating,
     reset: resetGeneration,
-  } = useGenerateBackupCodes(authClient as TwoFactorAuthClient, {
+  } = useGenerateBackupCodes(authClient, {
     onSuccess: (data) => {
       setCodes(data.backupCodes);
       toastSuccess({ message: twoFactorLocalization.backupCodesRegenerated });
@@ -65,7 +65,7 @@ export function RegenerateBackupCodesDialog({
   const form = useAuthForm({
     defaultValues: { password: "" },
     onSubmit: async ({ value }) => {
-      if (codes.length) {
+      if (codes.length > 0) {
         handleOpenChange(false);
         return;
       }
@@ -97,13 +97,13 @@ export function RegenerateBackupCodesDialog({
               <AlertDialogTitle>{twoFactorLocalization.backupCodes}</AlertDialogTitle>
 
               <AlertDialogDescription>
-                {codes.length || !requiresPassword
+                {codes.length > 0 || !requiresPassword
                   ? twoFactorLocalization.backupCodesDescription
                   : twoFactorLocalization.passwordConfirmation}
               </AlertDialogDescription>
             </AlertDialogHeader>
 
-            {codes.length ? (
+            {codes.length > 0 ? (
               <BackupCodes codes={codes} />
             ) : (
               requiresPassword && (
@@ -119,13 +119,14 @@ export function RegenerateBackupCodesDialog({
                         name={field.name}
                         type="password"
                         autoComplete="current-password"
-                        autoFocus
                         required
                         placeholder={localization.auth.passwordPlaceholder}
                         disabled={isPending}
                         value={field.state.value}
                         onBlur={field.handleBlur}
-                        onChange={(event) => field.handleChange(event.target.value)}
+                        onChange={(event) => {
+                          field.handleChange(event.target.value);
+                        }}
                       />
 
                       <FieldError />
@@ -136,14 +137,14 @@ export function RegenerateBackupCodesDialog({
             )}
 
             <AlertDialogFooter>
-              {!codes.length && (
+              {codes.length === 0 && (
                 <AlertDialogCancel disabled={isPending}>
                   {localization.settings.cancel}
                 </AlertDialogCancel>
               )}
 
               <form.AuthFormSubmitButton isPending={isPending} disabled={isPending}>
-                {codes.length
+                {codes.length > 0
                   ? twoFactorLocalization.done
                   : twoFactorLocalization.regenerateBackupCodes}
               </form.AuthFormSubmitButton>

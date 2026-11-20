@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { JSX, ReactNode } from "react";
 import {
   Body,
   Button,
@@ -43,7 +43,7 @@ export type ResetPasswordEmailLocalization = typeof resetPasswordEmailLocalizati
 /**
  * Props for the ResetPasswordEmail component.
  */
-export interface ResetPasswordEmailProps {
+export type ResetPasswordEmailProps = {
   /** Password reset URL that users must click to reset their password */
   url: string;
   /** Email address of the user requesting password reset */
@@ -69,7 +69,7 @@ export interface ResetPasswordEmailProps {
    * @remarks `ResetPasswordEmailLocalization`
    */
   localization?: Partial<ResetPasswordEmailLocalization>;
-}
+};
 
 /**
  * Email template component that sends password reset links to users.
@@ -105,7 +105,7 @@ export const ResetPasswordEmail = ({
   poweredBy,
   head,
   ...props
-}: ResetPasswordEmailProps) => {
+}: ResetPasswordEmailProps): JSX.Element => {
   const localization = {
     ...ResetPasswordEmail.localization,
     ...props.localization,
@@ -128,10 +128,10 @@ export const ResetPasswordEmail = ({
 
       <Tailwind config={{ presets: [pixelBasedPreset] }}>
         <Body className={cn("bg-background font-sans", classNames?.body)}>
-          <Container className={cn("mx-auto my-auto max-w-xl px-2 py-10", classNames?.container)}>
+          <Container className={cn("m-auto max-w-xl px-2 py-10", classNames?.container)}>
             <Section
               className={cn(
-                "border-border bg-card text-card-foreground rounded-none border p-8",
+                "bg-card text-card-foreground border-border rounded-none border p-8",
                 classNames?.card,
               )}
             >
@@ -174,7 +174,7 @@ export const ResetPasswordEmail = ({
                       "{appName}",
                       appName || "",
                     )
-                      .replace(/\s{2,}/g, " ")
+                      .replaceAll(/\s{2}/gu, " ")
                       .replace(" .", ".");
 
                   const [beforeEmail, afterEmail] = textWithAppName.split("{email}");
@@ -192,7 +192,7 @@ export const ResetPasswordEmail = ({
                   ) : (
                     textWithAppName
                       .replace("{email}", "")
-                      .replace(/\s{2,}/g, " ")
+                      .replaceAll(/\s{2}/gu, " ")
                       .replace(" .", ".")
                   );
                 })()}

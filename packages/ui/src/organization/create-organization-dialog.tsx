@@ -7,6 +7,7 @@ import {
   validateStringLength,
 } from "@better-auth-ui/core";
 import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useCreateOrganization } from "@better-auth-ui/react/plugins/organization";
 import { Briefcase } from "lucide-react";
@@ -28,8 +29,8 @@ import {
   isAuthFormFieldInvalid,
   useAuthForm,
 } from "../auth-form";
-import { organizationPlugin } from "../lib/organization-plugin";
-import { SlugField, sanitizeSlug } from "./slug-field";
+import { sanitizeSlug } from "./sanitize-slug";
+import { SlugField } from "./slug-field";
 
 /** Props for the `CreateOrganizationDialog` component. */
 export type CreateOrganizationDialogProps = {
@@ -127,7 +128,6 @@ export function CreateOrganizationDialog({
                       <Input
                         id="create-organization-name"
                         name={field.name}
-                        autoFocus
                         placeholder={organizationLocalization.namePlaceholder}
                         value={field.state.value}
                         onBlur={field.handleBlur}

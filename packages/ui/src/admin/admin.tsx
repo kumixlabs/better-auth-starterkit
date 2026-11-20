@@ -1,19 +1,19 @@
 "use client";
 
 import type { AdminView } from "@better-auth-ui/core";
+import { adminPlugin } from "@better-auth-ui/core/plugins/admin";
 import { useAuth, useAuthenticate, useAuthPlugin } from "@better-auth-ui/react";
 import { ShieldAlertIcon, UsersIcon } from "lucide-react";
 
 import { Button } from "@kumix/ui/ui/button";
 import { cn } from "@kumix/utils";
-import { adminPlugin } from "../lib/admin-plugin";
 import { AdminUsers } from "./admin-users";
 
 export type AdminProps = {
   className?: string;
   hideNav?: boolean;
   path?: string;
-  view?: AdminView | string;
+  view?: AdminView | (string & Record<never, never>);
 };
 
 /** Render a finite, static administration route and plugin-contributed tabs. */
@@ -40,8 +40,9 @@ export function Admin({ className, hideNav, path, view }: AdminProps) {
           <Button
             aria-current={currentView === "users" ? "page" : undefined}
             className="rounded-b-none"
-            render={<a href={`${basePaths.admin}/${viewPaths.admin.users}`} />}
             variant={currentView === "users" ? "secondary" : "ghost"}
+            render={<a href={`${basePaths.admin}/${viewPaths.admin.users}`} />}
+            nativeButton={false}
           >
             <UsersIcon />
             {localization.users}
@@ -52,8 +53,9 @@ export function Admin({ className, hideNav, path, view }: AdminProps) {
               key={`${tab.id}-${tab.path}`}
               aria-current={currentView === tab.id ? "page" : undefined}
               className="rounded-b-none"
-              render={<a href={`${basePaths.admin}/${tab.path}`} />}
               variant={currentView === tab.id ? "secondary" : "ghost"}
+              render={<a href={`${basePaths.admin}/${tab.path}`} />}
+              nativeButton={false}
             >
               {tab.label}
             </Button>

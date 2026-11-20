@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { JSX, ReactNode } from "react";
 import {
   Body,
   Button,
@@ -43,7 +43,7 @@ export type MagicLinkEmailLocalization = typeof magicLinkEmailLocalization;
 /**
  * Props for the MagicLinkEmail component.
  */
-export interface MagicLinkEmailProps {
+export type MagicLinkEmailProps = {
   /** Magic link URL for passwordless authentication */
   url: string;
   /** Email address of the user signing in */
@@ -69,7 +69,7 @@ export interface MagicLinkEmailProps {
    * @remarks `MagicLinkEmailLocalization`
    */
   localization?: Partial<MagicLinkEmailLocalization>;
-}
+};
 
 /**
  * Email template component that sends magic link authentication emails for passwordless sign-in.
@@ -106,7 +106,7 @@ export const MagicLinkEmail = ({
   poweredBy,
   head,
   ...props
-}: MagicLinkEmailProps) => {
+}: MagicLinkEmailProps): JSX.Element => {
   const localization = {
     ...MagicLinkEmail.localization,
     ...props.localization,
@@ -131,10 +131,10 @@ export const MagicLinkEmail = ({
 
       <Tailwind config={{ presets: [pixelBasedPreset] }}>
         <Body className={cn("bg-background font-sans", classNames?.body)}>
-          <Container className={cn("mx-auto my-auto max-w-xl px-2 py-10", classNames?.container)}>
+          <Container className={cn("m-auto max-w-xl px-2 py-10", classNames?.container)}>
             <Section
               className={cn(
-                "border-border bg-card text-card-foreground rounded-none border p-8",
+                "bg-card text-card-foreground border-border rounded-none border p-8",
                 classNames?.card,
               )}
             >
@@ -187,7 +187,7 @@ export const MagicLinkEmail = ({
                     </>
                   ) : (
                     localization.CLICK_BUTTON_TO_SIGN_IN.replace("{emailAddress}", "")
-                      .replace(/\s{2,}/g, " ")
+                      .replaceAll(/\s{2}/gu, " ")
                       .replace(" .", ".")
                   );
                 })()}

@@ -1,5 +1,6 @@
 "use client";
 
+import { passkeyPlugin } from "@better-auth-ui/core/plugins/passkey";
 import { useAuthPlugin } from "@better-auth-ui/react";
 import { Fingerprint } from "lucide-react";
 
@@ -12,7 +13,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@kumix/ui/ui/empty";
-import { passkeyPlugin } from "../lib/passkey-plugin";
 
 export type PasskeysEmptyProps = {
   onAddPress: () => void;

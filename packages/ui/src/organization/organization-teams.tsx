@@ -9,6 +9,7 @@ import {
   validateStringLength,
 } from "@better-auth-ui/core";
 import type { OrganizationTeamsAuthClient } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react";
 import {
   useActiveOrganization,
@@ -50,21 +51,13 @@ import {
 } from "@kumix/ui/ui/dialog";
 import { Field, FieldLabel } from "@kumix/ui/ui/field";
 import { Input } from "@kumix/ui/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@kumix/ui/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@kumix/ui/ui/select";
 import { Spinner } from "@kumix/ui/ui/spinner";
 import {
   getAuthAdditionalFieldValidators,
   isAuthFormFieldInvalid,
   useAuthForm,
 } from "../auth-form";
-import { organizationPlugin } from "../lib/organization-plugin";
 
 type Team = { id: string; name: string; [key: string]: unknown };
 
@@ -101,7 +94,9 @@ export function OrganizationTeams() {
         {(canCreate.isPending || canCreate.data?.success) && (
           <Button
             disabled={canCreate.isPending || teamLimitReached}
-            onClick={() => setDialogTeam(null)}
+            onClick={() => {
+              setDialogTeam(null);
+            }}
             title={teamLimitReached ? localization.teamLimitReached : undefined}
           >
             <Plus data-icon="inline-start" />
@@ -130,7 +125,13 @@ export function OrganizationTeams() {
                   <p className="truncate text-sm font-medium">{team.name}</p>
                   <p className="text-muted-foreground text-sm">{localization.team}</p>
                 </div>
-                <Button onClick={() => setDialogTeam(team)} size="sm" variant="outline">
+                <Button
+                  onClick={() => {
+                    setDialogTeam(team);
+                  }}
+                  size="sm"
+                  variant="outline"
+                >
                   <Pencil data-icon="inline-start" />
                   {localization.manage}
                 </Button>
@@ -152,7 +153,11 @@ export function OrganizationTeams() {
         allowRemovingAllTeams={teamPolicy.allowRemovingAllTeams}
         canListMembers={dialogTeam ? userTeamIds.has(dialogTeam.id) : false}
         maximumMembersPerTeam={teamPolicy.maximumMembersPerTeam}
-        onOpenChange={(open) => !open && setDialogTeam(undefined)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDialogTeam(undefined);
+          }
+        }}
         open={dialogTeam !== undefined}
         organizationId={activeOrganization?.id ?? ""}
         organizationMembers={members.data?.members ?? []}
@@ -186,10 +191,10 @@ function TeamDialog({
   onOpenChange: (open: boolean) => void;
   open: boolean;
   organizationId: string;
-  organizationMembers: Array<{
+  organizationMembers: {
     userId: string;
     user: { name: string; email: string };
-  }>;
+  }[];
   team?: Team;
   teamCount: number;
   teamFields: AdditionalFields;
@@ -237,16 +242,12 @@ function TeamDialog({
     },
   });
   const addMember = useAddTeamMember(authClient, {
-    onSuccess: () => setUserId(""),
+    onSuccess: () => {
+      setUserId("");
+    },
   });
   const removeMember = useRemoveTeamMember(authClient);
   const memberIds = new Set(teamMembers.data?.map((member) => member.userId));
-  const availableMembers = organizationMembers
-    .filter((member) => !memberIds.has(member.userId))
-    .map((member) => ({
-      label: member.user.name || member.user.email,
-      value: member.userId,
-    }));
   const memberLimitReached =
     maximumMembersPerTeam !== undefined && (teamMembers.data?.length ?? 0) >= maximumMembersPerTeam;
   const isActiveTeam = activeTeamId === team?.id;
@@ -328,12 +329,13 @@ function TeamDialog({
                       <FieldLabel htmlFor="organization-team-name">{localization.name}</FieldLabel>
                       <Input
                         aria-invalid={isInvalid}
-                        autoFocus
                         disabled={pending || !canEdit}
                         id="organization-team-name"
                         name={field.name}
                         onBlur={field.handleBlur}
-                        onChange={(event) => field.handleChange(event.target.value)}
+                        onChange={(event) => {
+                          field.handleChange(event.target.value);
+                        }}
                         value={field.state.value}
                       />
                       <field.AuthFormFieldError />
@@ -375,21 +377,22 @@ function TeamDialog({
                       <FieldLabel>{localization.addTeamMember}</FieldLabel>
                       <Select
                         disabled={canAddMember.isPending || memberLimitReached}
-                        items={availableMembers}
-                        onValueChange={(value) => setUserId(value ?? "")}
+                        onValueChange={(value) => {
+                          setUserId(value ?? "");
+                        }}
                         value={userId}
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder={localization.selectMember} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectGroup>
-                            {availableMembers.map((member) => (
-                              <SelectItem key={member.value} value={member.value}>
-                                {member.label}
+                          {organizationMembers
+                            .filter((member) => !memberIds.has(member.userId))
+                            .map((member) => (
+                              <SelectItem key={member.userId} value={member.userId}>
+                                {member.user.name || member.user.email}
                               </SelectItem>
                             ))}
-                          </SelectGroup>
                         </SelectContent>
                       </Select>
                     </Field>
@@ -470,9 +473,13 @@ function TeamDialog({
               {team && (canDelete.isPending || canDelete.data?.success) && (
                 <AlertDialog>
                   <AlertDialogTrigger
-                    className={buttonVariants({ variant: "destructive" })}
-                    disabled={canDelete.isPending || removeTeam.isPending || !canRemoveTeam}
-                    type="button"
+                    render={
+                      <Button
+                        disabled={canDelete.isPending || removeTeam.isPending || !canRemoveTeam}
+                        type="button"
+                        variant="destructive"
+                      />
+                    }
                   >
                     <Trash2 data-icon="inline-start" />
                     {localization.deleteTeam}
@@ -488,12 +495,12 @@ function TeamDialog({
                       <AlertDialogCancel>{authLocalization.settings.cancel}</AlertDialogCancel>
                       <AlertDialogAction
                         className={buttonVariants({ variant: "destructive" })}
-                        onClick={() =>
+                        onClick={() => {
                           removeTeam.mutate({
                             teamId: team.id,
                             organizationId,
-                          })
-                        }
+                          });
+                        }}
                       >
                         <Trash2 data-icon="inline-start" />
                         {localization.deleteTeam}

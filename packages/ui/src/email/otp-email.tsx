@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { JSX, ReactNode } from "react";
 import {
   Body,
   Container,
@@ -41,7 +41,7 @@ export type OtpEmailEmailLocalization = typeof otpEmailLocalization;
 /**
  * Props for the OtpEmail component.
  */
-export interface OtpEmailProps {
+export type OtpEmailProps = {
   /** The one-time verification code to display */
   verificationCode: string;
   /** Email address being verified */
@@ -67,7 +67,7 @@ export interface OtpEmailProps {
    * @remarks `OtpEmailEmailLocalization`
    */
   localization?: Partial<OtpEmailEmailLocalization>;
-}
+};
 
 /**
  * Email template component that sends one-time password (OTP) verification codes to users.
@@ -103,7 +103,7 @@ export const OtpEmail = ({
   poweredBy,
   head,
   ...props
-}: OtpEmailProps) => {
+}: OtpEmailProps): JSX.Element => {
   const localization = {
     ...OtpEmail.localization,
     ...props.localization,
@@ -129,10 +129,10 @@ export const OtpEmail = ({
 
       <Tailwind config={{ presets: [pixelBasedPreset] }}>
         <Body className={cn("bg-background font-sans", classNames?.body)}>
-          <Container className={cn("mx-auto my-auto max-w-xl px-2 py-10", classNames?.container)}>
+          <Container className={cn("m-auto max-w-xl px-2 py-10", classNames?.container)}>
             <Section
               className={cn(
-                "border-border bg-card text-card-foreground rounded-none border p-8",
+                "bg-card text-card-foreground border-border rounded-none border p-8",
                 classNames?.card,
               )}
             >
@@ -174,7 +174,7 @@ export const OtpEmail = ({
                     "{appName}",
                     appName || "",
                   )
-                    .replace(/\s{2,}/g, " ")
+                    .replaceAll(/\s{2}/gu, " ")
                     .replace(" .", ".");
 
                   const [beforeEmail, afterEmail] = textWithAppName.split("{email}");
@@ -192,7 +192,7 @@ export const OtpEmail = ({
                   ) : (
                     textWithAppName
                       .replace("{email}", "")
-                      .replace(/\s{2,}/g, " ")
+                      .replaceAll(/\s{2}/gu, " ")
                       .replace(" .", ".")
                   );
                 })()}

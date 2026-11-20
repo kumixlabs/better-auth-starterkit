@@ -1,5 +1,6 @@
 "use client";
 
+import { apiKeyPlugin } from "@better-auth-ui/core/plugins/api-key";
 import { useAuth, useAuthPlugin, useCopyToClipboard } from "@better-auth-ui/react";
 import { Check, Copy, Key } from "lucide-react";
 
@@ -20,7 +21,6 @@ import {
   InputGroupInput,
 } from "@kumix/ui/ui/input-group";
 import { Label } from "@kumix/ui/ui/label";
-import { apiKeyPlugin } from "../lib/api-key-plugin";
 
 export type NewApiKeyDialogProps = {
   open: boolean;
@@ -85,7 +85,7 @@ export function NewApiKeyDialog({ open, onOpenChange, name, secretKey }: NewApiK
                     ? localization.settings.copiedToClipboard
                     : localization.settings.copyToClipboard
                 }
-                onClick={copySecretKey}
+                onClick={() => void copySecretKey()}
               >
                 {copied ? <Check /> : <Copy />}
               </InputGroupButton>
@@ -94,7 +94,12 @@ export function NewApiKeyDialog({ open, onOpenChange, name, secretKey }: NewApiK
         </div>
 
         <DialogFooter>
-          <Button type="button" onClick={() => handleOpenChange(false)}>
+          <Button
+            type="button"
+            onClick={() => {
+              handleOpenChange(false);
+            }}
+          >
             {apiKeyLocalization.dismissNewKey}
           </Button>
         </DialogFooter>

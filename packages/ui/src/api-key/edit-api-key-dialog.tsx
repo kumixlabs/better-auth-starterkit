@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
+import { getAuthErrorMessage } from "@better-auth-ui/core";
 import type { ApiKeyAuthClient, ListedApiKey } from "@better-auth-ui/core/plugins/api-key";
+import { apiKeyPlugin } from "@better-auth-ui/core/plugins/api-key";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useUpdateApiKey } from "@better-auth-ui/react/plugins/api-key";
 
@@ -17,7 +19,6 @@ import {
 import { Field, FieldError, FieldGroup, FieldLabel } from "@kumix/ui/ui/field";
 import { Input } from "@kumix/ui/ui/input";
 import { useAuthForm } from "../auth-form";
-import { apiKeyPlugin } from "../lib/api-key-plugin";
 
 export function EditApiKeyDialog({
   apiKey,
@@ -32,12 +33,14 @@ export function EditApiKeyDialog({
   const { localization: labels } = useAuthPlugin(apiKeyPlugin);
 
   const updateApiKey = useUpdateApiKey(authClient, {
-    onSuccess: () => onOpenChange(false),
+    onSuccess: () => {
+      onOpenChange(false);
+    },
   });
   const form = useAuthForm({
     defaultValues: { name: apiKey.name ?? "" },
     onSubmit: async ({ value }) =>
-      await updateApiKey.mutateAsync({
+      updateApiKey.mutateAsync({
         configId: apiKey.configId,
         keyId: apiKey.id,
         name: value.name.trim(),
@@ -64,15 +67,15 @@ export function EditApiKeyDialog({
                       name={field.name}
                       value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(event) => field.handleChange(event.target.value)}
+                      onChange={(event) => {
+                        field.handleChange(event.target.value);
+                      }}
                     />
                   </Field>
                 )}
               </form.AppField>
               {updateApiKey.error && (
-                <FieldError>
-                  {updateApiKey.error.error?.message ?? updateApiKey.error.message}
-                </FieldError>
+                <FieldError>{getAuthErrorMessage(updateApiKey.error, localization)}</FieldError>
               )}
             </FieldGroup>
             <DialogFooter>

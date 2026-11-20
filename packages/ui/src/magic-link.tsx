@@ -3,6 +3,7 @@
 import { useId } from "react";
 import { authMutationKeys, getAuthCallbackURL, validateEmailAddress } from "@better-auth-ui/core";
 import type { MagicLinkAuthClient } from "@better-auth-ui/core/plugins/magic-link";
+import { magicLinkPlugin } from "@better-auth-ui/core/plugins/magic-link";
 import { getSsoFallbackEmail } from "@better-auth-ui/core/plugins/sso";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useSignInMagicLink } from "@better-auth-ui/react/plugins/magic-link";
@@ -19,7 +20,6 @@ import {
 import { Input } from "@kumix/ui/ui/input";
 import { cn } from "@kumix/utils";
 import { isAuthFormFieldInvalid, useAuthForm } from "./auth-form";
-import { magicLinkPlugin } from "./lib/magic-link-plugin";
 import { MAGIC_LINK_SENT_STORAGE_KEY } from "./magic-link-sent";
 import { ProviderButtons, type SocialLayout } from "./provider-buttons";
 import { ReauthenticationNotice } from "./reauthentication";
@@ -80,7 +80,7 @@ export function MagicLink({ className, socialLayout, socialPosition = "bottom" }
   const form = useAuthForm({
     defaultValues: { email: getSsoFallbackEmail() },
     onSubmit: async ({ value }) =>
-      await signInMagicLink({
+      signInMagicLink({
         callbackURL: getAuthCallbackURL(baseURL, redirectTo),
         email: value.email,
       }),
@@ -137,7 +137,9 @@ export function MagicLink({ className, socialLayout, socialPosition = "bottom" }
                           autoComplete="email"
                           value={field.state.value}
                           onBlur={field.handleBlur}
-                          onChange={(event) => field.handleChange(event.target.value)}
+                          onChange={(event) => {
+                            field.handleChange(event.target.value);
+                          }}
                           placeholder={localization.auth.emailPlaceholder}
                           required
                           disabled={isPending}
@@ -183,7 +185,7 @@ export function MagicLink({ className, socialLayout, socialPosition = "bottom" }
           )}
         </div>
 
-        {emailAndPassword?.enabled && (
+        {emailAndPassword.enabled && (
           <div className="mt-4 flex w-full flex-col items-center gap-3">
             <FieldDescription className="text-center">
               {localization.auth.needToCreateAnAccount}{" "}

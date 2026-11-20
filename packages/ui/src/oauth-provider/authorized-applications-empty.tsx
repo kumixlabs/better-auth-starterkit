@@ -1,10 +1,10 @@
 "use client";
 
+import { oauthProviderPlugin } from "@better-auth-ui/core/plugins/oauth-provider";
 import { useAuthPlugin } from "@better-auth-ui/react";
 import { ShieldCheck } from "lucide-react";
 
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@kumix/ui/ui/empty";
-import { oauthProviderPlugin } from "../lib/oauth-provider-plugin";
 
 export function AuthorizedApplicationsEmpty() {
   const { localization } = useAuthPlugin(oauthProviderPlugin);

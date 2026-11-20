@@ -67,7 +67,7 @@ export function ResetPassword({ className }: ResetPasswordProps) {
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
-    const token = searchParams.get("token") as string;
+    const token = searchParams.get("token");
 
     if (!token) {
       toastError({ message: localization.auth.invalidResetPasswordToken });
@@ -79,7 +79,7 @@ export function ResetPassword({ className }: ResetPasswordProps) {
     defaultValues: { confirmPassword: "", password: "" },
     onSubmit: async ({ value }) => {
       const searchParams = new URLSearchParams(window.location.search);
-      const token = searchParams.get("token") as string;
+      const token = searchParams.get("token");
 
       if (!token) {
         toastError({ message: localization.auth.invalidResetPasswordToken });
@@ -110,15 +110,15 @@ export function ResetPassword({ className }: ResetPasswordProps) {
                 validators={{
                   onChange: ({ value }) =>
                     validateStringLength(value, {
-                      maxLength: emailAndPassword?.maxPasswordLength,
+                      maxLength: emailAndPassword.maxPasswordLength,
                       maxLengthMessage: localization.auth.tooLong.replace(
                         "{{max}}",
-                        String(emailAndPassword?.maxPasswordLength),
+                        String(emailAndPassword.maxPasswordLength),
                       ),
-                      minLength: emailAndPassword?.minPasswordLength,
+                      minLength: emailAndPassword.minPasswordLength,
                       minLengthMessage: localization.auth.tooShort.replace(
                         "{{min}}",
-                        String(emailAndPassword?.minPasswordLength),
+                        String(emailAndPassword.minPasswordLength),
                       ),
                       requiredMessage: localization.auth.fieldRequired,
                     }),
@@ -138,8 +138,8 @@ export function ResetPassword({ className }: ResetPasswordProps) {
                           autoComplete="new-password"
                           placeholder={localization.auth.newPasswordPlaceholder}
                           required
-                          minLength={emailAndPassword?.minPasswordLength}
-                          maxLength={emailAndPassword?.maxPasswordLength}
+                          minLength={emailAndPassword.minPasswordLength}
+                          maxLength={emailAndPassword.maxPasswordLength}
                           disabled={isPending}
                           name={field.name}
                           onBlur={field.handleBlur}
@@ -185,22 +185,22 @@ export function ResetPassword({ className }: ResetPasswordProps) {
                 }}
               </form.AppField>
 
-              {emailAndPassword?.confirmPassword && (
+              {emailAndPassword.confirmPassword && (
                 <form.AppField
                   name="confirmPassword"
                   validators={{
                     onChangeListenTo: ["password"],
                     onChange: ({ fieldApi, value }) =>
                       validateStringLength(value, {
-                        maxLength: emailAndPassword?.maxPasswordLength,
+                        maxLength: emailAndPassword.maxPasswordLength,
                         maxLengthMessage: localization.auth.tooLong.replace(
                           "{{max}}",
-                          String(emailAndPassword?.maxPasswordLength),
+                          String(emailAndPassword.maxPasswordLength),
                         ),
-                        minLength: emailAndPassword?.minPasswordLength,
+                        minLength: emailAndPassword.minPasswordLength,
                         minLengthMessage: localization.auth.tooShort.replace(
                           "{{min}}",
-                          String(emailAndPassword?.minPasswordLength),
+                          String(emailAndPassword.minPasswordLength),
                         ),
                         requiredMessage: localization.auth.fieldRequired,
                       }) ??
@@ -228,11 +228,13 @@ export function ResetPassword({ className }: ResetPasswordProps) {
                             autoComplete="new-password"
                             placeholder={localization.auth.confirmPasswordPlaceholder}
                             required
-                            minLength={emailAndPassword?.minPasswordLength}
-                            maxLength={emailAndPassword?.maxPasswordLength}
+                            minLength={emailAndPassword.minPasswordLength}
+                            maxLength={emailAndPassword.maxPasswordLength}
                             disabled={isPending}
                             onBlur={field.handleBlur}
-                            onChange={(event) => field.handleChange(event.target.value)}
+                            onChange={(event) => {
+                              field.handleChange(event.target.value);
+                            }}
                             aria-invalid={isInvalid}
                             value={field.state.value}
                           />

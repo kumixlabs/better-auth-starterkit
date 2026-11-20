@@ -5,6 +5,7 @@ import { formatAdditionalFieldValue } from "@better-auth-ui/core";
 import {
   memberRoleLabels,
   type OrganizationAuthClient,
+  organizationPlugin,
 } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import {
@@ -21,7 +22,6 @@ import { Button } from "@kumix/ui/ui/button";
 import { Spinner } from "@kumix/ui/ui/spinner";
 import { TableCell, TableRow } from "@kumix/ui/ui/table";
 import { cn } from "@kumix/utils";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { OrganizationTableRowSkeleton } from "./organization-table-row-skeleton";
 import {
   type OrganizationSelectableRow,
@@ -78,9 +78,7 @@ export function OrganizationInvitationRow({
 
   const roleLabel = memberRoleLabels(invitation.role, roles).join(", ");
 
-  const statusLabel =
-    organizationLocalization[invitation.status as keyof typeof organizationLocalization] ??
-    invitation.status;
+  const statusLabel = organizationLocalization[invitation.status];
 
   if (cancelPermissionPending || invitePermissionPending) {
     return <OrganizationTableRowSkeleton columnIds={columnIds} />;
@@ -99,9 +97,7 @@ export function OrganizationInvitationRow({
         <div className="flex flex-col gap-1">
           <span className="text-sm font-medium">{invitation.email}</span>
           {invitationFields.map((field) => {
-            const value = formatAdditionalFieldValue(
-              (invitation as unknown as Record<string, unknown>)[field.name],
-            );
+            const value = formatAdditionalFieldValue(Reflect.get(invitation, field.name));
             return value ? (
               <span className="text-muted-foreground text-xs" key={field.name}>
                 {field.label}: {value}
@@ -130,7 +126,7 @@ export function OrganizationInvitationRow({
     status: (
       <TableCell key="status" className="text-sm">
         <Badge variant="secondary" className={cn(statusBadgeClasses[invitation.status])}>
-          {String(statusLabel)}
+          {statusLabel}
         </Badge>
       </TableCell>
     ),
@@ -143,20 +139,21 @@ export function OrganizationInvitationRow({
               variant="outline"
               className="size-8"
               disabled={resendPending}
-              onClick={() =>
+              onClick={() => {
                 resendInvitation({
                   ...Object.fromEntries(
                     invitationFields.flatMap((field) => {
-                      const value = (invitation as unknown as Record<string, unknown>)[field.name];
+                      const value: unknown = Reflect.get(invitation, field.name);
                       return value === undefined ? [] : [[field.name, value]];
                     }),
                   ),
                   email: invitation.email,
                   organizationId: invitation.organizationId,
+                  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- the server can define custom organization roles; the client type lists only the configured defaults
                   role: invitation.role as Parameters<typeof resendInvitation>[0]["role"],
                   resend: true,
-                })
-              }
+                });
+              }}
               aria-label={organizationLocalization.resendInvitation}
             >
               {resendPending ? <Spinner /> : <Send />}
@@ -169,7 +166,9 @@ export function OrganizationInvitationRow({
               variant="outline"
               className="text-destructive size-8"
               disabled={cancelPending}
-              onClick={() => cancelInvitation({ invitationId: invitation.id })}
+              onClick={() => {
+                cancelInvitation({ invitationId: invitation.id });
+              }}
               aria-label={organizationLocalization.cancelInvitation}
             >
               {cancelPending ? <Spinner /> : <X />}

@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   type ApiKeyAuthClient,
   apiKeyExpirationDaysToSeconds,
+  apiKeyPlugin,
 } from "@better-auth-ui/core/plugins/api-key";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useCreateApiKey } from "@better-auth-ui/react/plugins/api-key";
@@ -30,7 +31,6 @@ import {
   SelectValue,
 } from "@kumix/ui/ui/select";
 import { useAuthForm } from "../auth-form";
-import { apiKeyPlugin } from "../lib/api-key-plugin";
 import { NewApiKeyDialog } from "./new-api-key-dialog";
 
 export type CreateApiKeyDialogProps = {
@@ -65,7 +65,7 @@ export function CreateApiKeyDialog({
     defaultValues: {
       configId: availableConfigurations[0]?.id ?? "",
       expiration:
-        keyExpiration === false || keyExpiration?.defaultInterval == null
+        keyExpiration === false || keyExpiration.defaultInterval == null
           ? "never"
           : String(keyExpiration.defaultInterval),
       name: "",
@@ -136,12 +136,13 @@ export function CreateApiKeyDialog({
                       <Input
                         id="api-key-name"
                         name={field.name}
-                        autoFocus
                         placeholder={localization.settings.optional}
                         disabled={isCreating}
                         value={field.state.value}
                         onBlur={field.handleBlur}
-                        onChange={(event) => field.handleChange(event.target.value)}
+                        onChange={(event) => {
+                          field.handleChange(event.target.value);
+                        }}
                       />
 
                       <FieldError />
@@ -157,13 +158,11 @@ export function CreateApiKeyDialog({
                           {apiKeyLocalization.configuration}
                         </FieldLabel>
                         <Select
-                          items={availableConfigurations.map((configuration) => ({
-                            label: configuration.label,
-                            value: configuration.id,
-                          }))}
                           name={field.name}
                           value={field.state.value}
-                          onValueChange={(value) => field.handleChange(value ?? "")}
+                          onValueChange={(value) => {
+                            field.handleChange(value ?? "");
+                          }}
                           disabled={isCreating}
                         >
                           <SelectTrigger id="api-key-configuration" className="w-full">
@@ -193,25 +192,11 @@ export function CreateApiKeyDialog({
                         </FieldLabel>
 
                         <Select
-                          items={[
-                            ...keyExpiration.intervals.map((days) => ({
-                              label: `${days.toLocaleString()} ${
-                                days === 1 ? apiKeyLocalization.day : apiKeyLocalization.days
-                              }`,
-                              value: String(days),
-                            })),
-                            ...(keyExpiration.allowNever
-                              ? [
-                                  {
-                                    label: apiKeyLocalization.never,
-                                    value: "never",
-                                  },
-                                ]
-                              : []),
-                          ]}
                           name={field.name}
                           value={field.state.value}
-                          onValueChange={(value) => field.handleChange(value ?? "")}
+                          onValueChange={(value) => {
+                            field.handleChange(value ?? "");
+                          }}
                           disabled={isCreating}
                         >
                           <SelectTrigger id="api-key-expiration" className="w-full">

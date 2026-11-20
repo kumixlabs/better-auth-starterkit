@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { OAuthProviderAuthClient } from "@better-auth-ui/core/plugins/oauth-provider";
 import {
   hasOAuthPrompt,
   type OAuthAuthorizationRequest,
+  type OAuthProviderAuthClient,
+  oauthProviderPlugin,
   parseOAuthAuthorizationRequest,
 } from "@better-auth-ui/core/plugins/oauth-provider";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
@@ -15,9 +16,7 @@ import {
 
 import { Button } from "@kumix/ui/ui/button";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@kumix/ui/ui/card";
-import { Spinner } from "@kumix/ui/ui/spinner";
 import { cn } from "@kumix/utils";
-import { oauthProviderPlugin } from "../lib/oauth-provider-plugin";
 import type { SocialLayout } from "../provider-buttons";
 import { SignUp } from "../sign-up";
 
@@ -41,9 +40,9 @@ const interpolateClient = (template: string, clientName: string) =>
  * Without `prompt=create` this is just the normal sign-up view.
  */
 export function OAuthSignUp({ className, socialLayout, socialPosition }: OAuthSignUpProps) {
-  const { authClient } = useAuth();
+  const { authClient } = useAuth<OAuthProviderAuthClient>();
   const { localization } = useAuthPlugin(oauthProviderPlugin);
-  const oauthClient = authClient as OAuthProviderAuthClient;
+  const oauthClient = authClient;
 
   const [request, setRequest] = useState<OAuthAuthorizationRequest>();
   const [isCreated, setIsCreated] = useState(false);
@@ -82,10 +81,10 @@ export function OAuthSignUp({ className, socialLayout, socialPosition }: OAuthSi
             <Button
               className="w-full"
               disabled={oauthContinue.isPending}
-              onClick={() => oauthContinue.mutate({ created: true })}
+              onClick={() => {
+                oauthContinue.mutate({ created: true });
+              }}
             >
-              {oauthContinue.isPending && <Spinner />}
-
               {localization.tryAgain}
             </Button>
           </CardFooter>

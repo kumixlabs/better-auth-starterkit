@@ -46,13 +46,15 @@ export function VerifyEmail({ className }: VerifyEmailProps) {
   }, []);
 
   useEffect(() => {
-    if (cooldown <= 0 || !email) return;
+    if (cooldown <= 0 || !email) return undefined;
 
     const interval = setInterval(() => {
       setCooldown((current) => (current > 0 ? current - 1 : 0));
     }, 1000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [cooldown, email]);
 
   const { mutate: sendVerificationEmail, isPending } = useSendVerificationEmail(authClient, {
@@ -82,12 +84,12 @@ export function VerifyEmail({ className }: VerifyEmailProps) {
                 type="button"
                 variant="outline"
                 disabled={!email || isCoolingDown || isPending}
-                onClick={() =>
+                onClick={() => {
                   sendVerificationEmail({
                     email,
                     callbackURL: getAuthCallbackURL(baseURL, redirectTo),
-                  })
-                }
+                  });
+                }}
               >
                 {isPending && <Spinner />}
 

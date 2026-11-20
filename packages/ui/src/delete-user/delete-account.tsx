@@ -6,6 +6,7 @@ import {
   isReauthenticationRequiredError,
   validateStringLength,
 } from "@better-auth-ui/core";
+import { deleteUserPlugin } from "@better-auth-ui/core/plugins/delete-user";
 import { useAuth, useAuthPlugin, useDeleteUser, useListAccounts } from "@better-auth-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Eye, EyeOff, TriangleAlert } from "lucide-react";
@@ -33,7 +34,6 @@ import {
 } from "@kumix/ui/ui/input-group";
 import { cn } from "@kumix/utils";
 import { isAuthFormFieldInvalid, useAuthForm } from "../auth-form";
-import { deleteUserPlugin } from "../lib/delete-user-plugin";
 import { ReauthenticationAction } from "../reauthentication";
 
 export type DeleteAccountProps = {
@@ -99,9 +99,7 @@ export function DeleteAccount({ className }: DeleteAccountProps) {
     <Card className={cn("border-destructive", className)}>
       <CardContent className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm leading-tight font-medium">
-            {deleteUserLocalization.deleteAccount}
-          </p>
+          <p className="text-sm/tight font-medium">{deleteUserLocalization.deleteAccount}</p>
 
           <p className="text-muted-foreground mt-0.5 text-xs">
             {deleteUserLocalization.deleteAccountDescription}
@@ -169,7 +167,9 @@ export function DeleteAccount({ className }: DeleteAccountProps) {
                                 placeholder={localization.auth.passwordPlaceholder}
                                 value={field.state.value}
                                 onBlur={field.handleBlur}
-                                onChange={(event) => field.handleChange(event.target.value)}
+                                onChange={(event) => {
+                                  field.handleChange(event.target.value);
+                                }}
                                 disabled={deleteUser.isPending}
                                 required
                               />

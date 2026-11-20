@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { type AuthView, authMutationKeys, validateEmailAddress } from "@better-auth-ui/core";
-import { type SiweAuthClient, siweMutationKeys } from "@better-auth-ui/core/plugins/siwe";
+import {
+  type SiweAuthClient,
+  siweMutationKeys,
+  siwePlugin,
+} from "@better-auth-ui/core/plugins/siwe";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useSignInSiwe } from "@better-auth-ui/react/plugins/siwe";
 import { useIsMutating } from "@tanstack/react-query";
@@ -22,7 +26,6 @@ import { Input } from "@kumix/ui/ui/input";
 import { Spinner } from "@kumix/ui/ui/spinner";
 import { cn } from "@kumix/utils";
 import { isAuthFormFieldInvalid, runAuthFormAction, useAuthForm } from "../auth-form";
-import { siwePlugin } from "../lib/siwe-plugin";
 
 export type SignInEthereumButtonProps = { view?: AuthView };
 
@@ -120,7 +123,9 @@ export function SignInEthereumButton({ view }: SignInEthereumButtonProps) {
                       disabled={signIn.isPending}
                       value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(event) => field.handleChange(event.target.value)}
+                      onChange={(event) => {
+                        field.handleChange(event.target.value);
+                      }}
                       aria-invalid={isInvalid}
                     />
                     <FieldDescription>{plugin.localization.emailDescription}</FieldDescription>
@@ -135,7 +140,9 @@ export function SignInEthereumButton({ view }: SignInEthereumButtonProps) {
                 type="button"
                 variant="outline"
                 disabled={signIn.isPending}
-                onClick={() => setOpen(false)}
+                onClick={() => {
+                  setOpen(false);
+                }}
               >
                 {localization.settings.cancel}
               </Button>

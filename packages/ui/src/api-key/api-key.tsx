@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { ListedApiKey } from "@better-auth-ui/core/plugins/api-key";
+import { apiKeyPlugin } from "@better-auth-ui/core/plugins/api-key";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { Key, Pencil, X } from "lucide-react";
 
@@ -14,7 +15,6 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@kumix/ui/ui/item";
-import { apiKeyPlugin } from "../lib/api-key-plugin";
 import { DeleteApiKeyDialog } from "./delete-api-key-dialog";
 import { EditApiKeyDialog } from "./edit-api-key-dialog";
 
@@ -79,7 +79,13 @@ export function ApiKey({ apiKey, hideDelete, hideUpdate, organizationId }: ApiKe
       <ItemActions>
         {!hideUpdate && (
           <>
-            <Button variant="outline" size="sm" onClick={() => setEditOpen(true)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setEditOpen(true);
+              }}
+            >
               <Pencil />
               {apiKeyLocalization.editApiKey}
             </Button>
@@ -91,7 +97,9 @@ export function ApiKey({ apiKey, hideDelete, hideUpdate, organizationId }: ApiKe
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setDeleteOpen(true)}
+              onClick={() => {
+                setDeleteOpen(true);
+              }}
               aria-label={apiKeyLocalization.deleteApiKey}
             >
               <X />

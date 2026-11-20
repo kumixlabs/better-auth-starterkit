@@ -6,6 +6,7 @@ import {
   type BillingInterval,
   type BillingPlan,
   type BillingScope,
+  billingPlugin,
   followBillingAction,
 } from "@better-auth-ui/core/plugins/billing";
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react";
@@ -43,17 +44,9 @@ import {
 import { Field, FieldLabel } from "@kumix/ui/ui/field";
 import { Input } from "@kumix/ui/ui/input";
 import { Progress } from "@kumix/ui/ui/progress";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@kumix/ui/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@kumix/ui/ui/select";
 import { Spinner } from "@kumix/ui/ui/spinner";
 import { cn } from "@kumix/utils";
-import { billingPlugin } from "../lib/billing-plugin";
 
 type SubscriptionAction = "cancel" | "restore";
 
@@ -139,7 +132,9 @@ function PlanCard({
           className="w-full"
           variant={isCurrent ? "outline" : "default"}
           disabled={isCurrent || isPending}
-          onClick={() => onChoose(plan, price.id)}
+          onClick={() => {
+            onChoose(plan, price.id);
+          }}
         >
           {isCurrent ? localization.currentPlan : localization.choosePlan}
         </Button>
@@ -169,14 +164,18 @@ function SeatsEditor({
           type="number"
           min={1}
           value={value}
-          onChange={(event) => setValue(Math.max(1, event.target.valueAsNumber || 1))}
+          onChange={(event) => {
+            setValue(Math.max(1, event.target.valueAsNumber || 1));
+          }}
         />
       </Field>
       <Button
         size="sm"
         variant="outline"
         disabled={isPending || value === seats}
-        onClick={() => onSave(value)}
+        onClick={() => {
+          onSave(value);
+        }}
       >
         {isPending && <Spinner />}
         {localization.updateSeats}
@@ -199,15 +198,6 @@ export function BillingSettings({ adapter, scope, className }: BillingSettingsPr
   const subscription = state.data?.subscription;
   const intervals = availableIntervals(plans.data ?? []);
   const resolvedInterval = intervals.includes(interval) ? interval : (intervals[0] ?? "month");
-  const intervalItems = intervals.map((value) => ({
-    label:
-      value === "month"
-        ? localization.perMonth
-        : value === "year"
-          ? localization.perYear
-          : localization.oneTime,
-    value,
-  }));
   const isActionPending = cancelSubscription.isPending || restoreSubscription.isPending;
 
   const handleAction = () => {
@@ -268,12 +258,12 @@ export function BillingSettings({ adapter, scope, className }: BillingSettingsPr
                   key={subscription.id}
                   seats={subscription.seats}
                   isPending={updateSeats.isPending}
-                  onSave={(seats) =>
+                  onSave={(seats) => {
                     updateSeats.mutate(
                       { subscriptionId: subscription.id, seats },
                       { onSuccess: followBillingAction },
-                    )
-                  }
+                    );
+                  }}
                 />
               )}
             </>
@@ -285,18 +275,30 @@ export function BillingSettings({ adapter, scope, className }: BillingSettingsPr
           <Button
             variant="outline"
             disabled={portal.isPending}
-            onClick={() => portal.mutate(undefined, { onSuccess: followBillingAction })}
+            onClick={() => {
+              portal.mutate(undefined, { onSuccess: followBillingAction });
+            }}
           >
             {portal.isPending ? <Spinner /> : <ExternalLink />}
             {localization.manageBilling}
           </Button>
           {subscription?.cancelAtPeriodEnd && adapter.supports.restore ? (
-            <Button variant="outline" onClick={() => setAction("restore")}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setAction("restore");
+              }}
+            >
               <RotateCcw />
               {localization.restoreSubscription}
             </Button>
           ) : subscription && adapter.supports.cancel ? (
-            <Button variant="ghost" onClick={() => setAction("cancel")}>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setAction("cancel");
+              }}
+            >
               <X />
               {localization.cancelSubscription}
             </Button>
@@ -337,24 +339,27 @@ export function BillingSettings({ adapter, scope, className }: BillingSettingsPr
           </h3>
           {intervals.length > 1 && (
             <Select
-              items={intervalItems}
               value={resolvedInterval}
               onValueChange={(value) => {
-                if (!value) return;
-                setInterval(value as BillingInterval);
+                const nextInterval = intervals.find(
+                  (candidateInterval) => candidateInterval === value,
+                );
+                if (nextInterval) setInterval(nextInterval);
               }}
             >
               <SelectTrigger className="w-36" aria-label={localization.plans}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectGroup>
-                  {intervalItems.map((item) => (
-                    <SelectItem key={item.value} value={item.value}>
-                      {item.label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
+                {intervals.map((entry) => (
+                  <SelectItem key={entry} value={entry}>
+                    {entry === "month"
+                      ? localization.perMonth
+                      : entry === "year"
+                        ? localization.perYear
+                        : localization.oneTime}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           )}
@@ -373,7 +378,7 @@ export function BillingSettings({ adapter, scope, className }: BillingSettingsPr
                 interval={resolvedInterval}
                 currentPlanId={subscription?.planId}
                 isPending={checkout.isPending}
-                onChoose={(selectedPlan, priceId) =>
+                onChoose={(selectedPlan, priceId) => {
                   checkout.mutate(
                     {
                       planId: selectedPlan.id,
@@ -381,15 +386,22 @@ export function BillingSettings({ adapter, scope, className }: BillingSettingsPr
                       seats: selectedPlan.seatBased ? 1 : undefined,
                     },
                     { onSuccess: followBillingAction },
-                  )
-                }
+                  );
+                }}
               />
             ))}
           </div>
         )}
       </section>
 
-      <AlertDialog open={Boolean(action)} onOpenChange={(open) => !open && setAction(undefined)}>
+      <AlertDialog
+        open={Boolean(action)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setAction(undefined);
+          }
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogMedia>

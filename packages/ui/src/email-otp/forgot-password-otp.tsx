@@ -3,6 +3,7 @@
 import { useId } from "react";
 import { getAuthLinkURL, validateEmailAddress } from "@better-auth-ui/core";
 import type { EmailOtpAuthClient } from "@better-auth-ui/core/plugins/email-otp";
+import { emailOtpPlugin } from "@better-auth-ui/core/plugins/email-otp";
 import { useAuth, useAuthPlugin, useFetchOptions } from "@better-auth-ui/react";
 import { useRequestPasswordResetOtp } from "@better-auth-ui/react/plugins/email-otp";
 
@@ -11,7 +12,6 @@ import { Field, FieldDescription, FieldGroup, FieldLabel } from "@kumix/ui/ui/fi
 import { Input } from "@kumix/ui/ui/input";
 import { cn } from "@kumix/utils";
 import { isAuthFormFieldInvalid, useAuthForm } from "../auth-form";
-import { emailOtpPlugin } from "../lib/email-otp-plugin";
 
 /** `sessionStorage` key the reset-code form reads the pending address from. */
 export const RESET_PASSWORD_OTP_STORAGE_KEY = "better-auth-ui.reset-password-otp";
@@ -33,16 +33,18 @@ export type ForgotPasswordOtpProps = {
 export function ForgotPasswordOtp({ className }: ForgotPasswordOtpProps) {
   const emailErrorId = useId();
   const { authClient, basePaths, localization, navigate, plugins, redirectTo, viewPaths, Link } =
-    useAuth();
+    useAuth<EmailOtpAuthClient>();
   const { localization: emailOtpLocalization } = useAuthPlugin(emailOtpPlugin);
 
   const { fetchOptions, resetFetchOptions } = useFetchOptions();
 
   const { mutateAsync: requestPasswordResetOtp, isPending } = useRequestPasswordResetOtp(
-    authClient as EmailOtpAuthClient,
+    authClient,
     {
       meta: { errorPresentation: "inline" },
-      onError: () => resetFetchOptions(),
+      onError: () => {
+        resetFetchOptions();
+      },
       onSuccess: (_data, { email }) => {
         sessionStorage.setItem(RESET_PASSWORD_OTP_STORAGE_KEY, email);
         navigate({ to: `${basePaths.auth}/${viewPaths.auth.resetPassword}` });
@@ -52,11 +54,10 @@ export function ForgotPasswordOtp({ className }: ForgotPasswordOtpProps) {
 
   const form = useAuthForm({
     defaultValues: { email: "" },
-    onSubmit: async ({ value }) =>
-      await requestPasswordResetOtp({ email: value.email, fetchOptions }),
+    onSubmit: async ({ value }) => requestPasswordResetOtp({ email: value.email, fetchOptions }),
   });
 
-  const Captcha = plugins.find((plugin) => plugin.captchaComponent)?.captchaComponent;
+  const Captcha = plugins.find((plugin) => Boolean(plugin.captchaComponent))?.captchaComponent;
 
   return (
     <Card className={cn("w-full max-w-sm", className)}>
@@ -94,7 +95,9 @@ export function ForgotPasswordOtp({ className }: ForgotPasswordOtpProps) {
                         disabled={isPending}
                         value={field.state.value}
                         onBlur={field.handleBlur}
-                        onChange={(event) => field.handleChange(event.target.value)}
+                        onChange={(event) => {
+                          field.handleChange(event.target.value);
+                        }}
                         aria-invalid={isInvalid}
                       />
                       <field.AuthFormFieldError id={emailErrorId} />

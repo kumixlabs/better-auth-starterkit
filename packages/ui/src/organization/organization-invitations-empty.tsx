@@ -1,5 +1,6 @@
 "use client";
 
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuthPlugin } from "@better-auth-ui/react";
 import { Send } from "lucide-react";
 
@@ -12,7 +13,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@kumix/ui/ui/empty";
-import { organizationPlugin } from "../lib/organization-plugin";
 
 export type OrganizationInvitationsEmptyProps = {
   isInvitePending?: boolean;

@@ -2,13 +2,13 @@
 
 import { Fragment } from "react";
 import type { MultiSessionAuthClient } from "@better-auth-ui/core/plugins/multi-session";
+import { multiSessionPlugin } from "@better-auth-ui/core/plugins/multi-session";
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react";
 import { useListDeviceSessions } from "@better-auth-ui/react/plugins/multi-session";
 
 import { Card, CardContent } from "@kumix/ui/ui/card";
 import { ItemGroup, ItemSeparator } from "@kumix/ui/ui/item";
 import { cn } from "@kumix/utils";
-import { multiSessionPlugin } from "../lib/multi-session-plugin";
 import { ManageAccount } from "./manage-account";
 
 export type ManageAccountsProps = {

@@ -1,6 +1,7 @@
 "use client";
 
 import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useSetActiveOrganization } from "@better-auth-ui/react/plugins/organization";
 import type { Organization } from "better-auth/client";
@@ -9,7 +10,6 @@ import { Settings as SettingsIcon } from "lucide-react";
 import { Button } from "@kumix/ui/ui/button";
 import { Item, ItemActions } from "@kumix/ui/ui/item";
 import { Spinner } from "@kumix/ui/ui/spinner";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { OrganizationView } from "./organization-view";
 
 export type OrganizationRowProps = {

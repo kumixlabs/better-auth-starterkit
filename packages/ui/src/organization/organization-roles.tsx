@@ -9,6 +9,7 @@ import {
   validateStringLength,
 } from "@better-auth-ui/core";
 import type { OrganizationRolesAuthClient } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import {
   useCreateRole,
@@ -62,7 +63,6 @@ import {
   isAuthFormFieldInvalid,
   useAuthForm,
 } from "../auth-form";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { OrganizationSortableTableHead } from "./organization-sortable-table-head";
 import {
   createOrganizationColumnHelper,
@@ -139,7 +139,9 @@ export function OrganizationRoles({ organizationId }: { organizationId: string }
   const { globalFilter, pagination } = tableState;
   useEffect(() => {
     tableState.setColumnVisibility((current) =>
-      current.permissionResources === false ? current : { ...current, permissionResources: false },
+      "permissionResources" in current && !current.permissionResources
+        ? current
+        : { ...current, permissionResources: false },
     );
   }, [tableState.setColumnVisibility]);
   const table = useOrganizationTable(
@@ -164,8 +166,9 @@ export function OrganizationRoles({ organizationId }: { organizationId: string }
     () => null,
   );
   const deleteRoles = useDeleteRole(authClient, organizationId);
-  const permissionFilter = String(
-    table.getColumn("permissionResources")?.getFilterValue() ?? "all",
+  const permissionFilter = toStringValue(
+    table.getColumn("permissionResources")?.getFilterValue(),
+    "all",
   );
   const permissionFacetRows = table.getColumn("permissionResources")?.getFacetedRowModel().flatRows;
   const permissionResources = Array.from(
@@ -198,7 +201,12 @@ export function OrganizationRoles({ organizationId }: { organizationId: string }
           <p className="text-muted-foreground text-sm">{localization.rolesDescription}</p>
         </div>
         {(canCreate.isPending || canCreate.data?.success) && (
-          <Button disabled={canCreate.isPending} onClick={() => setEditingRole(null)}>
+          <Button
+            disabled={canCreate.isPending}
+            onClick={() => {
+              setEditingRole(null);
+            }}
+          >
             <Plus />
             {localization.createRole}
           </Button>
@@ -206,11 +214,13 @@ export function OrganizationRoles({ organizationId }: { organizationId: string }
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <InputGroup className="min-w-0 sm:w-55">
+        <InputGroup className="min-w-0 sm:w-[220px]">
           <InputGroupInput
             aria-label={localization.search}
             disabled={roles.isLoading}
-            onChange={(event) => table.setGlobalFilter(event.target.value)}
+            onChange={(event) => {
+              table.setGlobalFilter(event.target.value);
+            }}
             placeholder={localization.search}
             type="search"
             value={globalFilter}
@@ -310,7 +320,9 @@ export function OrganizationRoles({ organizationId }: { organizationId: string }
                         allSelected={table.getIsAllPageRowsSelected()}
                         disabled={roles.isLoading}
                         localization={localization}
-                        onCheckedChange={(checked) => table.toggleAllPageRowsSelected(checked)}
+                        onCheckedChange={(checked) => {
+                          table.toggleAllPageRowsSelected(checked);
+                        }}
                         someSelected={table.getIsSomePageRowsSelected()}
                       />
                     </TableHead>
@@ -335,7 +347,9 @@ export function OrganizationRoles({ organizationId }: { organizationId: string }
                     canDeletePending={canDelete.isPending}
                     canUpdate={canUpdate.data?.success === true}
                     canUpdatePending={canUpdate.isPending}
-                    onEdit={() => setEditingRole(row.original)}
+                    onEdit={() => {
+                      setEditingRole(row.original);
+                    }}
                     organizationId={organizationId}
                     role={row.original}
                     selectableRow={showSelection ? row : undefined}
@@ -360,11 +374,21 @@ export function OrganizationRoles({ organizationId }: { organizationId: string }
         canPreviousPage={table.getCanPreviousPage()}
         disabled={roles.isLoading}
         localization={localization}
-        onFirstPage={() => table.firstPage()}
-        onLastPage={() => table.lastPage()}
-        onNextPage={() => table.nextPage()}
-        onPageSizeChange={(pageSize) => table.setPageSize(pageSize)}
-        onPreviousPage={() => table.previousPage()}
+        onFirstPage={() => {
+          table.firstPage();
+        }}
+        onLastPage={() => {
+          table.lastPage();
+        }}
+        onNextPage={() => {
+          table.nextPage();
+        }}
+        onPageSizeChange={(pageSize) => {
+          table.setPageSize(pageSize);
+        }}
+        onPreviousPage={() => {
+          table.previousPage();
+        }}
         pageCount={table.getPageCount()}
         pageIndex={pagination.pageIndex}
         pageSize={pagination.pageSize}
@@ -378,7 +402,11 @@ export function OrganizationRoles({ organizationId }: { organizationId: string }
         role={editingRole ?? undefined}
         registry={dynamicAccessControl?.permissions ?? {}}
         roleFields={modelFields.role}
-        onOpenChange={(open) => !open && setEditingRole(undefined)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setEditingRole(undefined);
+          }
+        }}
       />
     </div>
   );
@@ -496,7 +524,9 @@ function OrganizationRoleRow({
                   <Button
                     variant="destructive"
                     disabled={deleteDisabled}
-                    onClick={() => deleteRole.mutate({ roleId: role.id, organizationId })}
+                    onClick={() => {
+                      deleteRole.mutate({ roleId: role.id, organizationId });
+                    }}
                   >
                     {deleteRole.isPending && <Spinner />}
                     {localization.deleteRole}
@@ -560,7 +590,7 @@ function RoleDialog({
     defaultValues: {
       additionalFields: getAdditionalFieldDefaultValues(configuredRoleFields),
       name: role?.role ?? "",
-      permission: role?.permission ?? ({} as Record<string, string[]>),
+      permission: role?.permission ?? {},
     },
     onSubmit: async ({ value }) => {
       const roleName = value.name.trim();
@@ -570,12 +600,10 @@ function RoleDialog({
         if (Object.values(value.permission).some((actions) => actions.length > 0)) {
           const access = await authClient.organization.hasPermission({
             organizationId,
-            permissions: value.permission as Parameters<
-              OrganizationRolesAuthClient["organization"]["hasPermission"]
-            >[0]["permissions"],
+            permissions: value.permission,
           });
 
-          if (access.error || !access.data?.success) {
+          if (access.error || !access.data.success) {
             toastError({ message: localization.permissionsLimitedDescription });
             return;
           }
@@ -653,7 +681,9 @@ function RoleDialog({
                       id="organization-role-name"
                       name={field.name}
                       onBlur={field.handleBlur}
-                      onChange={(event) => field.handleChange(event.target.value)}
+                      onChange={(event) => {
+                        field.handleChange(event.target.value);
+                      }}
                       placeholder={localization.roleNamePlaceholder}
                       value={field.state.value}
                     />
@@ -696,7 +726,7 @@ function RoleDialog({
                             checked={field.state.value[resource]?.includes(action) ?? false}
                             key={action}
                             label={label}
-                            onCheckedChange={(selected) =>
+                            onCheckedChange={(selected) => {
                               field.handleChange({
                                 ...field.state.value,
                                 [resource]: selected
@@ -704,8 +734,8 @@ function RoleDialog({
                                   : (field.state.value[resource] ?? []).filter(
                                       (entry) => entry !== action,
                                     ),
-                              })
-                            }
+                              });
+                            }}
                             organizationId={organizationId}
                             pending={pending}
                             resource={resource}
@@ -723,7 +753,9 @@ function RoleDialog({
                 type="button"
                 variant="outline"
                 disabled={pending}
-                onClick={() => onOpenChange(false)}
+                onClick={() => {
+                  onOpenChange(false);
+                }}
               >
                 {authLocalization.settings.cancel}
               </Button>
@@ -758,9 +790,7 @@ function RolePermissionCheckbox({
   const { authClient } = useAuth<OrganizationRolesAuthClient>();
   const canAssign = useHasPermission(authClient, {
     organizationId,
-    permissions: { [resource]: [action] } as Parameters<
-      OrganizationRolesAuthClient["organization"]["hasPermission"]
-    >[0]["permissions"],
+    permissions: { [resource]: [action] },
   });
   const id = `role-permission-${resource}-${action}`;
   const disabled = pending || canAssign.isPending || (!checked && !canAssign.data?.success);
@@ -775,9 +805,18 @@ function RolePermissionCheckbox({
         checked={checked}
         disabled={disabled}
         id={id}
-        onCheckedChange={(selected) => onCheckedChange(selected === true)}
+        onCheckedChange={(selected) => {
+          onCheckedChange(typeof selected === "boolean" && selected);
+        }}
       />
       {label}
     </label>
   );
+}
+
+/** Reads a primitive filter or payload value as a string, or returns the fallback. */
+function toStringValue(value: unknown, fallback: string) {
+  return typeof value === "string" || typeof value === "number" || typeof value === "boolean"
+    ? String(value)
+    : fallback;
 }

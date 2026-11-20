@@ -2,6 +2,7 @@
 
 import { type ComponentProps, type ReactElement, useState } from "react";
 import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react";
 import {
   useActiveOrganization,
@@ -20,7 +21,6 @@ import {
   DropdownMenuTrigger,
 } from "@kumix/ui/ui/dropdown-menu";
 import { cn } from "@kumix/utils";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { UserView } from "../user/user-view";
 import { CreateOrganizationDialog } from "./create-organization-dialog";
 import { OrganizationView } from "./organization-view";
@@ -106,11 +106,7 @@ export function OrganizationSwitcher({
       <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
         {trigger ?? (
           <DropdownMenuTrigger
-            className={cn(
-              buttonVariants({ variant: "ghost" }),
-              "h-auto px-2 py-2 text-left",
-              className,
-            )}
+            className={cn(buttonVariants({ variant: "ghost" }), "h-auto p-2 text-left", className)}
             disabled={!session || isPending}
           >
             {isPending ? (
@@ -138,7 +134,7 @@ export function OrganizationSwitcher({
           className="max-w-svw min-w-64"
         >
           {activeOrganization ? (
-            <div className="flex items-center justify-between gap-4 px-2 py-2">
+            <div className="flex items-center justify-between gap-4 p-2">
               <OrganizationView hideRole hideSlug={hideSlug} organization={activeOrganization} />
 
               {!hideSettings && (
@@ -157,7 +153,7 @@ export function OrganizationSwitcher({
               )}
             </div>
           ) : !isPending && session?.user && !hidePersonal ? (
-            <div className="flex items-center justify-between gap-4 px-2 py-2">
+            <div className="flex items-center justify-between gap-4 p-2">
               <UserView hideSubtitle={hideSlug} />
 
               {!hideSettings && (
@@ -176,13 +172,22 @@ export function OrganizationSwitcher({
           <DropdownMenuSeparator />
 
           {!!activeOrganization && !hidePersonal && (
-            <DropdownMenuItem onClick={() => handleSetActive(null)}>
+            <DropdownMenuItem
+              onClick={() => {
+                handleSetActive(null);
+              }}
+            >
               <UserView hideSubtitle={hideSlug} />
             </DropdownMenuItem>
           )}
 
           {otherOrganizations.map((organization) => (
-            <DropdownMenuItem key={organization.id} onClick={() => handleSetActive(organization)}>
+            <DropdownMenuItem
+              key={organization.id}
+              onClick={() => {
+                handleSetActive(organization);
+              }}
+            >
               <OrganizationView hideRole hideSlug={hideSlug} organization={organization} />
             </DropdownMenuItem>
           ))}

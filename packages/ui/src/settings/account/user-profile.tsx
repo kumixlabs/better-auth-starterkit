@@ -65,7 +65,7 @@ export function UserProfile({ className }: UserProfileProps) {
     if (!session) return;
     form.reset({
       additionalFields: getAdditionalFieldDefaultValues(
-        fieldsWithModelValues(profileFields, session.user as Record<string, unknown>),
+        fieldsWithModelValues(profileFields, session.user),
       ),
       name: session.user.name,
     });
@@ -110,7 +110,9 @@ export function UserProfile({ className }: UserProfileProps) {
                             disabled={isPending}
                             value={field.state.value}
                             onBlur={field.handleBlur}
-                            onChange={(event) => field.handleChange(event.target.value)}
+                            onChange={(event) => {
+                              field.handleChange(event.target.value);
+                            }}
                             aria-invalid={isInvalid}
                           />
                         ) : (

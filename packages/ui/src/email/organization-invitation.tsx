@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { JSX, ReactNode } from "react";
 import {
   Body,
   Button,
@@ -47,7 +47,7 @@ export type OrganizationInvitationEmailLocalization =
 /**
  * Props for the OrganizationInvitationEmail component.
  */
-export interface OrganizationInvitationEmailProps {
+export type OrganizationInvitationEmailProps = {
   /**
    * URL where the invitee can review and accept the invitation.
    *
@@ -88,7 +88,7 @@ export interface OrganizationInvitationEmailProps {
    * @remarks `OrganizationInvitationEmailLocalization`
    */
   localization?: Partial<OrganizationInvitationEmailLocalization>;
-}
+};
 
 /**
  * Email template component that invites a user to join an organization.
@@ -136,7 +136,7 @@ export const OrganizationInvitationEmail = ({
   poweredBy,
   head,
   ...props
-}: OrganizationInvitationEmailProps) => {
+}: OrganizationInvitationEmailProps): JSX.Element => {
   const localization = {
     ...OrganizationInvitationEmail.localization,
     ...props.localization,
@@ -161,10 +161,10 @@ export const OrganizationInvitationEmail = ({
 
       <Tailwind config={{ presets: [pixelBasedPreset] }}>
         <Body className={cn("bg-background font-sans", classNames?.body)}>
-          <Container className={cn("mx-auto my-auto max-w-xl px-2 py-10", classNames?.container)}>
+          <Container className={cn("m-auto max-w-xl px-2 py-10", classNames?.container)}>
             <Section
               className={cn(
-                "border-border bg-card text-card-foreground rounded-none border p-8",
+                "bg-card text-card-foreground border-border rounded-none border p-8",
                 classNames?.card,
               )}
             >
@@ -259,7 +259,7 @@ export const OrganizationInvitationEmail = ({
                       return segment
                         .replace("({inviterEmail})", "")
                         .replace("{inviterEmail}", "")
-                        .replace(/\s{2,}/g, " ")
+                        .replaceAll(/\s{2}/gu, " ")
                         .replace(" .", ".");
                     }
 
@@ -278,7 +278,7 @@ export const OrganizationInvitationEmail = ({
                     return renderInviterEmail(
                       text
                         .replace("{inviterName}", "")
-                        .replace(/\s{2,}/g, " ")
+                        .replaceAll(/\s{2}/gu, " ")
                         .replace(" .", "."),
                     );
                   }

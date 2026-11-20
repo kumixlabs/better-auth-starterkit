@@ -43,7 +43,14 @@ export function OrganizationTableBulkAction({
       <span className="text-muted-foreground text-sm tabular-nums">
         {selectedLabel.replace("{{count}}", String(count))}
       </span>
-      <AlertDialog open={open} onOpenChange={(nextOpen) => !isPending && setOpen(nextOpen)}>
+      <AlertDialog
+        open={open}
+        onOpenChange={(nextOpen) => {
+          if (!isPending) {
+            setOpen(nextOpen);
+          }
+        }}
+      >
         <AlertDialogTrigger
           className={buttonVariants({ size: "sm", variant: "destructive" })}
           disabled={disabled || count === 0}
@@ -63,10 +70,11 @@ export function OrganizationTableBulkAction({
             <AlertDialogCancel disabled={isPending}>{cancelLabel}</AlertDialogCancel>
             <Button
               disabled={isPending}
-              onClick={async () => {
-                await onConfirm();
-                setOpen(false);
-              }}
+              onClick={() =>
+                void onConfirm().then(() => {
+                  setOpen(false);
+                })
+              }
               variant="destructive"
             >
               {isPending && <Spinner data-icon="inline-start" />}

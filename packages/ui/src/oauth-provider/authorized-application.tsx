@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import type { OAuthProviderAuthClient } from "@better-auth-ui/core/plugins/oauth-provider";
 import {
   type AuthorizedOAuthApplication,
+  type OAuthProviderAuthClient,
+  oauthProviderPlugin,
   resolveOAuthScopeMetadata,
   sanitizeOAuthClientUrl,
 } from "@better-auth-ui/core/plugins/oauth-provider";
@@ -22,7 +23,6 @@ import {
   ItemTitle,
 } from "@kumix/ui/ui/item";
 import { Skeleton } from "@kumix/ui/ui/skeleton";
-import { oauthProviderPlugin } from "../lib/oauth-provider-plugin";
 import { RemoveAuthorizationDialog } from "./remove-authorization-dialog";
 
 export type AuthorizedApplicationProps = {
@@ -37,14 +37,11 @@ export type AuthorizedApplicationProps = {
  * application never blocks the rest of the card.
  */
 export function AuthorizedApplication({ application }: AuthorizedApplicationProps) {
-  const { authClient } = useAuth();
+  const { authClient } = useAuth<OAuthProviderAuthClient>();
   const { localization, scopeMetadata } = useAuthPlugin(oauthProviderPlugin);
   const [removeOpen, setRemoveOpen] = useState(false);
 
-  const publicClient = usePublicOAuthClient(
-    authClient as OAuthProviderAuthClient,
-    application.clientId,
-  );
+  const publicClient = usePublicOAuthClient(authClient, application.clientId);
 
   const client = publicClient.data;
   const clientName = client?.client_name || application.clientId;
@@ -94,7 +91,13 @@ export function AuthorizedApplication({ application }: AuthorizedApplicationProp
         ) : null}
       </ItemContent>
       <ItemActions className="col-start-2 sm:col-start-3 sm:row-start-1">
-        <Button size="sm" variant="outline" onClick={() => setRemoveOpen(true)}>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => {
+            setRemoveOpen(true);
+          }}
+        >
           {localization.removeAuthorization}
         </Button>
 
@@ -127,11 +130,9 @@ export function AuthorizedApplication({ application }: AuthorizedApplicationProp
                     className="text-muted-foreground mt-0.5 size-4 shrink-0"
                   />
                   <div className="grid min-w-0 gap-1">
-                    <p className="text-sm font-medium break-words">{details.label}</p>
+                    <p className="text-sm font-medium wrap-break-word">{details.label}</p>
                     {details.description ? (
-                      <p className="text-muted-foreground text-sm leading-5">
-                        {details.description}
-                      </p>
+                      <p className="text-muted-foreground text-sm/5">{details.description}</p>
                     ) : null}
                   </div>
                 </li>

@@ -6,6 +6,7 @@ import type {
   SiweWalletAccount,
   SiweWalletManager,
 } from "@better-auth-ui/core/plugins/siwe";
+import { siwePlugin } from "@better-auth-ui/core/plugins/siwe";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import {
   useLinkSiweWallet,
@@ -31,7 +32,6 @@ import { Card, CardContent } from "@kumix/ui/ui/card";
 import { Skeleton } from "@kumix/ui/ui/skeleton";
 import { Spinner } from "@kumix/ui/ui/spinner";
 import { cn } from "@kumix/utils";
-import { siwePlugin } from "../lib/siwe-plugin";
 
 const shortAddress = (address: string) =>
   address.length > 14 ? `${address.slice(0, 8)}…${address.slice(-6)}` : address;
@@ -71,7 +71,9 @@ function WalletRow({ wallet }: { wallet: SiweWalletAccount }) {
           size="sm"
           variant="outline"
           disabled={setPrimary.isPending}
-          onClick={() => setPrimary.mutate(wallet.id)}
+          onClick={() => {
+            setPrimary.mutate(wallet.id);
+          }}
         >
           {plugin.localization.setPrimary}
         </Button>
@@ -81,7 +83,9 @@ function WalletRow({ wallet }: { wallet: SiweWalletAccount }) {
         size="icon-sm"
         variant="outline"
         aria-label={plugin.localization.removeWallet}
-        onClick={() => setRemoveOpen(true)}
+        onClick={() => {
+          setRemoveOpen(true);
+        }}
       >
         <X />
       </Button>
@@ -106,11 +110,13 @@ function WalletRow({ wallet }: { wallet: SiweWalletAccount }) {
               type="button"
               variant="destructive"
               disabled={unlink.isPending}
-              onClick={() =>
+              onClick={() => {
                 unlink.mutate(wallet.id, {
-                  onSuccess: () => setRemoveOpen(false),
-                })
-              }
+                  onSuccess: () => {
+                    setRemoveOpen(false);
+                  },
+                });
+              }}
             >
               {unlink.isPending && <Spinner />}
               {plugin.localization.removeWallet}
@@ -138,7 +144,14 @@ export function WalletAccounts({ className }: WalletAccountsProps) {
           <h2 className="text-sm font-semibold">{plugin.localization.wallets}</h2>
           <p className="text-muted-foreground text-xs">{plugin.localization.walletsDescription}</p>
         </div>
-        <Button type="button" size="sm" disabled={link.isPending} onClick={() => link.mutate()}>
+        <Button
+          type="button"
+          size="sm"
+          disabled={link.isPending}
+          onClick={() => {
+            link.mutate();
+          }}
+        >
           {link.isPending && <Spinner />}
           {plugin.localization.connectWallet}
         </Button>

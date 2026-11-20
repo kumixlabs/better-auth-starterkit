@@ -5,6 +5,7 @@ import { DEFAULT_TABLE_SEARCH_DEBOUNCE_MS, getClampedTablePageIndex } from "@bet
 import {
   type DashAuditLog,
   type DashAuthClient,
+  dashPlugin,
   formatDashEventName,
   getDashEventDetail,
   getDashEventKey,
@@ -13,6 +14,7 @@ import {
 import {
   hasMemberRole,
   type OrganizationAuthClient,
+  organizationPlugin,
 } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import {
@@ -63,20 +65,11 @@ import {
 } from "@kumix/ui/ui/empty";
 import { Field, FieldLabel } from "@kumix/ui/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@kumix/ui/ui/input-group";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@kumix/ui/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@kumix/ui/ui/select";
 import { Separator } from "@kumix/ui/ui/separator";
 import { Skeleton } from "@kumix/ui/ui/skeleton";
 import { Spinner } from "@kumix/ui/ui/spinner";
 import { cn } from "@kumix/utils";
-import { dashPlugin } from "../lib/dash-plugin";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { useServerTableState } from "../server-table-state";
 
 type ActivityAccess = "admin" | "admin-user" | "organization" | "user";
@@ -132,7 +125,7 @@ const formatRelativeTime = (value: string) => {
     ["month", 2_592_000],
     ["week", 604_800],
     ["day", 86_400],
-    ["hour", 3_600],
+    ["hour", 3600],
     ["minute", 60],
     ["second", 1],
   ];
@@ -146,19 +139,19 @@ const formatRelativeTime = (value: string) => {
   return formatter.format(0, "second");
 };
 
-const getEventIcon = (eventType: string) => {
+function EventIcon({ eventType }: { eventType: string }) {
   if (
     eventType.includes("password") ||
     eventType.includes("two_factor") ||
     eventType.includes("banned") ||
     eventType === "user_sign_in_failed"
   ) {
-    return ShieldCheck;
+    return <ShieldCheck className="size-4" />;
   }
-  if (eventType.startsWith("organization_member")) return Users;
-  if (eventType.startsWith("organization_")) return Building2;
+  if (eventType.startsWith("organization_member")) return <Users className="size-4" />;
+  if (eventType.startsWith("organization_")) return <Building2 className="size-4" />;
   if (eventType.includes("session") || eventType.includes("signed_")) {
-    return MonitorDot;
+    return <MonitorDot className="size-4" />;
   }
   if (
     eventType.startsWith("user_") ||
@@ -166,14 +159,13 @@ const getEventIcon = (eventType: string) => {
     eventType.startsWith("email_") ||
     eventType.startsWith("account_")
   ) {
-    return UserRound;
+    return <UserRound className="size-4" />;
   }
-  return Activity;
-};
+  return <Activity className="size-4" />;
+}
 
 function ActivityRow({ event }: { event: DashAuditLog }) {
   const { localization, showIpAddress } = useAuthPlugin(dashPlugin);
-  const Icon = getEventIcon(event.eventType);
   const title =
     (localization.eventLabels as Record<string, string>)[event.eventType] ??
     formatDashEventName(event.eventType) ??
@@ -185,7 +177,7 @@ function ActivityRow({ event }: { event: DashAuditLog }) {
   return (
     <li className="flex items-start gap-3 py-4 first:pt-0 last:pb-0">
       <div className="bg-muted text-muted-foreground flex size-9 shrink-0 items-center justify-center rounded-lg">
-        <Icon className="size-4" />
+        <EventIcon eventType={event.eventType} />
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
@@ -227,12 +219,13 @@ function ActivityFeed({
   className,
   userId,
 }: ActivityFeedProps) {
-  const { authClient } = useAuth();
+  const { authClient } = useAuth<DashAuthClient>();
   const { localization, pageSize } = useAuthPlugin(dashPlugin);
   const tableState = useServerTableState({ pageSize });
   const { columnFilters, globalFilter, pagination, setPagination } = tableState;
-  const eventType = String(
-    columnFilters.find((filter) => filter.id === "eventType")?.value ?? "all",
+  const eventType = toStringValue(
+    columnFilters.find((filter) => filter.id === "eventType")?.value,
+    "all",
   );
   const [debouncedIdentifier] = useDebouncedValue(globalFilter.trim(), {
     wait: DEFAULT_TABLE_SEARCH_DEBOUNCE_MS,
@@ -241,10 +234,6 @@ function ActivityFeed({
     () => Object.entries(localization.eventLabels),
     [localization.eventLabels],
   );
-  const eventItems = [
-    { label: localization.allEvents, value: "all" },
-    ...eventOptions.map(([value, label]) => ({ label, value })),
-  ];
   const offset = pagination.pageIndex * pagination.pageSize;
   const params = {
     eventType: eventType === "all" ? undefined : eventType,
@@ -253,17 +242,17 @@ function ActivityFeed({
     offset,
     organizationId,
   };
-  const userQuery = useDashAuditLogs(authClient as DashAuthClient, {
+  const userQuery = useDashAuditLogs(authClient, {
     enabled: ready && access === "user",
     params,
     placeholderData: keepPreviousData,
   });
-  const organizationQuery = useDashAllAuditLogs(authClient as DashAuthClient, {
+  const organizationQuery = useDashAllAuditLogs(authClient, {
     enabled: ready && (access === "admin" || access === "organization"),
     params,
     placeholderData: keepPreviousData,
   });
-  const adminUserQuery = useDashUserAuditLogs(authClient as DashAuthClient, userId, {
+  const adminUserQuery = useDashUserAuditLogs(authClient, userId, {
     enabled: ready && access === "admin-user",
     params: {
       eventType: params.eventType,
@@ -281,6 +270,7 @@ function ActivityFeed({
   const { data, error, isFetching, isPending } = query;
   const showPending = !ready || isPending;
   const pageEnd = offset + (data?.events.length ?? 0);
+
   useEffect(() => {
     if (!ready || !query.isSuccess) return;
     const pageIndex = getClampedTablePageIndex(
@@ -341,10 +331,8 @@ function ActivityFeed({
           <Field>
             <FieldLabel htmlFor="dash-event-type">{localization.eventType}</FieldLabel>
             <Select
-              items={eventItems}
               value={eventType}
               onValueChange={(value) => {
-                if (!value) return;
                 table.getColumn("eventType")?.setFilterValue(value === "all" ? undefined : value);
               }}
             >
@@ -352,13 +340,12 @@ function ActivityFeed({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectGroup>
-                  {eventItems.map((item) => (
-                    <SelectItem key={item.value} value={item.value}>
-                      {item.label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
+                <SelectItem value="all">{localization.allEvents}</SelectItem>
+                {eventOptions.map(([key, label]) => (
+                  <SelectItem key={key} value={key}>
+                    {label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </Field>
@@ -398,12 +385,12 @@ function ActivityFeed({
               <EmptyDescription>{localization.activityLoadErrorDescription}</EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-              <Button size="sm" variant="outline" onClick={() => query.refetch()}>
+              <Button size="sm" variant="outline" onClick={() => void query.refetch()}>
                 {localization.retry}
               </Button>
             </EmptyContent>
           </Empty>
-        ) : data?.events.length ? (
+        ) : data.events.length > 0 ? (
           <ul>
             {table.getRowModel().rows.map((row, position) => (
               <Fragment key={row.id}>
@@ -442,7 +429,9 @@ function ActivityFeed({
               disabled={isFetching || !table.getCanPreviousPage()}
               size="icon-sm"
               variant="ghost"
-              onClick={() => table.previousPage()}
+              onClick={() => {
+                table.previousPage();
+              }}
             >
               <ChevronLeft />
             </Button>
@@ -451,7 +440,9 @@ function ActivityFeed({
               disabled={isFetching || !table.getCanNextPage()}
               size="icon-sm"
               variant="ghost"
-              onClick={() => table.nextPage()}
+              onClick={() => {
+                table.nextPage();
+              }}
             >
               <ChevronRight />
             </Button>
@@ -483,12 +474,11 @@ export function OrganizationActivity({
   organizationSlug: _organizationSlug,
   ...props
 }: OrganizationActivityProps) {
-  const { authClient } = useAuth();
+  const { authClient } = useAuth<OrganizationAuthClient>();
   const { creatorRole } = useAuthPlugin(organizationPlugin);
-  const { data: memberRole, isPending } = useActiveMemberRole(
-    authClient as OrganizationAuthClient,
-    { query: { organizationId } },
-  );
+  const { data: memberRole, isPending } = useActiveMemberRole(authClient, {
+    query: { organizationId },
+  });
   const canViewOrganization =
     hasMemberRole(memberRole?.role, creatorRole) || hasMemberRole(memberRole?.role, "admin");
 
@@ -512,4 +502,11 @@ export function OrganizationActivity({
       {...props}
     />
   );
+}
+
+/** Reads a primitive filter or payload value as a string, or returns the fallback. */
+function toStringValue(value: unknown, fallback: string) {
+  return typeof value === "string" || typeof value === "number" || typeof value === "boolean"
+    ? String(value)
+    : fallback;
 }

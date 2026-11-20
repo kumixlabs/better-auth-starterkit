@@ -6,6 +6,7 @@ import type {
   AgentAuthorization,
   AgentCapabilityGrant,
 } from "@better-auth-ui/core/plugins/agent-auth";
+import { agentAuthPlugin } from "@better-auth-ui/core/plugins/agent-auth";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import {
   useAgentAuthorizations,
@@ -29,7 +30,6 @@ import { Card, CardContent } from "@kumix/ui/ui/card";
 import { Skeleton } from "@kumix/ui/ui/skeleton";
 import { Spinner } from "@kumix/ui/ui/spinner";
 import { cn } from "@kumix/utils";
-import { agentAuthPlugin } from "../lib/agent-auth-plugin";
 
 type RevokeTarget = {
   agent: AgentAuthorization;
@@ -96,7 +96,9 @@ export function AgentAuthorizations({ className }: AgentAuthorizationsProps) {
                           size="icon-sm"
                           variant="ghost"
                           aria-label={`${plugin.localization.revoke} ${grant.capability}`}
-                          onClick={() => setTarget({ agent, grant })}
+                          onClick={() => {
+                            setTarget({ agent, grant });
+                          }}
                         >
                           <XIcon />
                         </Button>
@@ -145,7 +147,11 @@ export function AgentAuthorizations({ className }: AgentAuthorizationsProps) {
                     agentId: target.agent.id,
                     capability: target.grant.capability,
                   },
-                  { onSuccess: () => setTarget(undefined) },
+                  {
+                    onSuccess: () => {
+                      setTarget(undefined);
+                    },
+                  },
                 );
               }}
             >

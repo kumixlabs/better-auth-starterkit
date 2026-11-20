@@ -1,12 +1,12 @@
 "use client";
 
 import { downloadTextFile, formatBackupCodesText, printTextFile } from "@better-auth-ui/core";
+import { twoFactorPlugin } from "@better-auth-ui/core/plugins/two-factor";
 import { useAuth, useAuthPlugin, useCopyToClipboard } from "@better-auth-ui/react";
 import { Check, Copy, Download, Printer } from "lucide-react";
 
 import { toastError } from "@kumix/ui/custom/toast";
 import { Button } from "@kumix/ui/ui/button";
-import { twoFactorPlugin } from "../lib/two-factor-plugin";
 
 export type BackupCodesProps = {
   codes: string[];
@@ -25,7 +25,9 @@ export function BackupCodes({ codes }: BackupCodesProps) {
   const { localization } = useAuth();
   const { localization: twoFactorLocalization } = useAuthPlugin(twoFactorPlugin);
   const { copied, copy } = useCopyToClipboard({
-    onError: () => toastError({ message: twoFactorLocalization.backupCodesCopyFailed }),
+    onError: () => {
+      toastError({ message: twoFactorLocalization.backupCodesCopyFailed });
+    },
   });
   const getBackupCodesText = () =>
     formatBackupCodesText(codes, twoFactorLocalization, window.location.origin);
@@ -54,7 +56,7 @@ export function BackupCodes({ codes }: BackupCodesProps) {
           aria-label={
             copied ? twoFactorLocalization.backupCodesCopied : localization.settings.copyToClipboard
           }
-          onClick={copyCodes}
+          onClick={() => void copyCodes()}
         >
           {copied ? <Check data-icon="inline-start" /> : <Copy data-icon="inline-start" />}
           {localization.settings.copyToClipboard}
@@ -64,7 +66,9 @@ export function BackupCodes({ codes }: BackupCodesProps) {
           type="button"
           size="sm"
           variant="outline"
-          onClick={() => downloadTextFile(getBackupCodesText(), "backup-codes.txt")}
+          onClick={() => {
+            downloadTextFile(getBackupCodesText(), "backup-codes.txt");
+          }}
         >
           <Download data-icon="inline-start" />
           {twoFactorLocalization.downloadBackupCodes}
@@ -74,7 +78,9 @@ export function BackupCodes({ codes }: BackupCodesProps) {
           type="button"
           size="sm"
           variant="outline"
-          onClick={() => printTextFile(getBackupCodesText())}
+          onClick={() => {
+            printTextFile(getBackupCodesText());
+          }}
         >
           <Printer data-icon="inline-start" />
           {twoFactorLocalization.printBackupCodes}

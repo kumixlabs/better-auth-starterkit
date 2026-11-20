@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import {
   useActiveOrganization,
@@ -9,7 +10,6 @@ import {
 } from "@better-auth-ui/react/plugins/organization";
 
 import { Button } from "@kumix/ui/ui/button";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { DeleteOrganizationDialog } from "./delete-organization-dialog";
 import { DeleteOrganizationSkeleton } from "./delete-organization-skeleton";
 
@@ -40,9 +40,7 @@ export function DeleteOrganization() {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <p className="text-sm leading-tight font-medium">
-          {organizationLocalization.deleteOrganization}
-        </p>
+        <p className="text-sm/tight font-medium">{organizationLocalization.deleteOrganization}</p>
 
         <p className="text-muted-foreground mt-0.5 text-xs">
           {organizationLocalization.deleteOrganizationDescription}
@@ -54,7 +52,9 @@ export function DeleteOrganization() {
         size="sm"
         variant="outline"
         className="text-destructive"
-        onClick={() => setConfirmOpen(true)}
+        onClick={() => {
+          setConfirmOpen(true);
+        }}
       >
         {organizationLocalization.deleteOrganization}
       </Button>

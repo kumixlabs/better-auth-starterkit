@@ -1,7 +1,8 @@
 "use client";
 
-import { isReauthenticationRequiredError } from "@better-auth-ui/core";
+import { getAuthErrorMessage, isReauthenticationRequiredError } from "@better-auth-ui/core";
 import type { AddPasskeyParams, PasskeyAuthClient } from "@better-auth-ui/core/plugins/passkey";
+import { passkeyPlugin } from "@better-auth-ui/core/plugins/passkey";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useAddPasskey } from "@better-auth-ui/react/plugins/passkey";
 import { Fingerprint } from "lucide-react";
@@ -19,7 +20,6 @@ import {
 import { Field, FieldError, FieldLabel } from "@kumix/ui/ui/field";
 import { Input } from "@kumix/ui/ui/input";
 import { useAuthForm } from "../auth-form";
-import { passkeyPlugin } from "../lib/passkey-plugin";
 import { ReauthenticationAction } from "../reauthentication";
 
 export type AddPasskeyDialogProps = {
@@ -39,7 +39,9 @@ export function AddPasskeyDialog({ open, onOpenChange }: AddPasskeyDialogProps) 
       ...request,
       fetchOptions: {
         ...request?.fetchOptions,
-        onSuccess: () => handleOpenChange(false),
+        onSuccess: () => {
+          handleOpenChange(false);
+        },
       },
     };
     await addPasskey.mutateAsync(requestWithCallbacks);
@@ -52,7 +54,7 @@ export function AddPasskeyDialog({ open, onOpenChange }: AddPasskeyDialogProps) 
       await submitRequest({
         ...(name ? { name } : {}),
         ...(authenticatorAttachment ? { authenticatorAttachment } : {}),
-      } as AddPasskeyParams<PasskeyAuthClient>);
+      });
     },
   });
 
@@ -97,18 +99,17 @@ export function AddPasskeyDialog({ open, onOpenChange }: AddPasskeyDialogProps) 
                     <Input
                       id="passkey-name"
                       name={field.name}
-                      autoFocus
                       placeholder={localization.settings.optional}
                       disabled={addPasskey.isPending}
                       value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(event) => field.handleChange(event.target.value)}
+                      onChange={(event) => {
+                        field.handleChange(event.target.value);
+                      }}
                       aria-invalid={addPasskey.isError}
                     />
                     {addPasskey.error && (
-                      <FieldError>
-                        {addPasskey.error.error?.message ?? addPasskey.error.message}
-                      </FieldError>
+                      <FieldError>{getAuthErrorMessage(addPasskey.error, localization)}</FieldError>
                     )}
                   </Field>
                 )}

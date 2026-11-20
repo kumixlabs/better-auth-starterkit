@@ -38,7 +38,7 @@ export function AccountSettings({
 
   // A plugin that replaces the card brings its own way to confirm the change,
   // so it can stand on its own without password or magic-link auth.
-  const showChangeEmail = emailAndPassword?.enabled || hasMagicLink || Boolean(ChangeEmailOverride);
+  const showChangeEmail = emailAndPassword.enabled || hasMagicLink || Boolean(ChangeEmailOverride);
 
   return (
     <div className={cn("flex w-full flex-col gap-4 md:gap-6", className)} {...props}>

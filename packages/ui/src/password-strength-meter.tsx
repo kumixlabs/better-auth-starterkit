@@ -33,7 +33,7 @@ export type PasswordStrengthMeterProps = {
 export function PasswordStrengthMeter({ password, className }: PasswordStrengthMeterProps) {
   const { emailAndPassword, localization } = useAuth();
 
-  if (!emailAndPassword?.strengthMeter) return null;
+  if (!emailAndPassword.strengthMeter) return null;
 
   const { score, level } = evaluatePasswordStrength(password, {
     minLength: emailAndPassword.minPasswordLength,

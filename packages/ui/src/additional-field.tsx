@@ -4,6 +4,7 @@ import { type ComponentType, useRef, useState } from "react";
 import {
   type AdditionalField as AdditionalFieldConfig,
   type AdditionalFieldFormValue,
+  type AdditionalFieldOption,
   getFormFieldErrors,
   resolveInputType,
 } from "@better-auth-ui/core";
@@ -32,14 +33,7 @@ import {
   InputGroupInput,
 } from "@kumix/ui/ui/input-group";
 import { Popover, PopoverContent, PopoverTrigger } from "@kumix/ui/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@kumix/ui/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@kumix/ui/ui/select";
 import { Slider } from "@kumix/ui/ui/slider";
 import { Switch } from "@kumix/ui/ui/switch";
 import { Textarea } from "@kumix/ui/ui/textarea";
@@ -114,7 +108,7 @@ function CopyButton({
       title={
         copied ? localization.settings.copiedToClipboard : localization.settings.copyToClipboard
       }
-      onClick={handleCopy}
+      onClick={() => void handleCopy()}
       disabled={isDisabled}
     >
       {copied ? <Check /> : <Copy />}
@@ -180,7 +174,9 @@ export function AdditionalField({
           name={name}
           value={valueToString(value)}
           onBlur={onBlur}
-          onChange={(event) => onChange(event.target.value || null)}
+          onChange={(event) => {
+            onChange(event.target.value || null);
+          }}
           placeholder={field.placeholder}
           required={field.required}
           readOnly={field.readOnly}
@@ -210,9 +206,9 @@ export function AdditionalField({
           step={field.step ?? (maxFractionDigits ? 1 / 10 ** maxFractionDigits : undefined)}
           value={typeof value === "number" ? value : ""}
           onBlur={onBlur}
-          onChange={(event) =>
-            onChange(event.target.value === "" ? null : event.target.valueAsNumber)
-          }
+          onChange={(event) => {
+            onChange(event.target.value === "" ? null : event.target.valueAsNumber);
+          }}
           placeholder={field.placeholder}
           required={field.required}
           readOnly={field.readOnly}
@@ -269,7 +265,9 @@ export function AdditionalField({
           name={name}
           checked={value === true}
           onBlur={onBlur}
-          onCheckedChange={(checked) => onChange(checked === true)}
+          onCheckedChange={(checked) => {
+            onChange(checked === true);
+          }}
           required={field.required}
           disabled={isPending || field.readOnly}
           aria-invalid={isInvalid}
@@ -289,10 +287,11 @@ export function AdditionalField({
         <FieldLabel htmlFor={name}>{field.label}</FieldLabel>
 
         <Select
-          items={field.options ?? []}
           name={name}
           value={valueToString(value) || undefined}
-          onValueChange={(nextValue) => onChange(nextValue)}
+          onValueChange={(nextValue) => {
+            onChange(nextValue);
+          }}
           required={field.required}
           disabled={isPending || field.readOnly}
         >
@@ -301,13 +300,11 @@ export function AdditionalField({
           </SelectTrigger>
 
           <SelectContent>
-            <SelectGroup>
-              {field.options?.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
+            {field.options?.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
@@ -327,7 +324,9 @@ export function AdditionalField({
           items={field.options ?? []}
           name={name}
           value={selectedOption ?? null}
-          onValueChange={(option) => onChange(option?.value ?? null)}
+          onValueChange={(option) => {
+            onChange(option?.value ?? null);
+          }}
           required={field.required}
           disabled={isPending || field.readOnly}
         >
@@ -342,7 +341,7 @@ export function AdditionalField({
             <ComboboxEmpty>No items found.</ComboboxEmpty>
 
             <ComboboxList>
-              {(option) => (
+              {(option: AdditionalFieldOption) => (
                 <ComboboxItem key={option.value} value={option}>
                   {option.label}
                 </ComboboxItem>
@@ -424,7 +423,9 @@ function InputField({
             step={nativeStep}
             value={valueToString(value)}
             onBlur={onBlur}
-            onChange={(event) => onChange(event.target.value || null)}
+            onChange={(event) => {
+              onChange(event.target.value || null);
+            }}
             placeholder={field.placeholder}
             required={field.required}
             readOnly={field.readOnly}
@@ -460,7 +461,9 @@ function InputField({
         step={nativeStep}
         value={valueToString(value)}
         onBlur={onBlur}
-        onChange={(event) => onChange(event.target.value || null)}
+        onChange={(event) => {
+          onChange(event.target.value || null);
+        }}
         placeholder={field.placeholder}
         required={field.required}
         readOnly={field.readOnly}
@@ -511,9 +514,9 @@ function SliderField({
         name={name}
         value={[numericValue]}
         onBlur={onBlur}
-        onValueChange={(nextValue) =>
-          onChange((Array.isArray(nextValue) ? nextValue[0] : nextValue) ?? min)
-        }
+        onValueChange={(nextValue) => {
+          onChange((typeof nextValue === "number" ? nextValue : nextValue[0]) ?? min);
+        }}
         min={min}
         max={max}
         step={step}
@@ -583,11 +586,11 @@ function DateInput({
               selected={date}
               defaultMonth={date}
               captionLayout="dropdown"
-              onSelect={(value) => {
-                if (!value) {
+              onSelect={(selectedDate) => {
+                if (!selectedDate) {
                   onChange(null);
                 } else {
-                  const nextValue = new Date(value);
+                  const nextValue = new Date(selectedDate);
                   if (isDateTime && time.trim()) {
                     const [hours = "0", minutes = "0", seconds = "0"] = time.split(":");
                     nextValue.setHours(Number(hours), Number(minutes), Number(seconds), 0);

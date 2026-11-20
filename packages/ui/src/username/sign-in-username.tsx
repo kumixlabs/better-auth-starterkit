@@ -13,6 +13,7 @@ import {
   withPasskeyAutoFill,
 } from "@better-auth-ui/core/plugins/passkey";
 import type { UsernameAuthClient } from "@better-auth-ui/core/plugins/username";
+import { usernamePlugin } from "@better-auth-ui/core/plugins/username";
 import {
   AuthPrompts,
   useAuth,
@@ -44,7 +45,6 @@ import { cn } from "@kumix/utils";
 import { isAuthFormFieldInvalid, useAuthForm } from "../auth-form";
 import { LastUsedBadge } from "../last-login-method/last-used-badge";
 import { useSignInContinuation } from "../lib/use-sign-in-continuation";
-import { usernamePlugin } from "../lib/username-plugin";
 import { ProviderButtons, type SocialLayout } from "../provider-buttons";
 import { ReauthenticationNotice } from "../reauthentication";
 
@@ -84,7 +84,9 @@ export function SignInUsername({
 
   const { mutateAsync: signInEmail, isPending: isSignInEmailPending } = useSignInEmail(authClient, {
     meta: { errorPresentation: "inline" },
-    onError: () => resetFetchOptions(),
+    onError: () => {
+      resetFetchOptions();
+    },
     onSuccess: (data) => {
       sessionStorage.removeItem("better-auth-ui.verify-email");
       continueSignIn(data);
@@ -95,7 +97,9 @@ export function SignInUsername({
     authClient,
     {
       meta: { errorPresentation: "inline" },
-      onError: () => resetFetchOptions(),
+      onError: () => {
+        resetFetchOptions();
+      },
       onSuccess: (data) => {
         sessionStorage.removeItem("better-auth-ui.verify-email");
         continueSignIn(data);
@@ -112,7 +116,7 @@ export function SignInUsername({
   const isPending = signInMutating + signUpMutating > 0;
   const isSignInPending = isSignInEmailPending || isSignInUsernamePending;
 
-  const Captcha = plugins.find((plugin) => plugin.captchaComponent)?.captchaComponent;
+  const Captcha = plugins.find((plugin) => Boolean(plugin.captchaComponent))?.captchaComponent;
 
   const passkeyAutoFill = isPasskeyAutoFillEnabled(plugins);
 
@@ -125,7 +129,7 @@ export function SignInUsername({
       try {
         const params = {
           password: value.password,
-          ...(emailAndPassword?.rememberMe ? { rememberMe: value.rememberMe } : {}),
+          ...(emailAndPassword.rememberMe ? { rememberMe: value.rememberMe } : {}),
           fetchOptions,
         };
         if (isEmail) {
@@ -148,7 +152,7 @@ export function SignInUsername({
     },
   });
 
-  const showSeparator = emailAndPassword?.enabled && socialProviders && socialProviders.length > 0;
+  const showSeparator = emailAndPassword.enabled && socialProviders && socialProviders.length > 0;
 
   return (
     <Card className={cn("w-full max-w-sm", className)}>
@@ -174,7 +178,7 @@ export function SignInUsername({
             </>
           )}
 
-          {emailAndPassword?.enabled && (
+          {emailAndPassword.enabled && (
             <form.AppForm>
               <form.AuthFormRoot serverErrorMessage={localization.errors.generic}>
                 <FieldGroup>
@@ -209,7 +213,9 @@ export function SignInUsername({
                             disabled={isPending}
                             value={field.state.value}
                             onBlur={field.handleBlur}
-                            onChange={(event) => field.handleChange(event.target.value)}
+                            onChange={(event) => {
+                              field.handleChange(event.target.value);
+                            }}
                             aria-invalid={isInvalid}
                           />
                           <field.AuthFormFieldError />
@@ -223,15 +229,15 @@ export function SignInUsername({
                     validators={{
                       onChange: ({ value }) =>
                         validateStringLength(value, {
-                          maxLength: emailAndPassword?.maxPasswordLength,
+                          maxLength: emailAndPassword.maxPasswordLength,
                           maxLengthMessage: localization.auth.tooLong.replace(
                             "{{max}}",
-                            String(emailAndPassword?.maxPasswordLength),
+                            String(emailAndPassword.maxPasswordLength),
                           ),
-                          minLength: emailAndPassword?.minPasswordLength,
+                          minLength: emailAndPassword.minPasswordLength,
                           minLengthMessage: localization.auth.tooShort.replace(
                             "{{min}}",
-                            String(emailAndPassword?.minPasswordLength),
+                            String(emailAndPassword.minPasswordLength),
                           ),
                           requiredMessage: localization.auth.fieldRequired,
                         }),
@@ -254,11 +260,13 @@ export function SignInUsername({
                               )}
                               value={field.state.value}
                               onBlur={field.handleBlur}
-                              onChange={(event) => field.handleChange(event.target.value)}
+                              onChange={(event) => {
+                                field.handleChange(event.target.value);
+                              }}
                               placeholder={localization.auth.passwordPlaceholder}
                               required
-                              minLength={emailAndPassword?.minPasswordLength}
-                              maxLength={emailAndPassword?.maxPasswordLength}
+                              minLength={emailAndPassword.minPasswordLength}
+                              maxLength={emailAndPassword.maxPasswordLength}
                               disabled={isPending}
                               aria-invalid={isInvalid}
                             />
@@ -301,7 +309,9 @@ export function SignInUsername({
                               name={field.name}
                               checked={field.state.value}
                               disabled={isPending}
-                              onCheckedChange={(checked) => field.handleChange(checked === true)}
+                              onCheckedChange={(checked) => {
+                                field.handleChange(typeof checked === "boolean" && checked);
+                              }}
                             />
 
                             <FieldLabel
@@ -358,7 +368,7 @@ export function SignInUsername({
         </div>
 
         <div className="mt-4 flex w-full flex-col items-center gap-3">
-          {emailAndPassword?.enabled && emailAndPassword?.forgotPassword && (
+          {emailAndPassword.enabled && emailAndPassword.forgotPassword && (
             <Link
               href={`${basePaths.auth}/${viewPaths.auth.forgotPassword}`}
               className="self-center text-sm underline-offset-4 hover:underline"
@@ -367,7 +377,7 @@ export function SignInUsername({
             </Link>
           )}
 
-          {emailAndPassword?.enabled && (
+          {emailAndPassword.enabled && (
             <FieldDescription className="text-center">
               {localization.auth.needToCreateAnAccount}{" "}
               <Link

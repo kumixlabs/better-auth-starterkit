@@ -26,11 +26,12 @@ export function SignOut({ className }: SignOutProps) {
         replace: true,
       });
     },
-    onSuccess: () =>
+    onSuccess: () => {
       navigate({
         to: `${basePaths.auth}/${viewPaths.auth.signIn}`,
         replace: true,
-      }),
+      });
+    },
   });
 
   const hasSignedOut = useRef(false);
@@ -42,5 +43,5 @@ export function SignOut({ className }: SignOutProps) {
     signOut();
   }, [signOut]);
 
-  return <Spinner className={cn("mx-auto my-auto", className)} />;
+  return <Spinner className={cn("m-auto", className)} />;
 }

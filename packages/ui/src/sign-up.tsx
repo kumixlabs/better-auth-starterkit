@@ -96,7 +96,7 @@ export function SignUp({
       resetFetchOptions();
     },
     onSuccess: (_data, { email }) => {
-      if (emailAndPassword?.requireEmailVerification) {
+      if (emailAndPassword.requireEmailVerification) {
         sessionStorage.setItem("better-auth-ui.verify-email", email);
         navigate({
           to: getAuthLinkURL(`${basePaths.auth}/${viewPaths.auth.verifyEmail}`, redirectTo),
@@ -117,7 +117,7 @@ export function SignUp({
   });
   const isPending = signInMutating + signUpMutating > 0;
 
-  const Captcha = plugins.find((plugin) => plugin.captchaComponent)?.captchaComponent;
+  const Captcha = plugins.find((plugin) => Boolean(plugin.captchaComponent))?.captchaComponent;
 
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
@@ -138,7 +138,7 @@ export function SignUp({
     onSubmit: async ({ value }) => {
       try {
         await signUpEmail({
-          name: emailAndPassword?.name === false ? "" : value.name,
+          name: emailAndPassword.name === false ? "" : value.name,
           email: value.email.trim(),
           password: value.password,
           ...getAdditionalFieldSubmitValues(signUpFields, value.additionalFields),
@@ -151,7 +151,7 @@ export function SignUp({
     },
   });
 
-  const showSeparator = emailAndPassword?.enabled && socialProviders && socialProviders.length > 0;
+  const showSeparator = emailAndPassword.enabled && socialProviders && socialProviders.length > 0;
 
   return (
     <Card className={cn("w-full max-w-sm", className)}>
@@ -176,7 +176,7 @@ export function SignUp({
             </>
           )}
 
-          {emailAndPassword?.enabled && (
+          {emailAndPassword.enabled && (
             <form.AppForm>
               <form.AuthFormRoot>
                 <FieldGroup>
@@ -208,7 +208,9 @@ export function SignUp({
                               disabled={isPending}
                               value={field.state.value}
                               onBlur={field.handleBlur}
-                              onChange={(event) => field.handleChange(event.target.value)}
+                              onChange={(event) => {
+                                field.handleChange(event.target.value);
+                              }}
                               aria-invalid={isInvalid}
                             />
 
@@ -246,7 +248,9 @@ export function SignUp({
                             disabled={isPending}
                             value={field.state.value}
                             onBlur={field.handleBlur}
-                            onChange={(event) => field.handleChange(event.target.value)}
+                            onChange={(event) => {
+                              field.handleChange(event.target.value);
+                            }}
                             aria-invalid={isInvalid}
                           />
 
@@ -283,15 +287,15 @@ export function SignUp({
                     validators={{
                       onChange: ({ value }) =>
                         validateStringLength(value, {
-                          maxLength: emailAndPassword?.maxPasswordLength,
+                          maxLength: emailAndPassword.maxPasswordLength,
                           maxLengthMessage: localization.auth.tooLong.replace(
                             "{{max}}",
-                            String(emailAndPassword?.maxPasswordLength),
+                            String(emailAndPassword.maxPasswordLength),
                           ),
-                          minLength: emailAndPassword?.minPasswordLength,
+                          minLength: emailAndPassword.minPasswordLength,
                           minLengthMessage: localization.auth.tooShort.replace(
                             "{{min}}",
-                            String(emailAndPassword?.minPasswordLength),
+                            String(emailAndPassword.minPasswordLength),
                           ),
                           requiredMessage: localization.auth.fieldRequired,
                         }),
@@ -318,8 +322,8 @@ export function SignUp({
                               }}
                               placeholder={localization.auth.passwordPlaceholder}
                               required
-                              minLength={emailAndPassword?.minPasswordLength}
-                              maxLength={emailAndPassword?.maxPasswordLength}
+                              minLength={emailAndPassword.minPasswordLength}
+                              maxLength={emailAndPassword.maxPasswordLength}
                               disabled={isPending}
                               aria-invalid={isInvalid}
                             />
@@ -358,22 +362,22 @@ export function SignUp({
                     }}
                   </form.AppField>
 
-                  {emailAndPassword?.confirmPassword && (
+                  {emailAndPassword.confirmPassword && (
                     <form.AppField
                       name="confirmPassword"
                       validators={{
                         onChangeListenTo: ["password"],
                         onChange: ({ fieldApi, value }) =>
                           validateStringLength(value, {
-                            maxLength: emailAndPassword?.maxPasswordLength,
+                            maxLength: emailAndPassword.maxPasswordLength,
                             maxLengthMessage: localization.auth.tooLong.replace(
                               "{{max}}",
-                              String(emailAndPassword?.maxPasswordLength),
+                              String(emailAndPassword.maxPasswordLength),
                             ),
-                            minLength: emailAndPassword?.minPasswordLength,
+                            minLength: emailAndPassword.minPasswordLength,
                             minLengthMessage: localization.auth.tooShort.replace(
                               "{{min}}",
-                              String(emailAndPassword?.minPasswordLength),
+                              String(emailAndPassword.minPasswordLength),
                             ),
                             requiredMessage: localization.auth.fieldRequired,
                           }) ??
@@ -401,11 +405,13 @@ export function SignUp({
                                 autoComplete="new-password"
                                 value={field.state.value}
                                 onBlur={field.handleBlur}
-                                onChange={(e) => field.handleChange(e.target.value)}
+                                onChange={(e) => {
+                                  field.handleChange(e.target.value);
+                                }}
                                 placeholder={localization.auth.confirmPasswordPlaceholder}
                                 required
-                                minLength={emailAndPassword?.minPasswordLength}
-                                maxLength={emailAndPassword?.maxPasswordLength}
+                                minLength={emailAndPassword.minPasswordLength}
+                                maxLength={emailAndPassword.maxPasswordLength}
                                 disabled={isPending}
                                 aria-invalid={isInvalid}
                               />
@@ -423,7 +429,9 @@ export function SignUp({
                                       ? localization.auth.hidePassword
                                       : localization.auth.showPassword
                                   }
-                                  onClick={() => setIsConfirmPasswordVisible((visible) => !visible)}
+                                  onClick={() => {
+                                    setIsConfirmPasswordVisible((visible) => !visible);
+                                  }}
                                 >
                                   {isConfirmPasswordVisible ? <EyeOff /> : <Eye />}
                                 </InputGroupButton>
@@ -492,7 +500,7 @@ export function SignUp({
           )}
         </div>
 
-        {emailAndPassword?.enabled && (
+        {emailAndPassword.enabled && (
           <div className="mt-4 flex w-full flex-col items-center gap-3">
             <FieldDescription className="text-center">
               {localization.auth.alreadyHaveAnAccount}{" "}

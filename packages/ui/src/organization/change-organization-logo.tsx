@@ -3,6 +3,7 @@
 import { type ChangeEvent, useRef, useState } from "react";
 import { fileToBase64 } from "@better-auth-ui/core";
 import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import {
   useActiveOrganization,
@@ -22,7 +23,6 @@ import {
 import { Label } from "@kumix/ui/ui/label";
 import { Spinner } from "@kumix/ui/ui/spinner";
 import { cn } from "@kumix/utils";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { OrganizationLogo } from "./organization-logo";
 
 export type ChangeOrganizationLogoProps = {
@@ -57,15 +57,19 @@ export function ChangeOrganizationLogo({ className }: ChangeOrganizationLogoProp
     setIsUploading(true);
 
     try {
-      const resized = (await logo.resize?.(file, logo.size, logo.extension)) || file;
+      const resized = await logo.resize(file, logo.size, logo.extension);
 
       const image = (await logo.upload?.(resized)) || (await fileToBase64(resized));
 
       updateOrganization(
         { data: { logo: image } },
         {
-          onSuccess: () => toastSuccess({ message: organizationLocalization.logoChangedSuccess }),
-          onSettled: () => setIsUploading(false),
+          onSuccess: () => {
+            toastSuccess({ message: organizationLocalization.logoChangedSuccess });
+          },
+          onSettled: () => {
+            setIsUploading(false);
+          },
         },
       );
     } catch (error) {
@@ -75,29 +79,31 @@ export function ChangeOrganizationLogo({ className }: ChangeOrganizationLogoProp
     }
   }
 
-  async function handleDelete() {
+  function handleDelete() {
     if (!canUpdate.data?.success) return;
     const currentLogo = activeOrganization?.logo;
 
     updateOrganization(
       { data: { logo: "" } },
       {
-        onSuccess: async () => {
-          if (!currentLogo) {
-            toastSuccess({ message: organizationLocalization.logoDeletedSuccess });
-            return;
-          }
+        onSuccess: () => {
+          void (async () => {
+            if (!currentLogo) {
+              toastSuccess({ message: organizationLocalization.logoDeletedSuccess });
+              return;
+            }
 
-          setIsDeleting(true);
-          try {
-            await logo.delete?.(currentLogo);
-            toastSuccess({ message: organizationLocalization.logoDeletedSuccess });
-          } catch (error) {
-            console.error("[Better Auth UI] Image operation failed", error);
-            toastError({ message: localization.errors.imageDeleteFailed });
-          } finally {
-            setIsDeleting(false);
-          }
+            setIsDeleting(true);
+            try {
+              await logo.delete?.(currentLogo);
+              toastSuccess({ message: organizationLocalization.logoDeletedSuccess });
+            } catch (error) {
+              console.error("[Better Auth UI] Image operation failed", error);
+              toastError({ message: localization.errors.imageDeleteFailed });
+            } finally {
+              setIsDeleting(false);
+            }
+          })();
         },
       },
     );
@@ -116,7 +122,7 @@ export function ChangeOrganizationLogo({ className }: ChangeOrganizationLogoProp
         type="file"
         accept="image/*"
         className="hidden"
-        onChange={handleFileChange}
+        onChange={(e) => void handleFileChange(e)}
       />
 
       <div className="flex items-center gap-4">
@@ -125,7 +131,7 @@ export function ChangeOrganizationLogo({ className }: ChangeOrganizationLogoProp
             type="button"
             variant="ghost"
             size="icon"
-            className="h-auto w-auto rounded-full p-0"
+            className="size-auto rounded-full p-0"
             disabled={!activeOrganization || isPending}
             onClick={() => fileInputRef.current?.click()}
           >
@@ -163,7 +169,9 @@ export function ChangeOrganizationLogo({ className }: ChangeOrganizationLogoProp
 
               <DropdownMenuItem
                 disabled={!activeOrganization?.logo}
-                onClick={handleDelete}
+                onClick={() => {
+                  handleDelete();
+                }}
                 variant="destructive"
               >
                 <Trash2 />

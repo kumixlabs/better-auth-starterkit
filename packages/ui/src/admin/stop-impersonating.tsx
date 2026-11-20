@@ -1,13 +1,16 @@
 "use client";
 
-import { type AdminAuthClient, isImpersonatingSession } from "@better-auth-ui/core/plugins/admin";
+import {
+  type AdminAuthClient,
+  adminPlugin,
+  isImpersonatingSession,
+} from "@better-auth-ui/core/plugins/admin";
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react";
 import { useStopImpersonating } from "@better-auth-ui/react/plugins/admin";
 import { UserRoundCheck } from "lucide-react";
 
 import { DropdownMenuItem } from "@kumix/ui/ui/dropdown-menu";
 import { Spinner } from "@kumix/ui/ui/spinner";
-import { adminPlugin } from "../lib/admin-plugin";
 
 export type StopImpersonatingProps = {
   className?: string;
@@ -18,10 +21,10 @@ export type StopImpersonatingProps = {
  * impersonating another user.
  */
 export function StopImpersonating({ className }: StopImpersonatingProps) {
-  const { authClient } = useAuth();
+  const { authClient } = useAuth<AdminAuthClient>();
   const { localization } = useAuthPlugin(adminPlugin);
   const { data: session } = useSession(authClient);
-  const stopImpersonating = useStopImpersonating(authClient as AdminAuthClient);
+  const stopImpersonating = useStopImpersonating(authClient);
 
   if (!isImpersonatingSession(session)) {
     return null;
@@ -31,7 +34,9 @@ export function StopImpersonating({ className }: StopImpersonatingProps) {
     <DropdownMenuItem
       className={className}
       disabled={stopImpersonating.isPending}
-      onClick={() => stopImpersonating.mutate(undefined)}
+      onClick={() => {
+        stopImpersonating.mutate(undefined);
+      }}
     >
       {stopImpersonating.isPending ? (
         <Spinner />

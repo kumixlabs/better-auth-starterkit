@@ -23,10 +23,10 @@ function timeAgo(date: Date) {
   const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
 
   const UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
-    ["year", 31536000],
-    ["month", 2592000],
-    ["week", 604800],
-    ["day", 86400],
+    ["year", 31_536_000],
+    ["month", 2_592_000],
+    ["week", 604_800],
+    ["day", 86_400],
     ["hour", 3600],
     ["minute", 60],
     ["second", 1],
@@ -77,24 +77,24 @@ export function ActiveSession({ activeSession }: ActiveSessionProps) {
         {isCurrentSession ? (
           <Badge variant="secondary">{localization.settings.currentSession}</Badge>
         ) : (
-          activeSession.createdAt && (
-            <ItemDescription className="capitalize">
-              {timeAgo(activeSession.createdAt)}
-            </ItemDescription>
-          )
+          <ItemDescription className="capitalize">
+            {timeAgo(activeSession.createdAt)}
+          </ItemDescription>
         )}
       </ItemContent>
       <ItemActions>
         <Button
           variant="outline"
           size="sm"
-          onClick={() =>
-            isCurrentSession
-              ? navigate({
-                  to: `${basePaths.auth}/${viewPaths.auth.signOut}`,
-                })
-              : revokeSession(activeSession)
-          }
+          onClick={() => {
+            if (isCurrentSession) {
+              navigate({
+                to: `${basePaths.auth}/${viewPaths.auth.signOut}`,
+              });
+            } else {
+              revokeSession(activeSession);
+            }
+          }}
           disabled={isRevoking}
           aria-label={
             isCurrentSession ? localization.auth.signOut : localization.settings.revokeSession

@@ -98,7 +98,9 @@ function SetPassword({ className }: { className?: string }) {
   const { mutate: requestPasswordResetOtp, isPending: isOtpPending } = useRequestPasswordResetOtp(
     authClient,
     {
-      onError: () => resetFetchOptions(),
+      onError: () => {
+        resetFetchOptions();
+      },
       onSuccess: (_data, { email }) => {
         sessionStorage.setItem("better-auth-ui.reset-password-otp", email);
         navigate({
@@ -112,7 +114,7 @@ function SetPassword({ className }: { className?: string }) {
   );
   const isPending = isLinkPending || isOtpPending;
 
-  const Captcha = plugins.find((plugin) => plugin.captchaComponent)?.captchaComponent;
+  const Captcha = plugins.find((plugin) => Boolean(plugin.captchaComponent))?.captchaComponent;
 
   const handleSetPassword = () => {
     if (!session) return;
@@ -135,7 +137,7 @@ function SetPassword({ className }: { className?: string }) {
       <Card className={cn(className)}>
         <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm leading-tight font-medium">{localization.settings.setPassword}</p>
+            <p className="text-sm/tight font-medium">{localization.settings.setPassword}</p>
 
             <p className="text-muted-foreground mt-0.5 text-xs">
               {localization.settings.setPasswordDescription}
@@ -253,7 +255,9 @@ function ChangePasswordForm({
                           placeholder={localization.settings.currentPasswordPlaceholder}
                           value={field.state.value}
                           onBlur={field.handleBlur}
-                          onChange={(e) => field.handleChange(e.target.value)}
+                          onChange={(e) => {
+                            field.handleChange(e.target.value);
+                          }}
                           disabled={isPending}
                           required
                           aria-invalid={isAuthFormFieldInvalid(field.state.meta)}
@@ -346,7 +350,9 @@ function ChangePasswordForm({
                                   ? localization.auth.hidePassword
                                   : localization.auth.showPassword
                               }
-                              onClick={() => setIsNewPasswordVisible((visible) => !visible)}
+                              onClick={() => {
+                                setIsNewPasswordVisible((visible) => !visible);
+                              }}
                             >
                               {isNewPasswordVisible ? <EyeOff /> : <Eye />}
                             </InputGroupButton>
@@ -412,7 +418,9 @@ function ChangePasswordForm({
                             placeholder={localization.auth.confirmPasswordPlaceholder}
                             value={field.state.value}
                             onBlur={field.handleBlur}
-                            onChange={(e) => field.handleChange(e.target.value)}
+                            onChange={(e) => {
+                              field.handleChange(e.target.value);
+                            }}
                             minLength={emailAndPassword.minPasswordLength}
                             maxLength={emailAndPassword.maxPasswordLength}
                             disabled={isPending}
@@ -428,7 +436,9 @@ function ChangePasswordForm({
                                   ? localization.auth.hidePassword
                                   : localization.auth.showPassword
                               }
-                              onClick={() => setIsConfirmPasswordVisible((visible) => !visible)}
+                              onClick={() => {
+                                setIsConfirmPasswordVisible((visible) => !visible);
+                              }}
                             >
                               {isConfirmPasswordVisible ? <EyeOff /> : <Eye />}
                             </InputGroupButton>

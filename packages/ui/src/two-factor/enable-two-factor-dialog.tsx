@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { createQrCodeSvgData } from "@better-auth-ui/core";
 import type { TwoFactorAuthClient, TwoFactorMethod } from "@better-auth-ui/core/plugins/two-factor";
+import { twoFactorPlugin } from "@better-auth-ui/core/plugins/two-factor";
 import { useAuth, useAuthPlugin, useCopyToClipboard } from "@better-auth-ui/react";
 import { useEnableTwoFactor, useVerifyTotp } from "@better-auth-ui/react/plugins/two-factor";
 import { Check, Copy, Mail, ShieldCheck, Smartphone } from "lucide-react";
@@ -28,7 +29,6 @@ import {
 } from "@kumix/ui/ui/input-group";
 import { Tabs, TabsList, TabsTrigger } from "@kumix/ui/ui/tabs";
 import { submitAuthForm, useAuthForm } from "../auth-form";
-import { twoFactorPlugin } from "../lib/two-factor-plugin";
 import { useTwoFactorPasswordRequirement } from "../lib/use-two-factor-password";
 import { OtpField } from "../otp-field";
 import { BackupCodes } from "./backup-codes";
@@ -50,7 +50,7 @@ export type EnableTwoFactorDialogProps = {
  * @param onOpenChange - Called when the dialog requests an open state change.
  */
 export function EnableTwoFactorDialog({ open, onOpenChange }: EnableTwoFactorDialogProps) {
-  const { authClient, localization } = useAuth();
+  const { authClient, localization } = useAuth<TwoFactorAuthClient>();
   const {
     codeLength,
     enrollmentMethods,
@@ -59,7 +59,7 @@ export function EnableTwoFactorDialog({ open, onOpenChange }: EnableTwoFactorDia
   const { isPending: isResolvingPasswordRequirement, requiresPassword } =
     useTwoFactorPasswordRequirement();
 
-  const twoFactorClient = authClient as TwoFactorAuthClient;
+  const twoFactorClient = authClient;
 
   const [step, setStep] = useState<EnrollmentStep>("password");
   const [method, setMethod] = useState<TwoFactorMethod>(enrollmentMethods[0] ?? "totp");
@@ -70,7 +70,9 @@ export function EnableTwoFactorDialog({ open, onOpenChange }: EnableTwoFactorDia
     copy: copySetupKeyValue,
     reset: resetSetupKeyCopy,
   } = useCopyToClipboard({
-    onError: () => toastError({ message: twoFactorLocalization.setupKeyCopyFailed }),
+    onError: () => {
+      toastError({ message: twoFactorLocalization.setupKeyCopyFailed });
+    },
   });
 
   const qrCode = useMemo(() => (totpUri ? createQrCodeSvgData(totpUri) : null), [totpUri]);
@@ -112,10 +114,12 @@ export function EnableTwoFactorDialog({ open, onOpenChange }: EnableTwoFactorDia
   });
 
   const { mutateAsync: verifyTotp, isPending: isVerifying } = useVerifyTotp(twoFactorClient, {
-    onError: () => form.setFieldValue("code", ""),
+    onError: () => {
+      form.setFieldValue("code", "");
+    },
     onSuccess: () => {
       toastSuccess({ message: twoFactorLocalization.twoFactorEnabled });
-      if (backupCodes.length) setStep("backupCodes");
+      if (backupCodes.length > 0) setStep("backupCodes");
       else handleOpenChange(false);
     },
   });
@@ -192,7 +196,12 @@ export function EnableTwoFactorDialog({ open, onOpenChange }: EnableTwoFactorDia
                 {enrollmentMethods.length > 1 && (
                   <Tabs
                     value={method}
-                    onValueChange={(value) => setMethod(value as TwoFactorMethod)}
+                    onValueChange={(value) => {
+                      const nextMethod = enrollmentMethods.find(
+                        (enrollmentMethod) => enrollmentMethod === value,
+                      );
+                      if (nextMethod) setMethod(nextMethod);
+                    }}
                   >
                     <TabsList
                       aria-label={twoFactorLocalization.chooseEnrollmentMethod}
@@ -233,13 +242,14 @@ export function EnableTwoFactorDialog({ open, onOpenChange }: EnableTwoFactorDia
                           name={field.name}
                           type="password"
                           autoComplete="current-password"
-                          autoFocus
                           required
                           placeholder={localization.auth.passwordPlaceholder}
                           disabled={isPending}
                           value={field.state.value}
                           onBlur={field.handleBlur}
-                          onChange={(event) => field.handleChange(event.target.value)}
+                          onChange={(event) => {
+                            field.handleChange(event.target.value);
+                          }}
                         />
 
                         <FieldError />
@@ -287,7 +297,7 @@ export function EnableTwoFactorDialog({ open, onOpenChange }: EnableTwoFactorDia
                               ? twoFactorLocalization.setupKeyCopied
                               : localization.settings.copyToClipboard
                           }
-                          onClick={copySetupKey}
+                          onClick={() => void copySetupKey()}
                           size="icon-xs"
                         >
                           {setupKeyCopied ? <Check /> : <Copy />}
@@ -300,7 +310,6 @@ export function EnableTwoFactorDialog({ open, onOpenChange }: EnableTwoFactorDia
                 <form.AppField name="code">
                   {(field) => (
                     <OtpField
-                      autoFocus
                       className="w-full"
                       disabled={isPending}
                       label={twoFactorLocalization.authenticatorCode}

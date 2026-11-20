@@ -47,14 +47,14 @@ export function ForgotPassword({ className }: ForgotPasswordProps) {
   const form = useAuthForm({
     defaultValues: { email: "" },
     onSubmit: async ({ value }) =>
-      await requestPasswordReset({
+      requestPasswordReset({
         email: value.email,
         redirectTo: getViewURL(baseURL, basePaths.auth, viewPaths.auth.resetPassword),
         fetchOptions,
       }),
   });
 
-  const Captcha = plugins.find((plugin) => plugin.captchaComponent)?.captchaComponent;
+  const Captcha = plugins.find((plugin) => Boolean(plugin.captchaComponent))?.captchaComponent;
 
   return (
     <Card className={cn("w-full max-w-sm", className)}>
@@ -92,7 +92,9 @@ export function ForgotPassword({ className }: ForgotPasswordProps) {
                         disabled={isPending}
                         value={field.state.value}
                         onBlur={field.handleBlur}
-                        onChange={(event) => field.handleChange(event.target.value)}
+                        onChange={(event) => {
+                          field.handleChange(event.target.value);
+                        }}
                         aria-invalid={isInvalid}
                       />
                       <field.AuthFormFieldError id={emailErrorId} />

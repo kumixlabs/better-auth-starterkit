@@ -14,7 +14,8 @@ export const usernamePlugin = createAuthPlugin(
 
     return {
       ...core,
-      additionalFields: core.additionalFields?.map((field) =>
+      // oxlint-disable-next-line oxc/no-map-spread -- Copies keep plugin-owned objects unmutated.
+      additionalFields: core.additionalFields.map((field) =>
         field.name === "username"
           ? {
               ...field,

@@ -2,6 +2,7 @@
 
 import type { ComponentProps } from "react";
 import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react";
 import {
   useActiveOrganization,
@@ -11,7 +12,6 @@ import type { Organization } from "better-auth/client";
 
 import { Badge } from "@kumix/ui/ui/badge";
 import { cn } from "@kumix/utils";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { OrganizationLogo, type OrganizationLogoSize } from "./organization-logo";
 import { OrganizationViewSkeleton } from "./organization-view-skeleton";
 
@@ -58,7 +58,7 @@ export function OrganizationView({
     enabled: !!resolvedOrganization?.id && !hideRole,
   });
 
-  const membership = membersList?.members?.find((member) => member.userId === session?.user.id);
+  const membership = membersList?.members.find((member) => member.userId === session?.user.id);
 
   if (
     isPending ||
@@ -80,19 +80,19 @@ export function OrganizationView({
 
       <div className="flex min-w-0 flex-col">
         <div className="flex min-w-0 items-center gap-2">
-          <p className="text-foreground truncate text-sm leading-tight font-medium">
+          <p className="text-foreground truncate text-sm/tight font-medium">
             {resolvedOrganization?.name}
           </p>
 
           {!hideRole && !!membership && (
             <Badge variant="secondary" className="-my-0.5 shrink-0">
-              {roles?.[membership.role] ?? membership.role}
+              {roles[membership.role] ?? membership.role}
             </Badge>
           )}
         </div>
 
         {!hideSlug && !!resolvedOrganization?.slug && (
-          <p className="text-muted-foreground truncate overflow-x-hidden font-mono text-xs leading-tight">
+          <p className="text-muted-foreground truncate overflow-x-hidden font-mono text-xs/tight">
             {slugPrefix}
             {resolvedOrganization.slug}
           </p>

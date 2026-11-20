@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { JSX, ReactNode } from "react";
 import {
   Body,
   Button,
@@ -22,7 +22,7 @@ import { type EmailClassNames, type EmailColors, EmailStyles } from "./email-sty
 /**
  * Device information displayed in the new device email notification.
  */
-export interface DeviceInfo {
+export type DeviceInfo = {
   /** Browser name and version */
   browser?: string;
   /** Operating system name and version */
@@ -33,7 +33,7 @@ export interface DeviceInfo {
   ipAddress?: string;
   /** Timestamp of the sign-in event */
   timestamp?: string;
-}
+};
 
 const newDeviceEmailLocalization = {
   NEW_SIGN_IN_DETECTED: "New sign-in detected",
@@ -65,7 +65,7 @@ export type NewDeviceEmailLocalization = typeof newDeviceEmailLocalization;
 /**
  * Props for the NewDeviceEmail component.
  */
-export interface NewDeviceEmailProps {
+export type NewDeviceEmailProps = {
   /** Email address of the user account */
   userEmail?: string;
   /** Information about the device that signed in */
@@ -93,7 +93,7 @@ export interface NewDeviceEmailProps {
    * @remarks `NewDeviceEmailLocalization`
    */
   localization?: Partial<NewDeviceEmailLocalization>;
-}
+};
 
 /**
  * Email template component that notifies users when a new device signs into their account.
@@ -136,7 +136,7 @@ export const NewDeviceEmail = ({
   poweredBy,
   head,
   ...props
-}: NewDeviceEmailProps) => {
+}: NewDeviceEmailProps): JSX.Element => {
   const localization = {
     ...NewDeviceEmail.localization,
     ...props.localization,
@@ -159,10 +159,10 @@ export const NewDeviceEmail = ({
 
       <Tailwind config={{ presets: [pixelBasedPreset] }}>
         <Body className={cn("bg-background font-sans", classNames?.body)}>
-          <Container className={cn("mx-auto my-auto max-w-xl px-2 py-10", classNames?.container)}>
+          <Container className={cn("m-auto max-w-xl px-2 py-10", classNames?.container)}>
             <Section
               className={cn(
-                "border-border bg-card text-card-foreground rounded-none border p-8",
+                "bg-card text-card-foreground border-border rounded-none border p-8",
                 classNames?.card,
               )}
             >
@@ -204,7 +204,7 @@ export const NewDeviceEmail = ({
                     "{appName}",
                     appName || "",
                   )
-                    .replace(/\s{2,}/g, " ")
+                    .replaceAll(/\s{2}/gu, " ")
                     .replace(" .", ".");
 
                   const [beforeUserEmail, afterUserEmail] = textWithAppName.split("{userEmail}");
@@ -222,7 +222,7 @@ export const NewDeviceEmail = ({
                   ) : (
                     textWithAppName
                       .replace("{userEmail}", "")
-                      .replace(/\s{2,}/g, " ")
+                      .replaceAll(/\s{2}/gu, " ")
                       .replace(" .", ".")
                   );
                 })()}
@@ -327,7 +327,7 @@ export const NewDeviceEmail = ({
                     </>
                   ) : (
                     localization.IF_YOU_DIDNT_SIGN_IN.replace("{supportEmail}", "")
-                      .replace(/\s{2,}/g, " ")
+                      .replaceAll(/\s{2}/gu, " ")
                       .replace(" .", ".")
                   );
                 })()}

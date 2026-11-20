@@ -1,6 +1,7 @@
 "use client";
 
 import type { MultiSessionAuthClient } from "@better-auth-ui/core/plugins/multi-session";
+import { multiSessionPlugin } from "@better-auth-ui/core/plugins/multi-session";
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react";
 import { useListDeviceSessions } from "@better-auth-ui/react/plugins/multi-session";
 import { Check, CirclePlus } from "lucide-react";
@@ -10,7 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuSubContent,
 } from "@kumix/ui/ui/dropdown-menu";
-import { multiSessionPlugin } from "../lib/multi-session-plugin";
 import { UserView } from "../user/user-view";
 import { SwitchAccountSubmenuItem } from "./switch-account-submenu-item";
 
@@ -46,7 +46,9 @@ export function SwitchAccountSubmenuContent() {
       <DropdownMenuSeparator />
 
       <DropdownMenuItem
-        onClick={() => navigate({ to: `${basePaths.auth}/${viewPaths.auth.signIn}` })}
+        onClick={() => {
+          navigate({ to: `${basePaths.auth}/${viewPaths.auth.signIn}` });
+        }}
       >
         <CirclePlus className="text-muted-foreground" />
 

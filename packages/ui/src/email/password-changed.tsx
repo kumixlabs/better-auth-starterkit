@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { JSX, ReactNode } from "react";
 import {
   Body,
   Button,
@@ -45,7 +45,7 @@ export type PasswordChangedEmailLocalization = typeof passwordChangedEmailLocali
 /**
  * Props for the PasswordChangedEmail component.
  */
-export interface PasswordChangedEmailProps {
+export type PasswordChangedEmailProps = {
   /** Email address of the user account */
   email?: string;
   /** Timestamp when the password was changed */
@@ -73,7 +73,7 @@ export interface PasswordChangedEmailProps {
    * @remarks `PasswordChangedEmailLocalization`
    */
   localization?: Partial<PasswordChangedEmailLocalization>;
-}
+};
 
 /**
  * Email template component that notifies users when their password has been changed.
@@ -112,7 +112,7 @@ export const PasswordChangedEmail = ({
   poweredBy,
   head,
   ...props
-}: PasswordChangedEmailProps) => {
+}: PasswordChangedEmailProps): JSX.Element => {
   const localization = {
     ...PasswordChangedEmail.localization,
     ...props.localization,
@@ -135,10 +135,10 @@ export const PasswordChangedEmail = ({
 
       <Tailwind config={{ presets: [pixelBasedPreset] }}>
         <Body className={cn("bg-background font-sans", classNames?.body)}>
-          <Container className={cn("mx-auto my-auto max-w-xl px-2 py-10", classNames?.container)}>
+          <Container className={cn("m-auto max-w-xl px-2 py-10", classNames?.container)}>
             <Section
               className={cn(
-                "border-border bg-card text-card-foreground rounded-none border p-8",
+                "bg-card text-card-foreground border-border rounded-none border p-8",
                 classNames?.card,
               )}
             >
@@ -180,7 +180,7 @@ export const PasswordChangedEmail = ({
                     "{appName}",
                     appName || "",
                   )
-                    .replace(/\s{2,}/g, " ")
+                    .replaceAll(/\s{2}/gu, " ")
                     .replace(" .", ".");
 
                   const [beforeUserEmail, afterUserEmail] = textWithAppName.split("{userEmail}");
@@ -198,7 +198,7 @@ export const PasswordChangedEmail = ({
                   ) : (
                     textWithAppName
                       .replace("{userEmail}", "")
-                      .replace(/\s{2,}/g, " ")
+                      .replaceAll(/\s{2}/gu, " ")
                       .replace(" .", ".")
                   );
                 })()}
@@ -271,7 +271,7 @@ export const PasswordChangedEmail = ({
                     </>
                   ) : (
                     localization.IF_YOU_DIDNT_AUTHORIZE_THIS_CHANGE.replace("{supportEmail}", "")
-                      .replace(/\s{2,}/g, " ")
+                      .replaceAll(/\s{2}/gu, " ")
                       .replace(" .", ".")
                   );
                 })()}

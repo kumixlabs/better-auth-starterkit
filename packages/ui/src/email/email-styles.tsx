@@ -1,27 +1,6 @@
-export const defaultColors = {
-  light: {
-    background: "#F5F5F5",
-    border: "#E5E5E5",
-    card: "#FFFFFF",
-    cardForeground: "#0A0A0A",
-    foreground: "#262626",
-    muted: "#F5F5F5",
-    mutedForeground: "#737373",
-    primary: "#171717",
-    primaryForeground: "#FAFAFA",
-  },
-  dark: {
-    background: "#0A0A0A",
-    border: "#2E2E2E",
-    card: "#171717",
-    cardForeground: "#FAFAFA",
-    foreground: "#D4D4D4",
-    muted: "#212121",
-    mutedForeground: "#A1A1A1",
-    primary: "#E5E5E5",
-    primaryForeground: "#171717",
-  },
-};
+import type { JSX } from "react/jsx-runtime";
+
+import { defaultColors } from "./email-colors";
 
 /**
  * Custom CSS class names for styling different parts of email templates.
@@ -57,12 +36,12 @@ export type EmailColors = {
 /**
  * Props for the EmailStyles component.
  */
-interface EmailStylesProps {
+type EmailStylesProps = {
   /** Custom color scheme for light and dark modes */
   colors?: EmailColors;
   /** Whether to enable dark mode support */
   darkMode?: boolean;
-}
+};
 
 /**
  * Component that injects CSS styles for email templates with support for light and dark modes.
@@ -84,7 +63,7 @@ interface EmailStylesProps {
  * />
  * ```
  */
-export const EmailStyles = ({ colors, darkMode = true }: EmailStylesProps) => {
+export const EmailStyles = ({ colors, darkMode = true }: EmailStylesProps): JSX.Element => {
   return (
     <style type="text/css">{`
       .bg-background {

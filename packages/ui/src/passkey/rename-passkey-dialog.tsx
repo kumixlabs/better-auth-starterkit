@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import type { PasskeyAuthClient } from "@better-auth-ui/core/plugins/passkey";
+import { passkeyPlugin } from "@better-auth-ui/core/plugins/passkey";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useUpdatePasskey } from "@better-auth-ui/react/plugins/passkey";
 
@@ -17,7 +18,6 @@ import {
 import { Field, FieldLabel } from "@kumix/ui/ui/field";
 import { Input } from "@kumix/ui/ui/input";
 import { useAuthForm } from "../auth-form";
-import { passkeyPlugin } from "../lib/passkey-plugin";
 import type { ListedPasskey } from "./delete-passkey-dialog";
 
 export function RenamePasskeyDialog({
@@ -32,7 +32,9 @@ export function RenamePasskeyDialog({
   const { authClient, localization } = useAuth<PasskeyAuthClient>();
   const { localization: labels } = useAuthPlugin(passkeyPlugin);
   const updatePasskey = useUpdatePasskey(authClient, {
-    onSuccess: () => onOpenChange(false),
+    onSuccess: () => {
+      onOpenChange(false);
+    },
   });
   const form = useAuthForm({
     defaultValues: { name: passkey.name ?? "" },
@@ -61,10 +63,11 @@ export function RenamePasskeyDialog({
                   <Input
                     id={`passkey-name-${passkey.id}`}
                     name={field.name}
-                    autoFocus
                     value={field.state.value}
                     onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(event.target.value)}
+                    onChange={(event) => {
+                      field.handleChange(event.target.value);
+                    }}
                     required
                   />
                 </Field>

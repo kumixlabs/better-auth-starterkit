@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { JSX, ReactNode } from "react";
 import {
   Body,
   Button,
@@ -45,7 +45,7 @@ export type EmailChangedEmailLocalization = typeof emailChangedEmailLocalization
 /**
  * Props for the EmailChangedEmail component.
  */
-export interface EmailChangedEmailProps {
+export type EmailChangedEmailProps = {
   /** The previous email address that was changed */
   oldEmail?: string;
   /** The new email address */
@@ -73,7 +73,7 @@ export interface EmailChangedEmailProps {
    * @remarks `EmailChangedEmailLocalization`
    */
   localization?: Partial<EmailChangedEmailLocalization>;
-}
+};
 
 /**
  * Email template component that notifies users when their email address has been changed.
@@ -111,7 +111,7 @@ export const EmailChangedEmail = ({
   poweredBy,
   head,
   ...props
-}: EmailChangedEmailProps) => {
+}: EmailChangedEmailProps): JSX.Element => {
   const localization = {
     ...EmailChangedEmail.localization,
     ...props.localization,
@@ -134,10 +134,10 @@ export const EmailChangedEmail = ({
 
       <Tailwind config={{ presets: [pixelBasedPreset] }}>
         <Body className={cn("bg-background font-sans", classNames?.body)}>
-          <Container className={cn("mx-auto my-auto max-w-xl px-2 py-10", classNames?.container)}>
+          <Container className={cn("m-auto max-w-xl px-2 py-10", classNames?.container)}>
             <Section
               className={cn(
-                "border-border bg-card text-card-foreground rounded-none border p-8",
+                "bg-card text-card-foreground border-border rounded-none border p-8",
                 classNames?.card,
               )}
             >
@@ -178,7 +178,7 @@ export const EmailChangedEmail = ({
                   "{appName}",
                   appName || "",
                 )
-                  .replace(/\s{2,}/g, " ")
+                  .replaceAll(/\s{2}/gu, " ")
                   .replace(" .", ".")}
               </Text>
 
@@ -276,7 +276,7 @@ export const EmailChangedEmail = ({
                     </>
                   ) : (
                     localization.IF_YOU_DIDNT_AUTHORIZE_THIS_CHANGE.replace("{supportEmail}", "")
-                      .replace(/\s{2,}/g, " ")
+                      .replaceAll(/\s{2}/gu, " ")
                       .replace(" .", ".")
                   );
                 })()}

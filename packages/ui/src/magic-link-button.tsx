@@ -1,13 +1,13 @@
 "use client";
 
 import { type AuthView, authMutationKeys } from "@better-auth-ui/core";
+import { magicLinkPlugin } from "@better-auth-ui/core/plugins/magic-link";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useIsMutating } from "@tanstack/react-query";
 import { Lock, Mail } from "lucide-react";
 
 import { buttonVariants } from "@kumix/ui/ui/button";
 import { cn } from "@kumix/utils";
-import { magicLinkPlugin } from "./lib/magic-link-plugin";
 
 export type MagicLinkButtonProps = {
   /** @remarks `AuthView` */
@@ -39,7 +39,7 @@ export function MagicLinkButton({ view }: MagicLinkButtonProps) {
   // With password auth disabled there's nowhere to switch to, so hide it.
   // (Other views — e.g. a phone-number plugin's surface — still get a
   // "Continue with Magic Link" link.)
-  if (isMagicLinkView && !emailAndPassword?.enabled) return null;
+  if (isMagicLinkView && !emailAndPassword.enabled) return null;
 
   return (
     <Link

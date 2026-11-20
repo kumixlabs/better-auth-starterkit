@@ -8,6 +8,7 @@ import {
   validateStringLength,
 } from "@better-auth-ui/core";
 import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import {
   useActiveOrganization,
@@ -26,7 +27,6 @@ import {
   isAuthFormFieldInvalid,
   useAuthForm,
 } from "../auth-form";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { ChangeOrganizationLogo } from "./change-organization-logo";
 import { SlugField } from "./slug-field";
 
@@ -81,7 +81,7 @@ export function OrganizationProfile({
     if (!activeOrganization) return;
     form.reset({
       additionalFields: getAdditionalFieldDefaultValues(
-        fieldsWithModelValues(additionalFields, activeOrganization as Record<string, unknown>),
+        fieldsWithModelValues(additionalFields, activeOrganization),
       ),
       name: activeOrganization.name,
       slug: activeOrganization.slug,
@@ -127,7 +127,9 @@ export function OrganizationProfile({
                           name={field.name}
                           value={field.state.value}
                           onBlur={field.handleBlur}
-                          onChange={(event) => field.handleChange(event.target.value)}
+                          onChange={(event) => {
+                            field.handleChange(event.target.value);
+                          }}
                           autoComplete="organization"
                           placeholder={organizationLocalization.namePlaceholder}
                           disabled={formDisabled}

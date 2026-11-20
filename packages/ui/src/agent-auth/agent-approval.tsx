@@ -5,6 +5,7 @@ import type {
   AgentApprovalRequest,
   AgentAuthClient,
 } from "@better-auth-ui/core/plugins/agent-auth";
+import { agentAuthPlugin } from "@better-auth-ui/core/plugins/agent-auth";
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react";
 import {
   useAgentApproval,
@@ -26,7 +27,6 @@ import { Checkbox } from "@kumix/ui/ui/checkbox";
 import { Skeleton } from "@kumix/ui/ui/skeleton";
 import { Spinner } from "@kumix/ui/ui/spinner";
 import { cn } from "@kumix/utils";
-import { agentAuthPlugin } from "../lib/agent-auth-plugin";
 import { UserAvatar } from "../user/user-avatar";
 
 type ApprovalResult = "approved" | "denied";
@@ -188,7 +188,7 @@ export function AgentApproval({ className }: AgentApprovalProps) {
                   <Skeleton className="h-4 w-full" />
                 </div>
               </div>
-            ) : requested.length ? (
+            ) : requested.length > 0 ? (
               <div className="grid gap-5">
                 {requested.map((grant) => (
                   <div key={grant.capability} className="flex items-start gap-3">
@@ -198,24 +198,22 @@ export function AgentApproval({ className }: AgentApprovalProps) {
                       checked={selected.has(grant.capability)}
                       disabled={approve.isPending || deny.isPending}
                       aria-label={grant.capability}
-                      onCheckedChange={(checked) =>
-                        updateSelection(grant.capability, checked === true)
-                      }
+                      onCheckedChange={(checked) => {
+                        updateSelection(grant.capability, typeof checked === "boolean" && checked);
+                      }}
                     />
                     <div className="grid min-w-0 flex-1 gap-1">
                       <label
                         htmlFor={`agent-capability-${grant.capability}`}
-                        className="cursor-pointer text-base leading-6 wrap-break-word"
+                        className="cursor-pointer text-base/6 wrap-break-word"
                       >
                         {grant.capability}
                       </label>
                       {grant.description ? (
-                        <p className="text-muted-foreground text-sm leading-5">
-                          {grant.description}
-                        </p>
+                        <p className="text-muted-foreground text-sm/5">{grant.description}</p>
                       ) : null}
                       {grant.reason ? (
-                        <p className="text-muted-foreground text-sm leading-5">
+                        <p className="text-muted-foreground text-sm/5">
                           {plugin.localization.requestReason}: {grant.reason}
                         </p>
                       ) : null}
@@ -263,7 +261,13 @@ export function AgentApproval({ className }: AgentApprovalProps) {
             approval.isError
           }
           variant="secondary"
-          onClick={() => deny.mutate(denyDecision, { onSuccess: () => setResult("denied") })}
+          onClick={() => {
+            deny.mutate(denyDecision, {
+              onSuccess: () => {
+                setResult("denied");
+              },
+            });
+          }}
         >
           {deny.isPending && <Spinner />}
           {plugin.localization.deny}
@@ -273,13 +277,19 @@ export function AgentApproval({ className }: AgentApprovalProps) {
           disabled={
             approve.isPending ||
             deny.isPending ||
-            !selected.size ||
+            selected.size === 0 ||
             !approval.data ||
             !session.data ||
             approval.isFetching ||
             approval.isError
           }
-          onClick={() => approve.mutate(decision, { onSuccess: () => setResult("approved") })}
+          onClick={() => {
+            approve.mutate(decision, {
+              onSuccess: () => {
+                setResult("approved");
+              },
+            });
+          }}
         >
           {approve.isPending && <Spinner />}
           {plugin.localization.allow}

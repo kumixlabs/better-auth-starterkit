@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useCheckSlug } from "@better-auth-ui/react/plugins/organization";
 import { useDebouncer } from "@tanstack/react-pacer";
@@ -10,7 +11,7 @@ import { Check, X } from "lucide-react";
 import { Field, FieldError, FieldLabel } from "@kumix/ui/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@kumix/ui/ui/input-group";
 import { Spinner } from "@kumix/ui/ui/spinner";
-import { organizationPlugin } from "../lib/organization-plugin";
+import { sanitizeSlug } from "./sanitize-slug";
 
 /** Props for the `SlugField` component. */
 export type SlugFieldProps = {
@@ -20,15 +21,6 @@ export type SlugFieldProps = {
   disabled?: boolean;
   id?: string;
 };
-
-/**
- * Sanitize a slug value so it only contains lowercase alphanumeric characters
- * and dashes. Runs of disallowed characters are collapsed to a single dash, but
- * leading/trailing dashes are preserved while the user is still typing.
- */
-export function sanitizeSlug(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-}
 
 /**
  * Organization slug field with debounced availability checking.

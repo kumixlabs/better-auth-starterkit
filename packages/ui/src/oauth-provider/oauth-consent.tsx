@@ -4,6 +4,7 @@ import { useSyncExternalStore } from "react";
 import {
   getOAuthAuthorizationDestination,
   type OAuthProviderAuthClient,
+  oauthProviderPlugin,
   parseOAuthAuthorizationRequest,
   resolveOAuthScopeMetadata,
   sanitizeOAuthClientUrl,
@@ -29,7 +30,6 @@ import { Separator } from "@kumix/ui/ui/separator";
 import { Skeleton } from "@kumix/ui/ui/skeleton";
 import { Spinner } from "@kumix/ui/ui/spinner";
 import { cn } from "@kumix/utils";
-import { oauthProviderPlugin } from "../lib/oauth-provider-plugin";
 import { UserAvatar } from "../user/user-avatar";
 
 export type OAuthConsentProps = {
@@ -40,16 +40,18 @@ export type OAuthConsentProps = {
 
 const subscribeToQuery = (onChange: () => void) => {
   window.addEventListener("popstate", onChange);
-  return () => window.removeEventListener("popstate", onChange);
+  return () => {
+    window.removeEventListener("popstate", onChange);
+  };
 };
 
 const interpolateClient = (template: string, clientName: string) =>
   template.replace("{{client}}", clientName);
 
 export function OAuthConsent({ className, oauthQuery }: OAuthConsentProps) {
-  const { authClient } = useAuth();
+  const { authClient } = useAuth<OAuthProviderAuthClient>();
   const { localization, scopeMetadata } = useAuthPlugin(oauthProviderPlugin);
-  const oauthClient = authClient as OAuthProviderAuthClient;
+  const oauthClient = authClient;
   const { data: session, isPending: isSessionPending } = useSession(oauthClient);
   const browserQuery = useSyncExternalStore(
     subscribeToQuery,
@@ -120,7 +122,7 @@ export function OAuthConsent({ className, oauthQuery }: OAuthConsentProps) {
             <CardTitle
               role="heading"
               aria-level={2}
-              className="max-w-full text-xl font-semibold break-words"
+              className="max-w-full text-xl font-semibold wrap-break-word"
             >
               {client ? clientName : <Skeleton className="h-6 w-36" />}
             </CardTitle>
@@ -160,9 +162,9 @@ export function OAuthConsent({ className, oauthQuery }: OAuthConsentProps) {
                           className="text-muted-foreground mt-0.5 size-5 shrink-0"
                         />
                         <div className="grid min-w-0 gap-1">
-                          <p className="text-base leading-6 break-words">{metadata.label}</p>
+                          <p className="text-base/6 wrap-break-word">{metadata.label}</p>
                           {metadata.description ? (
-                            <p className="text-muted-foreground text-sm leading-5">
+                            <p className="text-muted-foreground text-sm/5">
                               {metadata.description}
                             </p>
                           ) : null}
@@ -185,7 +187,7 @@ export function OAuthConsent({ className, oauthQuery }: OAuthConsentProps) {
             <Separator />
 
             {destination ? (
-              <div className="text-muted-foreground flex gap-3 text-sm leading-5">
+              <div className="text-muted-foreground flex gap-3 text-sm/5">
                 <LinkIcon aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
                 <p>
                   {localization.redirectTo}{" "}
@@ -217,7 +219,7 @@ export function OAuthConsent({ className, oauthQuery }: OAuthConsentProps) {
                 ) : null}
               </div>
             ) : null}
-            <div className="text-muted-foreground flex gap-3 text-sm leading-5">
+            <div className="text-muted-foreground flex gap-3 text-sm/5">
               <Shield aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
               <p>{localization.applicationInformation}</p>
             </div>
@@ -230,17 +232,21 @@ export function OAuthConsent({ className, oauthQuery }: OAuthConsentProps) {
           className="h-11"
           disabled={!canRespond}
           variant="secondary"
-          onClick={() => consent.mutate({ accept: false, oauth_query: query })}
+          onClick={() => {
+            consent.mutate({ accept: false, oauth_query: query });
+          }}
         >
-          {consent.isPending && consent.variables?.accept === false ? <Spinner /> : null}
+          {consent.isPending && !consent.variables.accept ? <Spinner /> : null}
           {localization.cancel}
         </Button>
         <Button
           className="h-11"
           disabled={!canRespond}
-          onClick={() => consent.mutate({ accept: true, oauth_query: query })}
+          onClick={() => {
+            consent.mutate({ accept: true, oauth_query: query });
+          }}
         >
-          {consent.isPending && consent.variables?.accept === true ? <Spinner /> : null}
+          {consent.isPending && consent.variables.accept ? <Spinner /> : null}
           {localization.allow}
         </Button>
       </CardFooter>

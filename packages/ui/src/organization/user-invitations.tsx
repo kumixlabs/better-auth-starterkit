@@ -2,12 +2,12 @@
 
 import { Fragment } from "react";
 import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react";
 import { useListUserInvitations } from "@better-auth-ui/react/plugins/organization";
 
 import { Card, CardContent } from "@kumix/ui/ui/card";
 import { ItemGroup, ItemSeparator } from "@kumix/ui/ui/item";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { UserInvitationRow } from "./user-invitation-row";
 import { UserInvitationRowSkeleton } from "./user-invitation-row-skeleton";
 import { UserInvitationsEmpty } from "./user-invitations-empty";

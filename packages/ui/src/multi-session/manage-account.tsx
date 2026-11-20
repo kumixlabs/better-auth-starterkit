@@ -4,6 +4,7 @@ import type {
   ListDeviceSession,
   MultiSessionAuthClient,
 } from "@better-auth-ui/core/plugins/multi-session";
+import { multiSessionPlugin } from "@better-auth-ui/core/plugins/multi-session";
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react";
 import {
   useRevokeMultiSession,
@@ -22,7 +23,6 @@ import {
 import { Item, ItemActions } from "@kumix/ui/ui/item";
 import { Spinner } from "@kumix/ui/ui/spinner";
 import { cn } from "@kumix/utils";
-import { multiSessionPlugin } from "../lib/multi-session-plugin";
 import { UserView } from "../user/user-view";
 
 export type ManageAccountProps = {
@@ -46,7 +46,9 @@ export function ManageAccount({ deviceSession, isPending }: ManageAccountProps) 
   const { data: session } = useSession(authClient);
 
   const { mutate: setActiveSession, isPending: isSwitching } = useSetActiveSession(authClient, {
-    onSuccess: () => window.scrollTo({ top: 0 }),
+    onSuccess: () => {
+      window.scrollTo({ top: 0 });
+    },
   });
 
   const { mutate: revokeSession, isPending: isRevoking } = useRevokeMultiSession(authClient, {
@@ -65,7 +67,9 @@ export function ManageAccount({ deviceSession, isPending }: ManageAccountProps) 
             className="shrink-0"
             variant="outline"
             size="sm"
-            onClick={() => revokeSession({ sessionToken: deviceSession.session.token })}
+            onClick={() => {
+              revokeSession({ sessionToken: deviceSession.session.token });
+            }}
             disabled={isBusy}
           >
             {isRevoking ? <Spinner /> : <LogOut />}
@@ -84,22 +88,22 @@ export function ManageAccount({ deviceSession, isPending }: ManageAccountProps) 
 
             <DropdownMenuContent align="end" className="min-w-fit">
               <DropdownMenuItem
-                onClick={() =>
+                onClick={() => {
                   setActiveSession({
                     sessionToken: deviceSession.session.token,
-                  })
-                }
+                  });
+                }}
               >
                 <ArrowLeftRight className="text-muted-foreground" />
                 {multiSessionLocalization.switchAccount}
               </DropdownMenuItem>
 
               <DropdownMenuItem
-                onClick={() =>
+                onClick={() => {
                   revokeSession({
                     sessionToken: deviceSession.session.token,
-                  })
-                }
+                  });
+                }}
               >
                 <LogOut className="text-muted-foreground" />
                 {localization.auth.signOut}

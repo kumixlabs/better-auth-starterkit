@@ -44,7 +44,8 @@ export function ProviderButton({
   className,
   ...props
 }: ProviderButtonProps) {
-  const { authClient, baseURL, localization, navigate, redirectTo, socialSignInMode } = useAuth();
+  const { authClient, baseURL, localization, navigate, redirectTo, socialSignInMode } =
+    useAuth<OAuthPopupAuthClient>();
 
   const callbackURL = getAuthCallbackURL(baseURL, redirectTo);
   const { fetchOptions, resetFetchOptions } = useFetchOptions();
@@ -52,12 +53,9 @@ export function ProviderButton({
   const { mutate: signInSocial, isPending: signInSocialPending } = useSignInSocial(authClient, {
     onError: resetFetchOptions,
   });
-  const { mutate: signInPopup, isPending: signInPopupPending } = useSignInOAuthPopup(
-    authClient as OAuthPopupAuthClient,
-    {
-      onError: resetFetchOptions,
-    },
-  );
+  const { mutate: signInPopup, isPending: signInPopupPending } = useSignInOAuthPopup(authClient, {
+    onError: resetFetchOptions,
+  });
 
   const providerId = getProviderId(provider);
   const providerIcon = renderProviderIcon(provider);
@@ -78,7 +76,11 @@ export function ProviderButton({
           callbackURL,
           requestSignUp: view === "signUp",
         },
-        { onSuccess: () => navigate({ to: redirectTo }) },
+        {
+          onSuccess: () => {
+            navigate({ to: redirectTo });
+          },
+        },
       );
       return;
     }

@@ -72,8 +72,12 @@ export function SignIn({ className, socialLayout, socialPosition = "bottom" }: S
 
   const { mutateAsync: signInEmail, isPending: signInEmailPending } = useSignInEmail(authClient, {
     meta: { errorPresentation: "inline" },
-    onError: () => resetFetchOptions(),
-    onSuccess: (data) => continueSignIn(data),
+    onError: () => {
+      resetFetchOptions();
+    },
+    onSuccess: (data) => {
+      continueSignIn(data);
+    },
   });
 
   const signInMutating = useIsMutating({
@@ -84,7 +88,7 @@ export function SignIn({ className, socialLayout, socialPosition = "bottom" }: S
   });
   const isPending = signInMutating + signUpMutating > 0;
 
-  const Captcha = plugins.find((plugin) => plugin.captchaComponent)?.captchaComponent;
+  const Captcha = plugins.find((plugin) => Boolean(plugin.captchaComponent))?.captchaComponent;
 
   const passkeyAutoFill = isPasskeyAutoFillEnabled(plugins);
 
@@ -97,7 +101,7 @@ export function SignIn({ className, socialLayout, socialPosition = "bottom" }: S
         await signInEmail({
           email,
           password: value.password,
-          ...(emailAndPassword?.rememberMe ? { rememberMe: value.rememberMe } : {}),
+          ...(emailAndPassword.rememberMe ? { rememberMe: value.rememberMe } : {}),
           fetchOptions,
         });
       } catch (error) {
@@ -111,7 +115,7 @@ export function SignIn({ className, socialLayout, socialPosition = "bottom" }: S
     },
   });
 
-  const showSeparator = emailAndPassword?.enabled && socialProviders && socialProviders.length > 0;
+  const showSeparator = emailAndPassword.enabled && socialProviders && socialProviders.length > 0;
 
   return (
     <Card className={cn("w-full max-w-sm", className)}>
@@ -137,7 +141,7 @@ export function SignIn({ className, socialLayout, socialPosition = "bottom" }: S
             </>
           )}
 
-          {emailAndPassword?.enabled && (
+          {emailAndPassword.enabled && (
             <form.AppForm>
               <form.AuthFormRoot serverErrorMessage={localization.errors.generic}>
                 <FieldGroup>
@@ -167,7 +171,9 @@ export function SignIn({ className, socialLayout, socialPosition = "bottom" }: S
                             disabled={isPending}
                             value={field.state.value}
                             onBlur={field.handleBlur}
-                            onChange={(event) => field.handleChange(event.target.value)}
+                            onChange={(event) => {
+                              field.handleChange(event.target.value);
+                            }}
                             aria-invalid={isInvalid}
                           />
                           <field.AuthFormFieldError />
@@ -181,15 +187,15 @@ export function SignIn({ className, socialLayout, socialPosition = "bottom" }: S
                     validators={{
                       onChange: ({ value }) =>
                         validateStringLength(value, {
-                          maxLength: emailAndPassword?.maxPasswordLength,
+                          maxLength: emailAndPassword.maxPasswordLength,
                           maxLengthMessage: localization.auth.tooLong.replace(
                             "{{max}}",
-                            String(emailAndPassword?.maxPasswordLength),
+                            String(emailAndPassword.maxPasswordLength),
                           ),
-                          minLength: emailAndPassword?.minPasswordLength,
+                          minLength: emailAndPassword.minPasswordLength,
                           minLengthMessage: localization.auth.tooShort.replace(
                             "{{min}}",
-                            String(emailAndPassword?.minPasswordLength),
+                            String(emailAndPassword.minPasswordLength),
                           ),
                           requiredMessage: localization.auth.fieldRequired,
                         }),
@@ -212,11 +218,13 @@ export function SignIn({ className, socialLayout, socialPosition = "bottom" }: S
                               )}
                               value={field.state.value}
                               onBlur={field.handleBlur}
-                              onChange={(event) => field.handleChange(event.target.value)}
+                              onChange={(event) => {
+                                field.handleChange(event.target.value);
+                              }}
                               placeholder={localization.auth.passwordPlaceholder}
                               required
-                              minLength={emailAndPassword?.minPasswordLength}
-                              maxLength={emailAndPassword?.maxPasswordLength}
+                              minLength={emailAndPassword.minPasswordLength}
+                              maxLength={emailAndPassword.maxPasswordLength}
                               disabled={isPending}
                               aria-invalid={isInvalid}
                             />
@@ -259,7 +267,9 @@ export function SignIn({ className, socialLayout, socialPosition = "bottom" }: S
                               name={field.name}
                               checked={field.state.value}
                               disabled={isPending}
-                              onCheckedChange={(checked) => field.handleChange(checked === true)}
+                              onCheckedChange={(checked) => {
+                                field.handleChange(typeof checked === "boolean" && checked);
+                              }}
                             />
 
                             <FieldLabel
@@ -316,7 +326,7 @@ export function SignIn({ className, socialLayout, socialPosition = "bottom" }: S
         </div>
 
         <div className="mt-4 flex w-full flex-col items-center gap-3">
-          {emailAndPassword?.enabled && emailAndPassword?.forgotPassword && (
+          {emailAndPassword.enabled && emailAndPassword.forgotPassword && (
             <Link
               href={`${basePaths.auth}/${viewPaths.auth.forgotPassword}`}
               className="self-center text-sm underline-offset-4 hover:underline"
@@ -325,7 +335,7 @@ export function SignIn({ className, socialLayout, socialPosition = "bottom" }: S
             </Link>
           )}
 
-          {emailAndPassword?.enabled && (
+          {emailAndPassword.enabled && (
             <FieldDescription className="text-center">
               {localization.auth.needToCreateAnAccount}{" "}
               <Link

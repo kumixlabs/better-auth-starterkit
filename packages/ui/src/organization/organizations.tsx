@@ -2,13 +2,13 @@
 
 import { Fragment, useState } from "react";
 import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useListOrganizations } from "@better-auth-ui/react/plugins/organization";
 
 import { Button } from "@kumix/ui/ui/button";
 import { Card, CardContent } from "@kumix/ui/ui/card";
 import { Item, ItemGroup, ItemSeparator } from "@kumix/ui/ui/item";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { CreateOrganizationDialog } from "./create-organization-dialog";
 import { OrganizationRow } from "./organization-row";
 import { OrganizationViewSkeleton } from "./organization-view-skeleton";
@@ -52,7 +52,9 @@ export function Organizations({ className }: OrganizationsProps) {
                 className="shrink-0"
                 size="sm"
                 disabled={organizationsPending || !canCreate}
-                onClick={() => setCreateOpen(true)}
+                onClick={() => {
+                  setCreateOpen(true);
+                }}
               >
                 {organizationLocalization.createOrganization}
               </Button>
@@ -70,7 +72,9 @@ export function Organizations({ className }: OrganizationsProps) {
               ) : !organizations?.length ? (
                 <OrganizationsEmpty
                   canCreate={canCreate}
-                  onCreatePress={() => setCreateOpen(true)}
+                  onCreatePress={() => {
+                    setCreateOpen(true);
+                  }}
                 />
               ) : (
                 <ItemGroup className="gap-0">

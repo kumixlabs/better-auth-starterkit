@@ -11,6 +11,7 @@ import {
   type OrganizationAuthClient,
   type OrganizationRolesAuthClient,
   type OrganizationTeamsAuthClient,
+  organizationPlugin,
 } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import {
@@ -56,7 +57,6 @@ import {
   isAuthFormFieldInvalid,
   useAuthForm,
 } from "../auth-form";
-import { organizationPlugin } from "../lib/organization-plugin";
 
 /** Props for the `InviteMemberDialog` component. */
 export type InviteMemberDialogProps = {
@@ -71,7 +71,9 @@ const pickDefaultRole = (keys: string[]) =>
  * Render a dialog for inviting a member to the organization.
  */
 export function InviteMemberDialog({ open, onOpenChange }: InviteMemberDialogProps) {
-  const { authClient, localization } = useAuth<OrganizationAuthClient>();
+  const { authClient, localization } = useAuth<
+    OrganizationAuthClient & OrganizationTeamsAuthClient & OrganizationRolesAuthClient
+  >();
   const {
     allowMultipleRoles,
     modelFields: { invitation: invitationFields },
@@ -82,7 +84,7 @@ export function InviteMemberDialog({ open, onOpenChange }: InviteMemberDialogPro
     teams: teamsEnabled,
   } = useAuthPlugin(organizationPlugin);
   const { data: activeOrganization } = useActiveOrganization(authClient);
-  const teams = useListTeams(authClient as OrganizationTeamsAuthClient, {
+  const teams = useListTeams(authClient, {
     query: { organizationId: activeOrganization?.id },
     enabled: teamsEnabled,
   });
@@ -95,7 +97,7 @@ export function InviteMemberDialog({ open, onOpenChange }: InviteMemberDialogPro
     organizationId: activeOrganization?.id,
     permissions: { ac: ["read"] },
   });
-  const dynamicRoles = useListRoles(authClient as OrganizationRolesAuthClient, {
+  const dynamicRoles = useListRoles(authClient, {
     query: { organizationId: activeOrganization?.id },
     enabled: dynamicAccessControl?.enabled === true && canReadRoles.data?.success === true,
   });
@@ -103,24 +105,17 @@ export function InviteMemberDialog({ open, onOpenChange }: InviteMemberDialogPro
     () => mergeOrganizationRoleLabels(roles, dynamicRoles.data),
     [dynamicRoles.data, roles],
   );
-  const roleItems = Object.entries(assignableRoles).map(([value, label]) => ({
-    label,
-    value,
-  }));
-  const teamItems = teams.data?.map((team) => ({ label: team.name, value: team.id })) ?? [];
 
   const activeOrganizationId = activeOrganization?.id;
   const previousOrganizationId = useRef(activeOrganizationId);
 
-  const { mutateAsync: inviteMember, isPending: isInviting } = useInviteMember(
-    authClient as OrganizationTeamsAuthClient,
-    {
+  const { mutateAsync: inviteMember, isPending: isInviting } =
+    useInviteMember<OrganizationTeamsAuthClient>(authClient, {
       onSuccess: () => {
         onOpenChange(false);
         toastSuccess({ message: organizationLocalization.inviteMemberSuccess });
       },
-    },
-  );
+    });
 
   const atInvitationLimit =
     invitationLimit !== undefined &&
@@ -152,6 +147,7 @@ export function InviteMemberDialog({ open, onOpenChange }: InviteMemberDialogPro
           ...getAdditionalFieldSubmitValues(invitationFields, value.additionalFields),
           email: value.email.trim(),
           organizationId: activeOrganizationId,
+          // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- the server can define custom organization roles; the client type lists only the configured defaults
           role: value.roles as Parameters<typeof inviteMember>[0]["role"],
           teamId,
         });
@@ -165,7 +161,7 @@ export function InviteMemberDialog({ open, onOpenChange }: InviteMemberDialogPro
     const keys = Object.keys(assignableRoles);
     const current = form.getFieldValue("roles");
     const kept = current.filter((entry) => keys.includes(entry));
-    const roles =
+    const submittedRoles =
       kept.length > 0
         ? allowMultipleRoles
           ? kept
@@ -175,7 +171,7 @@ export function InviteMemberDialog({ open, onOpenChange }: InviteMemberDialogPro
             return fallback ? [fallback] : [];
           })();
 
-    form.setFieldValue("roles", roles);
+    form.setFieldValue("roles", submittedRoles);
   }, [allowMultipleRoles, assignableRoles, form]);
 
   useEffect(() => {
@@ -232,12 +228,13 @@ export function InviteMemberDialog({ open, onOpenChange }: InviteMemberDialogPro
                         id="invite-member-email"
                         name={field.name}
                         type="email"
-                        autoFocus
                         placeholder={localization.auth.email}
                         disabled={isInviting}
                         value={field.state.value}
                         onBlur={field.handleBlur}
-                        onChange={(event) => field.handleChange(event.target.value)}
+                        onChange={(event) => {
+                          field.handleChange(event.target.value);
+                        }}
                         aria-invalid={isInvalid}
                       />
                       <field.AuthFormFieldError />
@@ -258,12 +255,13 @@ export function InviteMemberDialog({ open, onOpenChange }: InviteMemberDialogPro
                   const roleSummary = selectedRoles
                     .map((entry) => assignableRoles[entry] ?? entry)
                     .join(", ");
-                  const toggleRole = (role: string) =>
+                  const toggleRole = (role: string) => {
                     field.handleChange(
                       selectedRoles.includes(role)
                         ? selectedRoles.filter((entry) => entry !== role)
                         : [...selectedRoles, role],
                     );
+                  };
 
                   return (
                     <Field data-invalid={isAuthFormFieldInvalid(field.state.meta)}>
@@ -298,7 +296,10 @@ export function InviteMemberDialog({ open, onOpenChange }: InviteMemberDialogPro
                                   key={key}
                                   checked={checked}
                                   disabled={checked && selectedRoles.length === 1}
-                                  onCheckedChange={() => toggleRole(key)}
+                                  onSelect={(event) => {
+                                    event.preventDefault();
+                                    toggleRole(key);
+                                  }}
                                 >
                                   {label}
                                 </DropdownMenuCheckboxItem>
@@ -309,8 +310,9 @@ export function InviteMemberDialog({ open, onOpenChange }: InviteMemberDialogPro
                       ) : (
                         <Select
                           disabled={isInviting}
-                          items={roleItems}
-                          onValueChange={(role) => role && field.handleChange([role])}
+                          onValueChange={(role) => {
+                            field.handleChange([role ?? ""]);
+                          }}
                           value={selectedRoles[0] ?? ""}
                         >
                           <SelectTrigger id="invite-member-role" className="w-full">
@@ -341,22 +343,21 @@ export function InviteMemberDialog({ open, onOpenChange }: InviteMemberDialogPro
                         {organizationLocalization.team}
                       </FieldLabel>
                       <Select
-                        items={teamItems}
                         value={field.state.value}
-                        onValueChange={(value) => field.handleChange(value ?? "")}
+                        onValueChange={(value) => {
+                          field.handleChange(value ?? "");
+                        }}
                         disabled={isInviting}
                       >
                         <SelectTrigger id="invite-member-team" className="w-full">
                           <SelectValue placeholder={organizationLocalization.selectTeam} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectGroup>
-                            {teamItems.map((item) => (
-                              <SelectItem key={item.value} value={item.value}>
-                                {item.label}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
+                          {teams.data?.map((team) => (
+                            <SelectItem key={team.id} value={team.id}>
+                              {team.name}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </Field>

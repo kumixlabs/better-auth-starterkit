@@ -31,7 +31,7 @@ export function ErrorToaster() {
       const message = getAuthErrorMessage(error, localization);
       if (message) {
         console.error("[Better Auth UI]", error);
-        toastError({ message });
+        toastError({ message: message });
       }
     };
 
@@ -58,7 +58,7 @@ export function ErrorToaster() {
       const message = getAuthErrorMessage(error, localization, mutation.options.mutationKey);
       if (message) {
         console.error("[Better Auth UI]", error);
-        toastError({ message });
+        toastError({ message: message });
       }
     };
 

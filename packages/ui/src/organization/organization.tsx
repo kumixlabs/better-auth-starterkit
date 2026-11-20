@@ -5,6 +5,7 @@ import type {
   OrganizationAuthClient,
   OrganizationView,
 } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthenticate, useAuthPlugin } from "@better-auth-ui/react";
 import {
   useActiveOrganization,
@@ -19,7 +20,6 @@ import {
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@kumix/ui/ui/tabs";
 import { cn } from "@kumix/utils";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { OrganizationPeople } from "./organization-people";
 import { OrganizationRoles } from "./organization-roles";
 import { OrganizationSettings } from "./organization-settings";
@@ -30,7 +30,7 @@ export type OrganizationProps = {
   hideNav?: boolean;
   path?: string;
   /** @remarks `OrganizationView` */
-  view?: OrganizationView | string;
+  view?: OrganizationView | (string & Record<never, never>);
 };
 
 /**
@@ -71,7 +71,7 @@ export function Organization({ className, hideNav, path, view }: OrganizationPro
   useEffect(() => {
     if (!isPending && !activeOrganization) {
       navigate({
-        to: `${basePaths.settings}/${organizationViewPaths.settings?.organizations}`,
+        to: `${basePaths.settings}/${organizationViewPaths.settings.organizations}`,
         replace: true,
       });
     }
@@ -79,7 +79,7 @@ export function Organization({ className, hideNav, path, view }: OrganizationPro
     basePaths.settings,
     isPending,
     navigate,
-    organizationViewPaths.settings?.organizations,
+    organizationViewPaths.settings.organizations,
     activeOrganization,
   ]);
 
@@ -93,7 +93,7 @@ export function Organization({ className, hideNav, path, view }: OrganizationPro
       ...extensionTabs.map((tab) => [tab.id, tab.path] as const),
     ].find(([, segment]) => segment === path);
 
-    return match?.[0] as OrganizationView | undefined;
+    return match?.[0];
   }, [extensionTabs, view, path, organizationViewPaths.organization, rolesEnabled]);
 
   if (!currentView) {
@@ -122,13 +122,13 @@ export function Organization({ className, hideNav, path, view }: OrganizationPro
           <TabsTrigger
             value="settings"
             className="gap-1"
-            onClick={() =>
+            onClick={() => {
               navigate({
                 to: slug
                   ? `${basePaths.organization}/${slugPrefix}${slug}/${organizationViewPaths.organization.settings}`
                   : `${basePaths.organization}/${organizationViewPaths.organization.settings}`,
-              })
-            }
+              });
+            }}
           >
             <SettingsIcon className="text-muted-foreground" />
 
@@ -139,13 +139,13 @@ export function Organization({ className, hideNav, path, view }: OrganizationPro
             <TabsTrigger
               value="teams"
               className="gap-1"
-              onClick={() =>
+              onClick={() => {
                 navigate({
                   to: slug
                     ? `${basePaths.organization}/${slugPrefix}${slug}/${organizationViewPaths.organization.teams}`
                     : `${basePaths.organization}/${organizationViewPaths.organization.teams}`,
-                })
-              }
+                });
+              }}
             >
               <TeamsIcon className="text-muted-foreground" />
               {organizationLocalization.teams}
@@ -157,13 +157,13 @@ export function Organization({ className, hideNav, path, view }: OrganizationPro
               disabled={canReadRoles.isPending || !canReadRoles.data?.success}
               value="roles"
               className="gap-1"
-              onClick={() =>
+              onClick={() => {
                 navigate({
                   to: slug
                     ? `${basePaths.organization}/${slugPrefix}${slug}/${organizationViewPaths.organization.roles}`
                     : `${basePaths.organization}/${organizationViewPaths.organization.roles}`,
-                })
-              }
+                });
+              }}
             >
               <RolesIcon className="text-muted-foreground" />
               {organizationLocalization.roles}
@@ -174,13 +174,13 @@ export function Organization({ className, hideNav, path, view }: OrganizationPro
             <TabsTrigger
               key={tab.id}
               value={tab.id}
-              onClick={() =>
+              onClick={() => {
                 navigate({
                   to: slug
                     ? `${basePaths.organization}/${slugPrefix}${slug}/${tab.path}`
                     : `${basePaths.organization}/${tab.path}`,
-                })
-              }
+                });
+              }}
             >
               {tab.label}
             </TabsTrigger>
@@ -189,13 +189,13 @@ export function Organization({ className, hideNav, path, view }: OrganizationPro
           <TabsTrigger
             value="people"
             className="gap-1"
-            onClick={() =>
+            onClick={() => {
               navigate({
                 to: slug
                   ? `${basePaths.organization}/${slugPrefix}${slug}/${organizationViewPaths.organization.people}`
                   : `${basePaths.organization}/${organizationViewPaths.organization.people}`,
-              })
-            }
+              });
+            }}
           >
             <UserIcon className="text-muted-foreground" />
 

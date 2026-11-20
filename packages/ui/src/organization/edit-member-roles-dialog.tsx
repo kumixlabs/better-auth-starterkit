@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { validateMinimumItems } from "@better-auth-ui/core";
 import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization";
-import { parseMemberRoles } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin, parseMemberRoles } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useUpdateMemberRole } from "@better-auth-ui/react/plugins/organization";
 import { ShieldCheck } from "lucide-react";
@@ -31,7 +31,6 @@ import {
 } from "@kumix/ui/ui/field";
 import { RadioGroup, RadioGroupItem } from "@kumix/ui/ui/radio-group";
 import { useAuthForm } from "../auth-form";
-import { organizationPlugin } from "../lib/organization-plugin";
 
 export type EditMemberRolesDialogProps = {
   member: {
@@ -41,7 +40,7 @@ export type EditMemberRolesDialogProps = {
   onOpenChange: (open: boolean) => void;
   open: boolean;
   organizationId: string;
-  roles: Array<[string, string]>;
+  roles: [string, string][];
   protectedRole?: string;
   protectedRoleRemovalDisabled?: boolean;
 };
@@ -156,7 +155,7 @@ export function EditMemberRolesDialog({
                             disabled={disabled}
                             id={id}
                             onCheckedChange={(next) => {
-                              if (next === true && !checked) {
+                              if (typeof next === "boolean" && next && !checked) {
                                 field.pushValue(role);
                                 return;
                               }
@@ -185,7 +184,9 @@ export function EditMemberRolesDialog({
                     ) : (
                       <RadioGroup
                         disabled={isPending}
-                        onValueChange={(role) => field.handleChange([role])}
+                        onValueChange={(role) => {
+                          field.handleChange([role]);
+                        }}
                         value={selectedRoles[0] ?? ""}
                       >
                         {roleOptions}

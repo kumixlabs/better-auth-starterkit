@@ -1,6 +1,6 @@
 "use client";
 
-import { type ComponentProps, type FormEvent, type ReactNode, useRef } from "react";
+import { type ComponentProps, type ReactNode, type SubmitEvent, useRef } from "react";
 import {
   type AdditionalField as AdditionalFieldConfig,
   type AdditionalFieldFormValue,
@@ -45,7 +45,7 @@ function AuthFormServerError() {
   const form = useFormContext();
 
   return (
-    <form.Subscribe selector={(state) => state.errorMap.onServer}>
+    <form.Subscribe selector={(state): unknown => state.errorMap.onServer}>
       {(error) => {
         const formError =
           error && typeof error === "object" && "form" in error ? error.form : error;
@@ -74,9 +74,11 @@ export function clearAuthFormFieldServerError(form: AnyFormApi, fieldName: strin
   form.setErrorMap({ onServer: undefined });
   if (!fieldName) return;
 
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- AnyFormApi has untyped field names
   const fieldMeta = form.getFieldMeta(fieldName as never);
   if (!fieldMeta?.errorMap.onServer) return;
 
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- AnyFormApi has untyped field names
   form.setFieldMeta(fieldName as never, (current = fieldMeta) => ({
     ...current,
     errorMap: { ...current.errorMap, onServer: undefined },
@@ -132,7 +134,7 @@ function AuthFormRoot({
   const form = useFormContext();
   const submittingRef = useRef(false);
 
-  async function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (submittingRef.current || form.state.isSubmitting) return;
 
@@ -150,7 +152,9 @@ function AuthFormRoot({
   return (
     <form
       {...props}
-      onInvalid={(event) => focusFirstInvalidAuthFormControl(event.currentTarget)}
+      onInvalid={(event) => {
+        focusFirstInvalidAuthFormControl(event.currentTarget);
+      }}
       onInput={(event) => {
         const target = event.target;
         const fieldName =
@@ -162,7 +166,7 @@ function AuthFormRoot({
         clearAuthFormFieldServerError(form, fieldName);
         onInput?.(event);
       }}
-      onSubmit={submit}
+      onSubmit={(event) => void submit(event)}
     >
       {children}
     </form>

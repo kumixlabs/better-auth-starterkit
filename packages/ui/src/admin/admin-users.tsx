@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { type SubmitEvent, useEffect, useMemo, useState } from "react";
 import {
   DEFAULT_TABLE_SEARCH_DEBOUNCE_MS,
   fieldsWithModelValues,
@@ -12,6 +12,7 @@ import {
   type AdminAuthClient,
   type AdminListUsersParams,
   type AdminUser,
+  adminPlugin,
   banAdminUserOptions,
   createAdminUserOptions,
   impersonateAdminUserOptions,
@@ -34,7 +35,6 @@ import {
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { keepPreviousData, useMutation } from "@tanstack/react-query";
 import type { SortingState } from "@tanstack/react-table";
-import type { BetterFetchError } from "better-auth/react";
 import {
   BanIcon,
   CheckIcon,
@@ -91,28 +91,22 @@ import {
 } from "@kumix/ui/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@kumix/ui/ui/input-group";
 import { RadioGroup, RadioGroupItem } from "@kumix/ui/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@kumix/ui/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@kumix/ui/ui/select";
 import { Separator } from "@kumix/ui/ui/separator";
 import { Skeleton } from "@kumix/ui/ui/skeleton";
 import { Switch } from "@kumix/ui/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@kumix/ui/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@kumix/ui/ui/tabs";
 import { getAuthAdditionalFieldValidators, useAuthForm } from "../auth-form";
-import { adminPlugin } from "../lib/admin-plugin";
 import { useServerTableState } from "../server-table-state";
 import { UserAvatar } from "../user/user-avatar";
 import { createAdminColumnHelper, useAdminTable } from "./admin-table";
 
-type SearchField = "email" | "name";
-type SearchOperator = "contains" | "ends_with" | "starts_with";
-type StatusFilter = "all" | "active" | "banned";
+const SEARCH_FIELDS = ["email", "name"] as const;
+type SearchField = (typeof SEARCH_FIELDS)[number];
+const SEARCH_OPERATORS = ["contains", "ends_with", "starts_with"] as const;
+type SearchOperator = (typeof SEARCH_OPERATORS)[number];
+const STATUS_FILTERS = ["all", "active", "banned"] as const;
 type DangerousAction = "ban" | "delete" | "impersonate" | "revokeAll";
 
 export type AdminUsersProps = {
@@ -124,7 +118,9 @@ export type AdminUsersProps = {
 const formatDate = (value: Date | string | undefined | null) =>
   value ? new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(new Date(value)) : "–";
 
-const asAdminRoles = (roles: string[]) => roles as ("user" | "admin")[];
+const asAdminRoles = (roles: string[]) =>
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- the server can define custom admin roles; the client type lists only the defaults
+  roles as ("user" | "admin")[];
 
 const parseAdminRoles = (
   role: string | undefined,
@@ -148,8 +144,10 @@ const getBanDurationSeconds = (value: string) => {
 };
 
 const getAdminErrorMessage = (error: Error | null) => {
-  const authError = error as BetterFetchError | null;
-  return authError?.error?.message ?? authError?.message;
+  const details: unknown = error && "error" in error ? error.error : undefined;
+  const message =
+    details && typeof details === "object" && "message" in details ? details.message : undefined;
+  return typeof message === "string" ? message : error?.message;
 };
 
 const adminColumnHelper = createAdminColumnHelper<AdminUser>();
@@ -171,6 +169,10 @@ const EMPTY_USERS: AdminUser[] = [];
 const INITIAL_ADMIN_SORTING: SortingState = [{ id: "createdAt", desc: true }];
 
 /** Server-paginated user management with optional controlled inspector state. */
+function parseOption<T extends string>(options: readonly T[], value: unknown, fallback: T): T {
+  return options.find((option) => option === value) ?? fallback;
+}
+
 export function AdminUsers({
   className,
   onSelectedUserIdChange,
@@ -191,23 +193,11 @@ export function AdminUsers({
   const [debouncedSearch] = useDebouncedValue(globalFilter.trim(), {
     wait: DEFAULT_TABLE_SEARCH_DEBOUNCE_MS,
   });
-  const status = String(
+  const status = parseOption(
+    STATUS_FILTERS,
     columnFilters.find((filter) => filter.id === "status")?.value ?? "all",
-  ) as StatusFilter;
-  const searchFieldItems = [
-    { label: localization.email, value: "email" },
-    { label: localization.name, value: "name" },
-  ];
-  const searchOperatorItems = [
-    { label: localization.searchContains, value: "contains" },
-    { label: localization.startsWith, value: "starts_with" },
-    { label: localization.endsWith, value: "ends_with" },
-  ];
-  const statusItems = [
-    { label: localization.filterAllStatuses, value: "all" },
-    { label: localization.active, value: "active" },
-    { label: localization.banned, value: "banned" },
-  ];
+    "all",
+  );
   const primarySort = sorting[0];
   const sortBy = primarySort?.id === "name" ? "name" : "createdAt";
   const sortDirection = primarySort?.desc ? "desc" : "asc";
@@ -292,7 +282,11 @@ export function AdminUsers({
           {canCreate.isPending ? (
             <Skeleton className="h-8 w-28" />
           ) : canCreate.data?.success ? (
-            <Button onClick={() => setCreateOpen(true)}>
+            <Button
+              onClick={() => {
+                setCreateOpen(true);
+              }}
+            >
               <UserPlusIcon />
               {localization.createUser}
             </Button>
@@ -301,11 +295,9 @@ export function AdminUsers({
 
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[9rem_10rem_minmax(14rem,1fr)_10rem]">
           <Select
-            items={searchFieldItems}
             value={searchField}
             onValueChange={(value) => {
-              if (!value) return;
-              setSearchField(value as SearchField);
+              setSearchField(parseOption(SEARCH_FIELDS, value, "email"));
               table.setPageIndex(0);
             }}
           >
@@ -313,21 +305,14 @@ export function AdminUsers({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectGroup>
-                {searchFieldItems.map((item) => (
-                  <SelectItem key={item.value} value={item.value}>
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
+              <SelectItem value="email">{localization.email}</SelectItem>
+              <SelectItem value="name">{localization.name}</SelectItem>
             </SelectContent>
           </Select>
           <Select
-            items={searchOperatorItems}
             value={searchOperator}
             onValueChange={(value) => {
-              if (!value) return;
-              setSearchOperator(value as SearchOperator);
+              setSearchOperator(parseOption(SEARCH_OPERATORS, value, "contains"));
               table.setPageIndex(0);
             }}
           >
@@ -335,13 +320,9 @@ export function AdminUsers({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectGroup>
-                {searchOperatorItems.map((item) => (
-                  <SelectItem key={item.value} value={item.value}>
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
+              <SelectItem value="contains">{localization.searchContains}</SelectItem>
+              <SelectItem value="starts_with">{localization.startsWith}</SelectItem>
+              <SelectItem value="ends_with">{localization.endsWith}</SelectItem>
             </SelectContent>
           </Select>
           <InputGroup>
@@ -362,10 +343,8 @@ export function AdminUsers({
             />
           </InputGroup>
           <Select
-            items={statusItems}
             value={status}
             onValueChange={(value) => {
-              if (!value) return;
               table.getColumn("status")?.setFilterValue(value === "all" ? undefined : value);
             }}
           >
@@ -373,13 +352,9 @@ export function AdminUsers({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectGroup>
-                {statusItems.map((item) => (
-                  <SelectItem key={item.value} value={item.value}>
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
+              <SelectItem value="all">{localization.filterAllStatuses}</SelectItem>
+              <SelectItem value="active">{localization.active}</SelectItem>
+              <SelectItem value="banned">{localization.banned}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -398,7 +373,7 @@ export function AdminUsers({
             title={localization.loadUsersError}
             description={localization.loadUsersErrorDescription}
             action={
-              <Button variant="outline" onClick={() => users.refetch()}>
+              <Button variant="outline" onClick={() => void users.refetch()}>
                 {localization.retry}
               </Button>
             }
@@ -431,7 +406,7 @@ export function AdminUsers({
               <TableBody>
                 {users.isPending ? (
                   <UserRowsSkeleton />
-                ) : table.getRowModel().rows.length ? (
+                ) : table.getRowModel().rows.length > 0 ? (
                   table.getRowModel().rows.map((row) => {
                     const user = row.original;
                     return (
@@ -440,7 +415,11 @@ export function AdminUsers({
                         aria-selected={selectedUserId === user.id}
                         className={canGet.data?.success ? "cursor-pointer" : undefined}
                         onClick={
-                          canGet.data?.success ? () => setSelectedUserId(user.id) : undefined
+                          canGet.data?.success
+                            ? () => {
+                                setSelectedUserId(user.id);
+                              }
+                            : undefined
                         }
                       >
                         <TableCell>
@@ -507,7 +486,9 @@ export function AdminUsers({
             <Button
               aria-label={localization.previousPage}
               disabled={!table.getCanPreviousPage() || users.isFetching}
-              onClick={() => table.previousPage()}
+              onClick={() => {
+                table.previousPage();
+              }}
               size="icon-sm"
               variant="outline"
             >
@@ -516,7 +497,9 @@ export function AdminUsers({
             <Button
               aria-label={localization.nextPage}
               disabled={!table.getCanNextPage() || users.isFetching}
-              onClick={() => table.nextPage()}
+              onClick={() => {
+                table.nextPage();
+              }}
               size="icon-sm"
               variant="outline"
             >
@@ -530,7 +513,11 @@ export function AdminUsers({
       <UserInspector
         canGetUser={canGet.data?.success === true}
         open={Boolean(selectedUserId) && canGet.data?.success === true}
-        onOpenChange={(open) => !open && setSelectedUserId(undefined)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedUserId(undefined);
+          }
+        }}
         userId={selectedUserId}
       />
     </section>
@@ -676,7 +663,16 @@ function CreateUserDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(value) => (value ? onOpenChange(true) : close())}>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        if (value) {
+          onOpenChange(true);
+        } else {
+          close();
+        }
+      }}
+    >
       <DialogContent>
         <form.AppForm>
           <form.AuthFormRoot className="flex flex-col gap-4">
@@ -693,7 +689,9 @@ function CreateUserDialog({
                       <InputGroupInput
                         id="admin-create-name"
                         name={field.name}
-                        onChange={(event) => field.handleChange(event.target.value)}
+                        onChange={(event) => {
+                          field.handleChange(event.target.value);
+                        }}
                         required
                         value={field.state.value}
                       />
@@ -712,7 +710,9 @@ function CreateUserDialog({
                         autoComplete="off"
                         id="admin-create-email"
                         name={field.name}
-                        onChange={(event) => field.handleChange(event.target.value)}
+                        onChange={(event) => {
+                          field.handleChange(event.target.value);
+                        }}
                         required
                         type="email"
                         value={field.state.value}
@@ -732,7 +732,9 @@ function CreateUserDialog({
                         autoComplete="new-password"
                         id="admin-create-password"
                         name={field.name}
-                        onChange={(event) => field.handleChange(event.target.value)}
+                        onChange={(event) => {
+                          field.handleChange(event.target.value);
+                        }}
                         required
                         type="password"
                         value={field.state.value}
@@ -759,7 +761,7 @@ function CreateUserDialog({
                                   const next = checked
                                     ? [...field.state.value, role]
                                     : field.state.value.filter((item) => item !== role);
-                                  if (next.length) field.handleChange(next);
+                                  if (next.length > 0) field.handleChange(next);
                                 }}
                               />
                               <FieldLabel htmlFor={`admin-create-role-${role}`}>{role}</FieldLabel>
@@ -768,7 +770,9 @@ function CreateUserDialog({
                         </FieldGroup>
                       ) : (
                         <RadioGroup
-                          onValueChange={(role) => field.handleChange([role])}
+                          onValueChange={(role) => {
+                            field.handleChange([role]);
+                          }}
                           value={field.state.value[0] ?? ""}
                         >
                           {config.roles.map((role) => (
@@ -847,6 +851,7 @@ function UserInspector({
   const auth = useAuth<AdminAuthClient>();
   const config = useAuthPlugin(adminPlugin);
   const contributedTabs = auth.plugins.flatMap((plugin) =>
+    // oxlint-disable-next-line oxc/no-map-spread -- Copies keep plugin-owned objects unmutated.
     (plugin.adminUserTabs ?? []).map((tab) => ({
       ...tab,
       value: `${plugin.id}:${tab.id}`,
@@ -957,10 +962,7 @@ function UserInspector({
   );
   const configuredUserFields = useMemo(
     () =>
-      fieldsWithModelValues(
-        auth.additionalFields ?? [],
-        user ? (user as unknown as Record<string, unknown>) : {},
-      ),
+      fieldsWithModelValues(auth.additionalFields ?? [], (user ?? {}) as Record<string, unknown>),
     [auth.additionalFields, user],
   );
   const profileForm = useAuthForm({
@@ -1011,13 +1013,22 @@ function UserInspector({
   });
 
   useEffect(() => {
-    profileForm.reset({
-      additionalFields: getAdditionalFieldDefaultValues(configuredUserFields),
-      email: user?.email ?? "",
-      emailVerified: user?.emailVerified ?? false,
-      name: user?.name ?? "",
-      roles: parseAdminRoles(user?.role, config.defaultRole, config.allowMultipleRoles),
-    });
+    // keepDefaultValues is required: useAppForm calls update(opts) on
+    // every render, and update() resets untouched values back to
+    // defaultValues whenever they differ. Without this flag the reset
+    // below would swap defaultValues to the loaded user, letting the
+    // next re-render clobber the fields back to the empty defaults
+    // (blank name/email and the default role) before this effect re-ran.
+    profileForm.reset(
+      {
+        additionalFields: getAdditionalFieldDefaultValues(configuredUserFields),
+        email: user?.email ?? "",
+        emailVerified: user?.emailVerified ?? false,
+        name: user?.name ?? "",
+        roles: parseAdminRoles(user?.role, config.defaultRole, config.allowMultipleRoles),
+      },
+      { keepDefaultValues: true },
+    );
   }, [
     config.allowMultipleRoles,
     config.defaultRole,
@@ -1061,7 +1072,11 @@ function UserInspector({
     if (dangerousAction === "revokeAll")
       revokeSessions.mutate(
         { userId: user.id },
-        { onSuccess: () => setDangerousAction(undefined) },
+        {
+          onSuccess: () => {
+            setDangerousAction(undefined);
+          },
+        },
       );
     if (dangerousAction === "impersonate")
       impersonate.mutate(
@@ -1127,11 +1142,11 @@ function UserInspector({
                           aria-label={config.localization.moreActions}
                           size="icon-sm"
                           variant="ghost"
-                        >
-                          <EllipsisIcon />
-                        </Button>
+                        />
                       }
-                    />
+                    >
+                      <EllipsisIcon />
+                    </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
                       <DropdownMenuGroup>
                         <DropdownMenuItem
@@ -1143,7 +1158,9 @@ function UserInspector({
                                 !canImpersonateAdmins.data?.success)) ||
                             isSelf
                           }
-                          onSelect={() => setDangerousAction("impersonate")}
+                          onSelect={() => {
+                            setDangerousAction("impersonate");
+                          }}
                         >
                           <LogInIcon />
                           {config.localization.impersonateUser}
@@ -1205,7 +1222,9 @@ function UserInspector({
                                     id="admin-user-name"
                                     name={field.name}
                                     value={field.state.value}
-                                    onChange={(event) => field.handleChange(event.target.value)}
+                                    onChange={(event) => {
+                                      field.handleChange(event.target.value);
+                                    }}
                                   />
                                 </InputGroup>
                               </Field>
@@ -1224,7 +1243,9 @@ function UserInspector({
                                     }
                                     id="admin-user-email"
                                     name={field.name}
-                                    onChange={(event) => field.handleChange(event.target.value)}
+                                    onChange={(event) => {
+                                      field.handleChange(event.target.value);
+                                    }}
                                     required
                                     type="email"
                                     value={field.state.value}
@@ -1269,7 +1290,7 @@ function UserInspector({
                                             const next = checked
                                               ? [...field.state.value, item]
                                               : field.state.value.filter((role) => role !== item);
-                                            if (next.length) field.handleChange(next);
+                                            if (next.length > 0) field.handleChange(next);
                                           }}
                                         />
                                         <FieldLabel htmlFor={`admin-user-role-${item}`}>
@@ -1282,7 +1303,9 @@ function UserInspector({
                                   <RadioGroup
                                     className="flex-row flex-wrap gap-4"
                                     disabled={isSelf || !canSetRole.data?.success}
-                                    onValueChange={(role) => field.handleChange([role])}
+                                    onValueChange={(role) => {
+                                      field.handleChange([role]);
+                                    }}
                                     value={field.state.value[0] ?? ""}
                                   >
                                     {config.roles.map((item) => (
@@ -1338,7 +1361,7 @@ function UserInspector({
                                     ? auth.localization.settings.copiedToClipboard
                                     : config.localization.copyUserId
                                 }
-                                onClick={() => copyUserId(user.id)}
+                                onClick={() => void copyUserId(user.id)}
                                 size="icon-xs"
                                 type="button"
                                 variant="ghost"
@@ -1385,7 +1408,9 @@ function UserInspector({
                         <div>
                           <Button
                             disabled={canSetPassword.isPending || !canSetPassword.data?.success}
-                            onClick={() => setPasswordOpen(true)}
+                            onClick={() => {
+                              setPasswordOpen(true);
+                            }}
                             type="button"
                             variant="outline"
                           >
@@ -1400,11 +1425,13 @@ function UserInspector({
                         <div className="flex flex-wrap gap-2">
                           <Button
                             disabled={canBan.isPending || !canBan.data?.success || isSelf}
-                            onClick={() =>
-                              user.banned
-                                ? unban.mutate({ userId: user.id })
-                                : setDangerousAction("ban")
-                            }
+                            onClick={() => {
+                              if (user.banned) {
+                                unban.mutate({ userId: user.id });
+                              } else {
+                                setDangerousAction("ban");
+                              }
+                            }}
                             type="button"
                             variant="outline"
                           >
@@ -1415,7 +1442,9 @@ function UserInspector({
                           </Button>
                           <Button
                             disabled={canDelete.isPending || !canDelete.data?.success || isSelf}
-                            onClick={() => setDangerousAction("delete")}
+                            onClick={() => {
+                              setDangerousAction("delete");
+                            }}
                             type="button"
                             variant="destructive"
                           >
@@ -1429,7 +1458,13 @@ function UserInspector({
                       </section>
                     </div>
                     <div className="bg-muted/50 flex flex-col-reverse gap-2 border-t px-6 py-4 sm:flex-row sm:justify-end">
-                      <Button onClick={() => onOpenChange(false)} type="button" variant="outline">
+                      <Button
+                        onClick={() => {
+                          onOpenChange(false);
+                        }}
+                        type="button"
+                        variant="outline"
+                      >
                         {config.localization.cancel}
                       </Button>
                       <profileForm.Subscribe
@@ -1470,7 +1505,9 @@ function UserInspector({
                       <Button
                         className="self-end"
                         disabled={canRevoke.isPending || !canRevoke.data?.success || isSelf}
-                        onClick={() => setDangerousAction("revokeAll")}
+                        onClick={() => {
+                          setDangerousAction("revokeAll");
+                        }}
                         variant="outline"
                       >
                         {config.localization.revokeAllSessions}
@@ -1501,7 +1538,9 @@ function UserInspector({
                               !canRevoke.data?.success ||
                               isSelf
                             }
-                            onClick={() => revokeSession.mutate({ sessionToken: item.token })}
+                            onClick={() => {
+                              revokeSession.mutate({ sessionToken: item.token });
+                            }}
                             size="icon-sm"
                             variant="ghost"
                           >
@@ -1542,7 +1581,11 @@ function UserInspector({
       <PasswordDialog open={passwordOpen} onOpenChange={setPasswordOpen} userId={user?.id} />
       <AlertDialog
         open={Boolean(dangerousAction)}
-        onOpenChange={(value) => !value && closeDangerousAction()}
+        onOpenChange={(value) => {
+          if (!value) {
+            closeDangerousAction();
+          }
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -1556,7 +1599,9 @@ function UserInspector({
                 <InputGroup>
                   <InputGroupInput
                     id="admin-ban-reason"
-                    onChange={(event) => setBanReason(event.target.value)}
+                    onChange={(event) => {
+                      setBanReason(event.target.value);
+                    }}
                     value={banReason}
                   />
                 </InputGroup>
@@ -1569,7 +1614,9 @@ function UserInspector({
                   <InputGroupInput
                     id="admin-ban-duration"
                     min="1"
-                    onChange={(event) => setBanDuration(event.target.value)}
+                    onChange={(event) => {
+                      setBanDuration(event.target.value);
+                    }}
                     step="1"
                     type="number"
                     value={banDuration}
@@ -1620,7 +1667,9 @@ function PasswordDialog({
   const [errorMessage, setErrorMessage] = useState<string>();
   const mutation = useMutation(
     setAdminUserPasswordOptions(auth.authClient, () => {
-      setTimeout(() => mutation.reset(), 0);
+      setTimeout(() => {
+        mutation.reset();
+      }, 0);
     }),
   );
   const close = () => {
@@ -1629,20 +1678,31 @@ function PasswordDialog({
     mutation.reset();
     onOpenChange(false);
   };
-  const submit = (event: FormEvent) => {
+  const submit = (event: SubmitEvent) => {
     event.preventDefault();
     setErrorMessage(undefined);
     if (userId)
       mutation.mutate(
         { userId, newPassword: password },
         {
-          onError: (error) => setErrorMessage(getAdminErrorMessage(error)),
+          onError: (error) => {
+            setErrorMessage(getAdminErrorMessage(error));
+          },
           onSuccess: close,
         },
       );
   };
   return (
-    <Dialog open={open} onOpenChange={(value) => (value ? onOpenChange(true) : close())}>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        if (value) {
+          onOpenChange(true);
+        } else {
+          close();
+        }
+      }}
+    >
       <DialogContent>
         <form className="flex flex-col gap-4" onSubmit={submit}>
           <DialogHeader>
@@ -1656,7 +1716,9 @@ function PasswordDialog({
                 aria-invalid={Boolean(errorMessage)}
                 autoComplete="new-password"
                 id="admin-new-password"
-                onChange={(event) => setPassword(event.target.value)}
+                onChange={(event) => {
+                  setPassword(event.target.value);
+                }}
                 required
                 type="password"
                 value={password}

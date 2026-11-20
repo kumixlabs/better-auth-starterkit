@@ -1,6 +1,7 @@
 "use client";
 
 import type { PasskeyAuthClient } from "@better-auth-ui/core/plugins/passkey";
+import { passkeyPlugin } from "@better-auth-ui/core/plugins/passkey";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useDeletePasskey } from "@better-auth-ui/react/plugins/passkey";
 import { Fingerprint } from "lucide-react";
@@ -19,7 +20,6 @@ import { Button } from "@kumix/ui/ui/button";
 import { Field, FieldLabel } from "@kumix/ui/ui/field";
 import { Input } from "@kumix/ui/ui/input";
 import { Spinner } from "@kumix/ui/ui/spinner";
-import { passkeyPlugin } from "../lib/passkey-plugin";
 
 export type ListedPasskey = {
   id: string;
@@ -41,7 +41,9 @@ export function DeletePasskeyDialog({ open, onOpenChange, passkey }: DeletePassk
   const previewId = `delete-passkey-preview-${passkey.id}`;
 
   const { mutate: deletePasskey, isPending: isDeleting } = useDeletePasskey(authClient, {
-    onSuccess: () => onOpenChange(false),
+    onSuccess: () => {
+      onOpenChange(false);
+    },
   });
 
   return (
@@ -74,7 +76,9 @@ export function DeletePasskeyDialog({ open, onOpenChange, passkey }: DeletePassk
             type="button"
             variant="destructive"
             disabled={isDeleting}
-            onClick={() => deletePasskey({ id: passkey.id })}
+            onClick={() => {
+              deletePasskey({ id: passkey.id });
+            }}
           >
             {isDeleting && <Spinner />}
 

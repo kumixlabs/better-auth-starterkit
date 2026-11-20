@@ -2,6 +2,7 @@
 
 import { useEffect, useReducer } from "react";
 import type { EmailOtpAuthClient } from "@better-auth-ui/core/plugins/email-otp";
+import { emailOtpPlugin } from "@better-auth-ui/core/plugins/email-otp";
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react";
 import {
   useChangeEmailOtp,
@@ -18,7 +19,6 @@ import { Input } from "@kumix/ui/ui/input";
 import { Skeleton } from "@kumix/ui/ui/skeleton";
 import { cn } from "@kumix/utils";
 import { submitAuthForm, useAuthForm } from "../auth-form";
-import { emailOtpPlugin } from "../lib/email-otp-plugin";
 import { OpenEmailButton } from "../open-email-button";
 import { OtpField } from "../otp-field";
 
@@ -43,12 +43,18 @@ const initialChangeEmailState: ChangeEmailState = {
 // takes part in the transition.
 function changeEmailReducer(_state: ChangeEmailState, action: ChangeEmailAction): ChangeEmailState {
   switch (action.type) {
-    case "currentEmailChallenged":
+    case "currentEmailChallenged": {
       return { step: "currentCode", newEmail: action.newEmail };
-    case "changeRequested":
+    }
+    case "changeRequested": {
       return { step: "newCode", newEmail: action.newEmail };
-    case "restarted":
+    }
+    case "restarted": {
       return initialChangeEmailState;
+    }
+    default: {
+      return action satisfies never;
+    }
   }
 }
 
@@ -67,14 +73,14 @@ export type ChangeEmailOtpProps = {
  * @param className - Additional CSS classes applied to the card.
  */
 export function ChangeEmailOtp({ className }: ChangeEmailOtpProps) {
-  const { authClient, localization } = useAuth();
+  const { authClient, localization } = useAuth<EmailOtpAuthClient>();
   const {
     localization: emailOtpLocalization,
     otpLength,
     verifyCurrentEmail,
   } = useAuthPlugin(emailOtpPlugin);
 
-  const otpClient = authClient as EmailOtpAuthClient;
+  const otpClient = authClient;
   const { data: session } = useSession(otpClient);
   const currentEmail = session?.user.email;
 
@@ -88,7 +94,9 @@ export function ChangeEmailOtp({ className }: ChangeEmailOtpProps) {
   const { mutateAsync: requestEmailChangeOtp, isPending: isRequesting } = useRequestEmailChangeOtp(
     otpClient,
     {
-      onError: () => form.setFieldValue("code", ""),
+      onError: () => {
+        form.setFieldValue("code", "");
+      },
       onSuccess: (_data, { newEmail }) => {
         form.setFieldValue("code", "");
         dispatch({ type: "changeRequested", newEmail });
@@ -97,7 +105,9 @@ export function ChangeEmailOtp({ className }: ChangeEmailOtpProps) {
   );
 
   const { mutateAsync: changeEmailOtp, isPending: isChanging } = useChangeEmailOtp(otpClient, {
-    onError: () => form.setFieldValue("code", ""),
+    onError: () => {
+      form.setFieldValue("code", "");
+    },
     onSuccess: () => {
       toastSuccess({ message: localization.settings.changeEmailSuccess });
       resetFlow();
@@ -130,7 +140,9 @@ export function ChangeEmailOtp({ className }: ChangeEmailOtpProps) {
           await sendVerificationOtp(
             { email: currentEmail, type: "change-email" },
             {
-              onSuccess: () => dispatch({ type: "currentEmailChallenged", newEmail }),
+              onSuccess: () => {
+                dispatch({ type: "currentEmailChallenged", newEmail });
+              },
             },
           );
           return;
@@ -185,7 +197,9 @@ export function ChangeEmailOtp({ className }: ChangeEmailOtpProps) {
                           disabled={isPending}
                           required
                           onBlur={field.handleBlur}
-                          onChange={(event) => field.handleChange(event.target.value)}
+                          onChange={(event) => {
+                            field.handleChange(event.target.value);
+                          }}
                         />
                       ) : (
                         <Skeleton>
@@ -209,7 +223,6 @@ export function ChangeEmailOtp({ className }: ChangeEmailOtpProps) {
                   <form.AppField name="code">
                     {(field) => (
                       <OtpField
-                        autoFocus
                         disabled={isPending}
                         label={
                           state.step === "currentCode"

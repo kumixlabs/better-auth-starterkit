@@ -37,7 +37,9 @@ export function ReauthenticationAction({
       `${auth.basePaths.auth}/${auth.viewPaths.auth.signIn}`,
     );
     signOut.mutate(undefined, {
-      onSuccess: () => auth.navigate({ to: signInURL }),
+      onSuccess: () => {
+        auth.navigate({ to: signInURL });
+      },
     });
   };
 

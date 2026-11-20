@@ -4,6 +4,7 @@ import { Fragment } from "react";
 import {
   groupOAuthConsents,
   type OAuthProviderAuthClient,
+  oauthProviderPlugin,
 } from "@better-auth-ui/core/plugins/oauth-provider";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useListOAuthConsents } from "@better-auth-ui/react/plugins/oauth-provider";
@@ -11,7 +12,6 @@ import { useListOAuthConsents } from "@better-auth-ui/react/plugins/oauth-provid
 import { Card, CardContent } from "@kumix/ui/ui/card";
 import { ItemGroup, ItemSeparator } from "@kumix/ui/ui/item";
 import { cn } from "@kumix/utils";
-import { oauthProviderPlugin } from "../lib/oauth-provider-plugin";
 import { AuthorizedApplication } from "./authorized-application";
 import { AuthorizedApplicationSkeleton } from "./authorized-application-skeleton";
 import { AuthorizedApplicationsEmpty } from "./authorized-applications-empty";
@@ -28,10 +28,10 @@ export type AuthorizedApplicationsProps = {
  * are grouped by client ID and rendered as a single application.
  */
 export function AuthorizedApplications({ className }: AuthorizedApplicationsProps) {
-  const { authClient } = useAuth();
+  const { authClient } = useAuth<OAuthProviderAuthClient>();
   const { localization } = useAuthPlugin(oauthProviderPlugin);
 
-  const { data: consents, isPending } = useListOAuthConsents(authClient as OAuthProviderAuthClient);
+  const { data: consents, isPending } = useListOAuthConsents(authClient);
 
   const applications = groupOAuthConsents(consents);
 
@@ -43,7 +43,7 @@ export function AuthorizedApplications({ className }: AuthorizedApplicationsProp
         <CardContent className="p-0">
           {isPending ? (
             <AuthorizedApplicationSkeleton />
-          ) : !applications.length ? (
+          ) : applications.length === 0 ? (
             <AuthorizedApplicationsEmpty />
           ) : (
             <ItemGroup className="gap-0">

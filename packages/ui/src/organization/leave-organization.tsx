@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useActiveOrganization } from "@better-auth-ui/react/plugins/organization";
 
 import { Button } from "@kumix/ui/ui/button";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { LeaveOrganizationDialog } from "./leave-organization-dialog";
 
 /**
@@ -23,9 +23,7 @@ export function LeaveOrganization() {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <p className="text-sm leading-tight font-medium">
-          {organizationLocalization.leaveOrganization}
-        </p>
+        <p className="text-sm/tight font-medium">{organizationLocalization.leaveOrganization}</p>
 
         <p className="text-muted-foreground mt-0.5 text-xs">
           {organizationLocalization.leaveOrganizationDescription}
@@ -37,7 +35,9 @@ export function LeaveOrganization() {
         size="sm"
         variant="outline"
         className="text-destructive"
-        onClick={() => setConfirmOpen(true)}
+        onClick={() => {
+          setConfirmOpen(true);
+        }}
       >
         {organizationLocalization.leaveOrganization}
       </Button>

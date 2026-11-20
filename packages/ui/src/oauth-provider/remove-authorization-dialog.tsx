@@ -5,6 +5,7 @@ import type {
   AuthorizedOAuthApplication,
   OAuthProviderAuthClient,
 } from "@better-auth-ui/core/plugins/oauth-provider";
+import { oauthProviderPlugin } from "@better-auth-ui/core/plugins/oauth-provider";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useDeleteOAuthConsent } from "@better-auth-ui/react/plugins/oauth-provider";
 import { ShieldOff } from "lucide-react";
@@ -21,7 +22,6 @@ import {
 } from "@kumix/ui/ui/alert-dialog";
 import { Button } from "@kumix/ui/ui/button";
 import { Spinner } from "@kumix/ui/ui/spinner";
-import { oauthProviderPlugin } from "../lib/oauth-provider-plugin";
 
 export type RemoveAuthorizationDialogProps = {
   /** @remarks `AuthorizedOAuthApplication` */
@@ -44,13 +44,11 @@ export function RemoveAuthorizationDialog({
   open,
   onOpenChange,
 }: RemoveAuthorizationDialogProps) {
-  const { authClient, localization } = useAuth();
+  const { authClient, localization } = useAuth<OAuthProviderAuthClient>();
   const { localization: oauthLocalization } = useAuthPlugin(oauthProviderPlugin);
   const [isRemoving, setIsRemoving] = useState(false);
 
-  const { mutateAsync: deleteConsent } = useDeleteOAuthConsent(
-    authClient as OAuthProviderAuthClient,
-  );
+  const { mutateAsync: deleteConsent } = useDeleteOAuthConsent(authClient);
 
   const removeAuthorization = async () => {
     setIsRemoving(true);
@@ -97,7 +95,7 @@ export function RemoveAuthorizationDialog({
             type="button"
             variant="destructive"
             disabled={isRemoving}
-            onClick={removeAuthorization}
+            onClick={() => void removeAuthorization()}
           >
             {isRemoving && <Spinner />}
 

@@ -1,13 +1,13 @@
 "use client";
 
 import { type AuthView, authMutationKeys, getAuthLinkURL } from "@better-auth-ui/core";
+import { emailOtpPlugin } from "@better-auth-ui/core/plugins/email-otp";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useIsMutating } from "@tanstack/react-query";
 import { KeyRound, Lock } from "lucide-react";
 
 import { buttonVariants } from "@kumix/ui/ui/button";
 import { cn } from "@kumix/utils";
-import { emailOtpPlugin } from "../lib/email-otp-plugin";
 
 export type EmailOtpButtonProps = {
   /** @remarks `AuthView` */
@@ -36,7 +36,7 @@ export function EmailOtpButton({ view }: EmailOtpButtonProps) {
 
   // On the code view this button switches back to password sign-in. With
   // password auth disabled there's nowhere to switch to, so hide it.
-  if (isEmailOtpView && !emailAndPassword?.enabled) return null;
+  if (isEmailOtpView && !emailAndPassword.enabled) return null;
 
   return (
     <Link

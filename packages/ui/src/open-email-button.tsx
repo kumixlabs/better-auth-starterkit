@@ -56,7 +56,9 @@ export function OpenEmailButton({ email, className, variant }: OpenEmailButtonPr
         <TooltipTrigger
           type="button"
           className={cn(buttonVariants({ variant }), "w-full", className)}
-          onClick={() => window.open(provider.loginUrl, "_blank", "noopener,noreferrer")}
+          onClick={() => {
+            window.open(provider.loginUrl, "_blank", "noopener,noreferrer");
+          }}
         >
           {localization.auth.openEmailProvider.replace("{{provider}}", provider.companyProvider)}
           <QrCode data-icon="inline-end" />

@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import { authMutationKeys, validateEmailAddress } from "@better-auth-ui/core";
 import type { EmailOtpAuthClient } from "@better-auth-ui/core/plugins/email-otp";
+import { emailOtpPlugin } from "@better-auth-ui/core/plugins/email-otp";
 import { getSsoFallbackEmail } from "@better-auth-ui/core/plugins/sso";
 import { useAuth, useAuthPlugin, useFetchOptions } from "@better-auth-ui/react";
 import { useSendVerificationOtp, useSignInEmailOtp } from "@better-auth-ui/react/plugins/email-otp";
@@ -26,7 +27,6 @@ import {
   submitAuthForm,
   useAuthForm,
 } from "../auth-form";
-import { emailOtpPlugin } from "../lib/email-otp-plugin";
 import { useResendCooldown } from "../lib/use-resend-cooldown";
 import { useSignInContinuation } from "../lib/use-sign-in-continuation";
 import { OpenEmailButton } from "../open-email-button";
@@ -61,12 +61,12 @@ export function EmailOtp({ className, socialLayout, socialPosition = "bottom" }:
     socialProviders,
     viewPaths,
     Link,
-  } = useAuth();
+  } = useAuth<EmailOtpAuthClient>();
   const { localization: emailOtpLocalization, otpLength } = useAuthPlugin(emailOtpPlugin);
 
   const { fetchOptions, resetCaptcha } = useFetchOptions();
-  const Captcha = plugins.find((plugin) => plugin.captchaComponent)?.captchaComponent;
-  const otpClient = authClient as EmailOtpAuthClient;
+  const Captcha = plugins.find((plugin) => Boolean(plugin.captchaComponent))?.captchaComponent;
+  const otpClient = authClient;
   const continueSignIn = useSignInContinuation();
   const { cooldown, isCoolingDown, startCooldown } = useResendCooldown();
 
@@ -75,7 +75,9 @@ export function EmailOtp({ className, socialLayout, socialPosition = "bottom" }:
   const { mutateAsync: sendVerificationOtp, isPending: isSending } = useSendVerificationOtp(
     otpClient,
     {
-      onError: () => resetCaptcha(),
+      onError: () => {
+        resetCaptcha();
+      },
       onSuccess: () => {
         resetCaptcha();
         setCodeSent(true);
@@ -89,7 +91,9 @@ export function EmailOtp({ className, socialLayout, socialPosition = "bottom" }:
       form.setFieldValue("code", "");
       resetCaptcha();
     },
-    onSuccess: (data) => continueSignIn(data),
+    onSuccess: (data) => {
+      continueSignIn(data);
+    },
   });
 
   const signInMutating = useIsMutating({
@@ -101,7 +105,7 @@ export function EmailOtp({ className, socialLayout, socialPosition = "bottom" }:
   const isPending = signInMutating + signUpMutating > 0 || isSending;
 
   const sendCode = async () =>
-    await sendVerificationOtp({
+    sendVerificationOtp({
       email: form.state.values.email,
       type: "sign-in",
       fetchOptions,
@@ -172,7 +176,6 @@ export function EmailOtp({ className, socialLayout, socialPosition = "bottom" }:
                   <form.AppField name="code">
                     {(field) => (
                       <OtpField
-                        autoFocus
                         disabled={isPending || isSigningIn}
                         label={emailOtpLocalization.code}
                         length={otpLength}
@@ -208,7 +211,9 @@ export function EmailOtp({ className, socialLayout, socialPosition = "bottom" }:
                           autoComplete="email"
                           value={field.state.value}
                           onBlur={field.handleBlur}
-                          onChange={(event) => field.handleChange(event.target.value)}
+                          onChange={(event) => {
+                            field.handleChange(event.target.value);
+                          }}
                           placeholder={localization.auth.emailPlaceholder}
                           required
                           disabled={isPending}
@@ -285,7 +290,7 @@ export function EmailOtp({ className, socialLayout, socialPosition = "bottom" }:
           )}
         </div>
 
-        {emailAndPassword?.enabled && (
+        {emailAndPassword.enabled && (
           <div className="mt-4 flex w-full flex-col items-center gap-3">
             <FieldDescription className="text-center">
               {localization.auth.needToCreateAnAccount}{" "}

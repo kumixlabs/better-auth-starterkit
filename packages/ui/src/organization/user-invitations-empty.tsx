@@ -1,10 +1,10 @@
 "use client";
 
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuthPlugin } from "@better-auth-ui/react";
 import { MailWarning, Send } from "lucide-react";
 
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@kumix/ui/ui/empty";
-import { organizationPlugin } from "../lib/organization-plugin";
 
 /**
  * Empty state for `UserInvitations`.

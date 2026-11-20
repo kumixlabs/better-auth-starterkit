@@ -13,7 +13,7 @@ import { Card, CardContent } from "@kumix/ui/ui/card";
 import { Field, FieldContent, FieldLabel, FieldTitle } from "@kumix/ui/ui/field";
 import { RadioGroup, RadioGroupItem } from "@kumix/ui/ui/radio-group";
 import { cn } from "@kumix/utils";
-import { themePlugin } from "../lib/theme-plugin";
+import { themePluginBase } from "../lib/theme-plugin-base";
 
 export type AppearanceProps = {
   className?: string;
@@ -29,11 +29,13 @@ export type AppearanceProps = {
  * @returns A JSX element containing the theme selector card.
  */
 export function Appearance({ className }: AppearanceProps) {
-  const { useTheme, localization } = useAuthPlugin(themePlugin);
+  const { useTheme, localization } = useAuthPlugin(themePluginBase);
   const { theme, setTheme, themes = [] } = useTheme();
 
   const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => setIsMounted(true), []);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <div>

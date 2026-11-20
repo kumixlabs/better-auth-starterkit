@@ -10,6 +10,7 @@ import {
   type OrganizationAuthClient,
   type OrganizationRolesAuthClient,
   type OrganizationTeamsAuthClient,
+  organizationPlugin,
 } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react";
 import {
@@ -23,7 +24,6 @@ import { LogOut, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@kumix/ui/ui/button";
 import { Skeleton } from "@kumix/ui/ui/skeleton";
 import { TableCell, TableRow } from "@kumix/ui/ui/table";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { UserView } from "../user/user-view";
 import { EditMemberRolesDialog } from "./edit-member-roles-dialog";
 import { LeaveOrganizationDialog } from "./leave-organization-dialog";
@@ -50,7 +50,9 @@ export function OrganizationMemberRow({
   organization,
   selectableRow,
 }: OrganizationMemberRowProps) {
-  const { authClient } = useAuth<OrganizationAuthClient>();
+  const { authClient } = useAuth<
+    OrganizationAuthClient & OrganizationRolesAuthClient & OrganizationTeamsAuthClient
+  >();
   const {
     modelFields: { member: memberFields },
     dynamicAccessControl,
@@ -64,11 +66,11 @@ export function OrganizationMemberRow({
     organizationId: organization.id,
     permissions: { ac: ["read"] },
   });
-  const dynamicRoles = useListRoles(authClient as OrganizationRolesAuthClient, {
+  const dynamicRoles = useListRoles(authClient, {
     query: { organizationId: organization.id },
     enabled: dynamicAccessControl?.enabled === true && canReadRoles.data?.success === true,
   });
-  const memberTeams = useListUserTeams(authClient as OrganizationTeamsAuthClient, {
+  const memberTeams = useListUserTeams(authClient, {
     query: {
       organizationId: organization.id,
       userId: member.userId,
@@ -120,9 +122,7 @@ export function OrganizationMemberRow({
         <div className="flex flex-col gap-1">
           <UserView user={member.user} />
           {memberFields.map((field) => {
-            const value = formatAdditionalFieldValue(
-              (member as unknown as Record<string, unknown>)[field.name],
-            );
+            const value = formatAdditionalFieldValue(Reflect.get(member, field.name));
             return value ? (
               <span className="text-muted-foreground text-xs" key={field.name}>
                 {field.label}: {value}
@@ -161,7 +161,9 @@ export function OrganizationMemberRow({
           {canManageTarget && hasUpdatePermission?.success && (
             <Button
               className="size-8"
-              onClick={() => setRoleEditorOpen(true)}
+              onClick={() => {
+                setRoleEditorOpen(true);
+              }}
               size="icon"
               variant="ghost"
             >
@@ -194,7 +196,9 @@ export function OrganizationMemberRow({
                   ? organizationLocalization.onlyOwnerActionDisabled
                   : undefined
               }
-              onClick={() => setLeaveOpen(true)}
+              onClick={() => {
+                setLeaveOpen(true);
+              }}
             >
               <LogOut />
             </Button>
@@ -220,14 +224,16 @@ export function OrganizationMemberRow({
                   ? organizationLocalization.onlyOwnerActionDisabled
                   : undefined
               }
-              onClick={() => setRemoveOpen(true)}
+              onClick={() => {
+                setRemoveOpen(true);
+              }}
             >
               <Trash2 />
             </Button>
           ) : null}
         </div>
 
-        {isCurrentUser && organization && !onlyOwnerActionDisabled ? (
+        {isCurrentUser && !onlyOwnerActionDisabled ? (
           <LeaveOrganizationDialog
             open={leaveOpen}
             onOpenChange={setLeaveOpen}

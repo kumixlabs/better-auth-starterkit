@@ -1,6 +1,7 @@
 "use client";
 
 import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import {
   useAcceptInvitation,
@@ -20,7 +21,6 @@ import {
   ItemTitle,
 } from "@kumix/ui/ui/item";
 import { Spinner } from "@kumix/ui/ui/spinner";
-import { organizationPlugin } from "../lib/organization-plugin";
 
 export type UserInvitationRowProps = {
   invitation: Invitation & { organizationName?: string };
@@ -45,7 +45,7 @@ export function UserInvitationRow({ invitation }: UserInvitationRowProps) {
       <ItemContent>
         <ItemTitle>
           {invitation.organizationName}
-          <Badge variant="secondary">{roles?.[invitation.role] ?? invitation.role}</Badge>
+          <Badge variant="secondary">{roles[invitation.role] ?? invitation.role}</Badge>
         </ItemTitle>
         <ItemDescription>
           {new Date(invitation.createdAt).toLocaleString(undefined, {
@@ -59,7 +59,9 @@ export function UserInvitationRow({ invitation }: UserInvitationRowProps) {
           variant="outline"
           size="sm"
           disabled={isAccepting || isRejecting}
-          onClick={() => acceptInvitation({ invitationId: invitation.id })}
+          onClick={() => {
+            acceptInvitation({ invitationId: invitation.id });
+          }}
         >
           {isAccepting ? <Spinner /> : <Check />}
 
@@ -71,7 +73,9 @@ export function UserInvitationRow({ invitation }: UserInvitationRowProps) {
           size="icon"
           className="text-destructive size-8"
           disabled={isAccepting || isRejecting}
-          onClick={() => rejectInvitation({ invitationId: invitation.id })}
+          onClick={() => {
+            rejectInvitation({ invitationId: invitation.id });
+          }}
           aria-label={organizationLocalization.rejectInvitation}
         >
           {isRejecting ? <Spinner /> : <X />}

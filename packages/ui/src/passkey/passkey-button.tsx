@@ -3,6 +3,7 @@
 import { useCallback, useMemo } from "react";
 import { type AuthView, authMutationKeys, authQueryKeys } from "@better-auth-ui/core";
 import type { PasskeyAuthClient } from "@better-auth-ui/core/plugins/passkey";
+import { passkeyPlugin } from "@better-auth-ui/core/plugins/passkey";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { usePasskeyAutoFill, useSignInPasskey } from "@better-auth-ui/react/plugins/passkey";
 import { useIsMutating, useQueryClient } from "@tanstack/react-query";
@@ -11,7 +12,6 @@ import { Fingerprint } from "lucide-react";
 import { Button } from "@kumix/ui/ui/button";
 import { Spinner } from "@kumix/ui/ui/spinner";
 import { cn } from "@kumix/utils";
-import { passkeyPlugin } from "../lib/passkey-plugin";
 
 export type PasskeyButtonProps = {
   /** @remarks `AuthView` */
@@ -65,7 +65,9 @@ export function PasskeyButton({ view }: PasskeyButtonProps) {
       variant="outline"
       disabled={isPending}
       className={cn("w-full", isPending && "pointer-events-none opacity-50")}
-      onClick={() => signInPasskey({ autoFill: false, fetchOptions })}
+      onClick={() => {
+        signInPasskey({ autoFill: false, fetchOptions });
+      }}
     >
       {passkeyPending ? <Spinner /> : <Fingerprint />}
       {localization.auth.continueWith.replace("{{provider}}", passkeyLocalization.passkey)}

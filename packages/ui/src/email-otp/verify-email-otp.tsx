@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { getAuthLinkURL } from "@better-auth-ui/core";
 import type { EmailOtpAuthClient } from "@better-auth-ui/core/plugins/email-otp";
+import { emailOtpPlugin } from "@better-auth-ui/core/plugins/email-otp";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useSendVerificationOtp, useVerifyEmailOtp } from "@better-auth-ui/react/plugins/email-otp";
 import { useSelector } from "@tanstack/react-form";
@@ -15,7 +16,6 @@ import { Field, FieldDescription, FieldGroup, FieldLabel } from "@kumix/ui/ui/fi
 import { Input } from "@kumix/ui/ui/input";
 import { cn } from "@kumix/utils";
 import { runAuthFormAction, submitAuthForm, useAuthForm } from "../auth-form";
-import { emailOtpPlugin } from "../lib/email-otp-plugin";
 import { RESEND_COOLDOWN_SECONDS, useResendCooldown } from "../lib/use-resend-cooldown";
 import { OpenEmailButton } from "../open-email-button";
 import { OtpField } from "../otp-field";
@@ -39,10 +39,11 @@ export type VerifyEmailOtpProps = {
  * @param className - Additional CSS classes applied to the card.
  */
 export function VerifyEmailOtp({ className }: VerifyEmailOtpProps) {
-  const { authClient, basePaths, localization, navigate, redirectTo, viewPaths, Link } = useAuth();
+  const { authClient, basePaths, localization, navigate, redirectTo, viewPaths, Link } =
+    useAuth<EmailOtpAuthClient>();
   const { localization: emailOtpLocalization, otpLength } = useAuthPlugin(emailOtpPlugin);
 
-  const otpClient = authClient as EmailOtpAuthClient;
+  const otpClient = authClient;
   const isHydrated = useHydrated();
 
   const [email, setEmail] = useState(
@@ -74,7 +75,9 @@ export function VerifyEmailOtp({ className }: VerifyEmailOtpProps) {
   );
 
   const { mutateAsync: verifyEmailOtp, isPending: isVerifying } = useVerifyEmailOtp(otpClient, {
-    onError: () => form.setFieldValue("code", ""),
+    onError: () => {
+      form.setFieldValue("code", "");
+    },
     onSuccess: () => {
       sessionStorage.removeItem(VERIFY_EMAIL_STORAGE_KEY);
       toastSuccess({ message: emailOtpLocalization.emailVerified });
@@ -125,7 +128,6 @@ export function VerifyEmailOtp({ className }: VerifyEmailOtpProps) {
                 <form.AppField name="code">
                   {(field) => (
                     <OtpField
-                      autoFocus
                       disabled={isPending}
                       label={emailOtpLocalization.code}
                       length={otpLength}
@@ -152,7 +154,9 @@ export function VerifyEmailOtp({ className }: VerifyEmailOtpProps) {
                         disabled={isPending}
                         value={field.state.value}
                         onBlur={field.handleBlur}
-                        onChange={(event) => field.handleChange(event.target.value)}
+                        onChange={(event) => {
+                          field.handleChange(event.target.value);
+                        }}
                       />
 
                       <field.AuthFormFieldError />

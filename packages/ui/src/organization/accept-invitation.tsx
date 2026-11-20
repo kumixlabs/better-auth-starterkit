@@ -2,6 +2,7 @@
 
 import { getSafeRedirectTo } from "@better-auth-ui/core";
 import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthenticate, useAuthPlugin } from "@better-auth-ui/react";
 import {
   useAcceptInvitation,
@@ -25,7 +26,6 @@ import { FieldDescription } from "@kumix/ui/ui/field";
 import { Skeleton } from "@kumix/ui/ui/skeleton";
 import { Spinner } from "@kumix/ui/ui/spinner";
 import { cn } from "@kumix/utils";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { UserAvatar } from "../user/user-avatar";
 
 type UserInvitation = Invitation & { organizationName?: string };
@@ -45,9 +45,9 @@ function isPendingInvitation(invitation: UserInvitation | undefined) {
  * parameter and let the signed-in recipient accept or reject it directly.
  */
 export function AcceptInvitation({ className }: AcceptInvitationProps) {
-  const { authClient, navigate, redirectTo } = useAuth();
+  const { authClient, navigate, redirectTo } = useAuth<OrganizationAuthClient>();
   const { localization, roles } = useAuthPlugin(organizationPlugin);
-  const organizationAuthClient = authClient as OrganizationAuthClient;
+  const organizationAuthClient = authClient;
   const isHydrated = useHydrated();
   const invitationId = isHydrated
     ? new URLSearchParams(window.location.search).get("invitationId")
@@ -57,7 +57,7 @@ export function AcceptInvitation({ className }: AcceptInvitationProps) {
     query: { id: invitationId ?? "" },
     enabled: Boolean(invitationId),
   });
-  const invitation = invitationQuery.data as UserInvitation | undefined;
+  const invitation: UserInvitation | undefined = invitationQuery.data ?? undefined;
 
   const returnToApplication = () => {
     navigate({
@@ -85,7 +85,7 @@ export function AcceptInvitation({ className }: AcceptInvitationProps) {
     (Boolean(invitationId) && invitationQuery.isPending);
   const isAvailable = isPendingInvitation(invitation);
   const organizationName = invitation?.organizationName || localization.organization;
-  const role = invitation ? (roles?.[invitation.role] ?? invitation.role) : localization.member;
+  const role = invitation ? (roles[invitation.role] ?? invitation.role) : localization.member;
 
   return (
     <Card className={cn("w-full max-w-lg gap-0 overflow-hidden p-0", className)}>
@@ -156,7 +156,9 @@ export function AcceptInvitation({ className }: AcceptInvitationProps) {
               className="h-11 w-full"
               variant="secondary"
               disabled={isAccepting || isRejecting}
-              onClick={() => rejectInvitation({ invitationId: invitation.id })}
+              onClick={() => {
+                rejectInvitation({ invitationId: invitation.id });
+              }}
             >
               {isRejecting ? <Spinner /> : null}
               {localization.rejectInvitation}
@@ -164,7 +166,9 @@ export function AcceptInvitation({ className }: AcceptInvitationProps) {
             <Button
               className="h-11 w-full"
               disabled={isAccepting || isRejecting}
-              onClick={() => acceptInvitation({ invitationId: invitation.id })}
+              onClick={() => {
+                acceptInvitation({ invitationId: invitation.id });
+              }}
             >
               {isAccepting ? <Spinner /> : null}
               {localization.accept}

@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import type { ListDeviceSession } from "@better-auth-ui/core/plugins/multi-session";
-import type { OAuthProviderMultiSessionAuthClient } from "@better-auth-ui/core/plugins/oauth-provider";
 import {
   type OAuthAuthorizationRequest,
+  type OAuthProviderMultiSessionAuthClient,
+  oauthProviderPlugin,
   parseOAuthAuthorizationRequest,
   sanitizeOAuthClientUrl,
 } from "@better-auth-ui/core/plugins/oauth-provider";
@@ -26,7 +27,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@kumi
 import { Skeleton } from "@kumix/ui/ui/skeleton";
 import { Spinner } from "@kumix/ui/ui/spinner";
 import { cn } from "@kumix/utils";
-import { oauthProviderPlugin } from "../lib/oauth-provider-plugin";
 import { UserAvatar } from "../user/user-avatar";
 
 export type OAuthSelectAccountProps = {
@@ -48,9 +48,9 @@ const interpolateClient = (template: string, clientName: string) =>
  * management belongs in security settings.
  */
 export function OAuthSelectAccount({ className }: OAuthSelectAccountProps) {
-  const { authClient } = useAuth();
+  const { authClient } = useAuth<OAuthProviderMultiSessionAuthClient>();
   const { localization } = useAuthPlugin(oauthProviderPlugin);
-  const oauthClient = authClient as OAuthProviderMultiSessionAuthClient;
+  const oauthClient = authClient;
 
   const { data: session, isPending: isSessionPending } = useSession(oauthClient);
   const [request, setRequest] = useState<OAuthAuthorizationRequest>();
@@ -134,7 +134,7 @@ export function OAuthSelectAccount({ className }: OAuthSelectAccountProps) {
             <Skeleton className="size-16 rounded-full" />
           )}
           {client ? (
-            <p className="max-w-full text-base font-medium break-words">{clientName}</p>
+            <p className="max-w-full text-base font-medium wrap-break-word">{clientName}</p>
           ) : (
             <Skeleton className="h-5 w-36" />
           )}
@@ -175,11 +175,11 @@ export function OAuthSelectAccount({ className }: OAuthSelectAccountProps) {
                       variant="ghost"
                       disabled={isBusy || !client || isSessionPending}
                       aria-label={`${localization.continue}: ${deviceSession.user.name || deviceSession.user.email} (${deviceSession.user.email})`}
-                      onClick={() => selectAccount(deviceSession)}
+                      onClick={() => void selectAccount(deviceSession)}
                     >
                       <UserAvatar className="size-10 shrink-0" user={deviceSession.user} />
                       <span className="grid min-w-0 flex-1 gap-0.5">
-                        <span className="text-base font-medium break-words">
+                        <span className="text-base font-medium wrap-break-word">
                           {deviceSession.user.name || deviceSession.user.email}
                         </span>
                         {deviceSession.user.name ? (

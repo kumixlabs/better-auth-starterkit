@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { passkeyPlugin } from "@better-auth-ui/core/plugins/passkey";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { Fingerprint, Pencil, X } from "lucide-react";
 
@@ -13,7 +14,6 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@kumix/ui/ui/item";
-import { passkeyPlugin } from "../lib/passkey-plugin";
 import { DeletePasskeyDialog, type ListedPasskey } from "./delete-passkey-dialog";
 import { RenamePasskeyDialog } from "./rename-passkey-dialog";
 
@@ -44,14 +44,22 @@ export function Passkey({ passkey }: PasskeyProps) {
         </ItemDescription>
       </ItemContent>
       <ItemActions>
-        <Button variant="outline" size="sm" onClick={() => setRenameOpen(true)}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            setRenameOpen(true);
+          }}
+        >
           <Pencil />
           {passkeyLocalization.renamePasskey}
         </Button>
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setDeleteOpen(true)}
+          onClick={() => {
+            setDeleteOpen(true);
+          }}
           aria-label={passkeyLocalization.deletePasskey.replace("{{name}}", passkeyName)}
         >
           <X />

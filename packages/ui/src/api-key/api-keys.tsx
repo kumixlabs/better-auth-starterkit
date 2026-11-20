@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { getLookaheadPage } from "@better-auth-ui/core";
 import type { ApiKeyAuthClient, ListedApiKey } from "@better-auth-ui/core/plugins/api-key";
+import { apiKeyPlugin } from "@better-auth-ui/core/plugins/api-key";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useListApiKeys } from "@better-auth-ui/react/plugins/api-key";
 import {
@@ -16,16 +17,8 @@ import {
 import { Button } from "@kumix/ui/ui/button";
 import { Card, CardContent } from "@kumix/ui/ui/card";
 import { ItemGroup, ItemSeparator } from "@kumix/ui/ui/item";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@kumix/ui/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@kumix/ui/ui/select";
 import { cn } from "@kumix/utils";
-import { apiKeyPlugin } from "../lib/api-key-plugin";
 import { useServerTableState } from "../server-table-state";
 import { ApiKey } from "./api-key";
 import { ApiKeySkeleton } from "./api-key-skeleton";
@@ -80,12 +73,6 @@ export function ApiKeys({
   const sortBy = primarySort?.id === "name" ? "name" : "createdAt";
   const sortDirection = primarySort?.desc ? "desc" : "asc";
   const sort = `${sortBy}:${sortDirection}`;
-  const sortItems = [
-    { label: apiKeyLocalization.newest, value: "createdAt:desc" },
-    { label: apiKeyLocalization.oldest, value: "createdAt:asc" },
-    { label: apiKeyLocalization.nameAscending, value: "name:asc" },
-    { label: apiKeyLocalization.nameDescending, value: "name:desc" },
-  ];
 
   const {
     data: listData,
@@ -115,6 +102,7 @@ export function ApiKeys({
       }));
     }
   }, [isListSuccess, isPendingProp, page.rows.length, pagination.pageIndex, setPagination]);
+
   const table = useApiKeyTable(
     {
       atoms: tableState.atoms,
@@ -140,17 +128,18 @@ export function ApiKeys({
             className="shrink-0"
             size="sm"
             disabled={isPending}
-            onClick={() => setCreateOpen(true)}
+            onClick={() => {
+              setCreateOpen(true);
+            }}
           >
             {apiKeyLocalization.createApiKey}
           </Button>
         )}
       </div>
       <Select
-        items={sortItems}
         value={sort}
         onValueChange={(value) => {
-          const [id = "createdAt", direction = "desc"] = (value ?? "createdAt:desc").split(":");
+          const [id = "createdAt", direction = "desc"] = value?.split(":") ?? [];
           table.setSorting([{ id, desc: direction === "desc" }]);
         }}
       >
@@ -158,13 +147,10 @@ export function ApiKeys({
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectGroup>
-            {sortItems.map((item) => (
-              <SelectItem key={item.value} value={item.value}>
-                {item.label}
-              </SelectItem>
-            ))}
-          </SelectGroup>
+          <SelectItem value="createdAt:desc">{apiKeyLocalization.newest}</SelectItem>
+          <SelectItem value="createdAt:asc">{apiKeyLocalization.oldest}</SelectItem>
+          <SelectItem value="name:asc">{apiKeyLocalization.nameAscending}</SelectItem>
+          <SelectItem value="name:desc">{apiKeyLocalization.nameDescending}</SelectItem>
         </SelectContent>
       </Select>
 
@@ -173,7 +159,12 @@ export function ApiKeys({
           {isPending ? (
             <ApiKeySkeleton />
           ) : page.rows.length === 0 ? (
-            <ApiKeysEmpty onCreatePress={() => setCreateOpen(true)} hideCreate={hideCreate} />
+            <ApiKeysEmpty
+              onCreatePress={() => {
+                setCreateOpen(true);
+              }}
+              hideCreate={hideCreate}
+            />
           ) : (
             <ItemGroup className="gap-0">
               {table.getRowModel().rows.map((row, index) => (
@@ -197,7 +188,9 @@ export function ApiKeys({
             variant="outline"
             size="sm"
             disabled={!table.getCanPreviousPage()}
-            onClick={() => table.previousPage()}
+            onClick={() => {
+              table.previousPage();
+            }}
           >
             {apiKeyLocalization.previousPage}
           </Button>
@@ -205,7 +198,9 @@ export function ApiKeys({
             variant="outline"
             size="sm"
             disabled={!page.hasNextPage}
-            onClick={() => table.nextPage()}
+            onClick={() => {
+              table.nextPage();
+            }}
           >
             {apiKeyLocalization.nextPage}
           </Button>

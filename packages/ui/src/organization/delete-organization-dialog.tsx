@@ -1,6 +1,7 @@
 "use client";
 
 import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useDeleteOrganization } from "@better-auth-ui/react/plugins/organization";
 import type { Organization } from "better-auth/client";
@@ -19,7 +20,6 @@ import {
 } from "@kumix/ui/ui/alert-dialog";
 import { Card, CardContent } from "@kumix/ui/ui/card";
 import { useAuthForm } from "../auth-form";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { OrganizationView } from "./organization-view";
 
 export type DeleteOrganizationDialogProps = {

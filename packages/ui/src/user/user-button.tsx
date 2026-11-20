@@ -62,7 +62,13 @@ function renderUserLink(
 
   const { label, href, icon, variant } = link;
   return (
-    <DropdownMenuItem key={fallbackKey} variant={variant} onClick={() => navigate({ to: href })}>
+    <DropdownMenuItem
+      key={fallbackKey}
+      variant={variant}
+      onClick={() => {
+        navigate({ to: href });
+      }}
+    >
       {icon}
       {label}
     </DropdownMenuItem>
@@ -133,12 +139,12 @@ export function UserButton({
         ) : (
           <>
             {session || sessionPending || settingActiveSession ? (
-              <UserView isPending={!!settingActiveSession} />
+              <UserView isPending={settingActiveSession} />
             ) : (
               <>
                 <UserAvatar />
 
-                <div className="grid flex-1 text-left text-sm leading-tight">
+                <div className="grid flex-1 text-left text-sm/tight">
                   {localization.auth.account}
                 </div>
               </>
@@ -173,11 +179,11 @@ export function UserButton({
 
             {!hideSettings && (
               <DropdownMenuItem
-                onClick={() =>
+                onClick={() => {
                   navigate({
                     to: `${basePaths.settings}/${viewPaths.settings.account}`,
-                  })
-                }
+                  });
+                }}
               >
                 <Settings className="text-muted-foreground" />
 
@@ -194,11 +200,11 @@ export function UserButton({
             <DropdownMenuSeparator />
 
             <DropdownMenuItem
-              onClick={() =>
+              onClick={() => {
                 navigate({
                   to: `${basePaths.auth}/${viewPaths.auth.signOut}`,
-                })
-              }
+                });
+              }}
             >
               <LogOut className="text-muted-foreground" />
 
@@ -210,11 +216,11 @@ export function UserButton({
             {userLinks}
 
             <DropdownMenuItem
-              onClick={() =>
+              onClick={() => {
                 navigate({
                   to: `${basePaths.auth}/${viewPaths.auth.signIn}`,
-                })
-              }
+                });
+              }}
             >
               <LogIn className="text-muted-foreground" />
 
@@ -222,11 +228,11 @@ export function UserButton({
             </DropdownMenuItem>
 
             <DropdownMenuItem
-              onClick={() =>
+              onClick={() => {
                 navigate({
                   to: `${basePaths.auth}/${viewPaths.auth.signUp}`,
-                })
-              }
+                });
+              }}
             >
               <UserPlus2 className="text-muted-foreground" />
 

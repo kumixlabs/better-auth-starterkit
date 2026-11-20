@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { JSX, ReactNode } from "react";
 import {
   Body,
   Button,
@@ -43,7 +43,7 @@ export type EmailVerificationEmailLocalization = typeof emailVerificationEmailLo
 /**
  * Props for the EmailVerificationEmail component.
  */
-export interface EmailVerificationEmailProps {
+export type EmailVerificationEmailProps = {
   /** Verification URL that users must click to verify their email */
   url: string;
   /** Email address being verified */
@@ -69,7 +69,7 @@ export interface EmailVerificationEmailProps {
    * @remarks `EmailVerificationEmailLocalization`
    */
   localization?: Partial<EmailVerificationEmailLocalization>;
-}
+};
 
 /**
  * Email template component that sends email verification links to users.
@@ -105,7 +105,7 @@ export const EmailVerificationEmail = ({
   poweredBy,
   head,
   ...props
-}: EmailVerificationEmailProps) => {
+}: EmailVerificationEmailProps): JSX.Element => {
   const localization = {
     ...EmailVerificationEmail.localization,
     ...props.localization,
@@ -128,10 +128,10 @@ export const EmailVerificationEmail = ({
 
       <Tailwind config={{ presets: [pixelBasedPreset] }}>
         <Body className={cn("bg-background font-sans", classNames?.body)}>
-          <Container className={cn("mx-auto my-auto max-w-xl px-2 py-10", classNames?.container)}>
+          <Container className={cn("m-auto max-w-xl px-2 py-10", classNames?.container)}>
             <Section
               className={cn(
-                "border-border bg-card text-card-foreground rounded-none border p-8",
+                "bg-card text-card-foreground border-border rounded-none border p-8",
                 classNames?.card,
               )}
             >
@@ -173,7 +173,7 @@ export const EmailVerificationEmail = ({
                     "{appName}",
                     appName || "",
                   )
-                    .replace(/\s{2,}/g, " ")
+                    .replaceAll(/\s{2}/gu, " ")
                     .replace(" .", ".");
 
                   const [beforeEmailAddress, afterEmailAddress] =
@@ -192,7 +192,7 @@ export const EmailVerificationEmail = ({
                   ) : (
                     textWithAppName
                       .replace("{emailAddress}", "")
-                      .replace(/\s{2,}/g, " ")
+                      .replaceAll(/\s{2}/gu, " ")
                       .replace(" .", ".")
                   );
                 })()}

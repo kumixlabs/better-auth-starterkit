@@ -1,6 +1,7 @@
 "use client";
 
 import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useRemoveMember } from "@better-auth-ui/react/plugins/organization";
 import type { Member, User } from "better-auth/client";
@@ -21,7 +22,6 @@ import { Badge } from "@kumix/ui/ui/badge";
 import { Button } from "@kumix/ui/ui/button";
 import { Card, CardContent } from "@kumix/ui/ui/card";
 import { Spinner } from "@kumix/ui/ui/spinner";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { UserView } from "../user/user-view";
 
 export type RemoveMemberDialogProps = {
@@ -60,7 +60,7 @@ export function RemoveMemberDialog({ open, onOpenChange, member }: RemoveMemberD
           <CardContent className="flex flex-row items-center justify-between gap-2">
             <UserView user={member.user} />
 
-            <Badge variant="outline">{roles?.[member.role] ?? member.role}</Badge>
+            <Badge variant="outline">{roles[member.role] ?? member.role}</Badge>
           </CardContent>
         </Card>
 
@@ -70,12 +70,12 @@ export function RemoveMemberDialog({ open, onOpenChange, member }: RemoveMemberD
           <Button
             variant="destructive"
             disabled={isPending}
-            onClick={() =>
+            onClick={() => {
               removeMember({
                 memberIdOrEmail: member.id,
                 organizationId: member.organizationId,
-              })
-            }
+              });
+            }}
           >
             {isPending && <Spinner />}
 

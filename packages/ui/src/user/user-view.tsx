@@ -56,15 +56,15 @@ export function UserView({ className, isPending, hideSubtitle = false, user }: U
 
   return (
     <div className={cn("flex min-w-0 items-center gap-2", className)}>
-      <UserAvatar user={resolvedUser as User | undefined} />
+      <UserAvatar user={resolvedUser} />
 
-      <div className="grid min-w-0 flex-1 text-left text-sm leading-tight">
+      <div className="grid min-w-0 flex-1 text-left text-sm/tight">
         <span className="text-foreground truncate font-medium">
           {resolvedUser?.displayUsername || resolvedUser?.name || resolvedUser?.email}
         </span>
 
         {!hideSubtitle && (resolvedUser?.displayUsername || resolvedUser?.name) && (
-          <span className="text-muted-foreground truncate text-xs">{resolvedUser?.email}</span>
+          <span className="text-muted-foreground truncate text-xs">{resolvedUser.email}</span>
         )}
       </div>
     </div>

@@ -36,7 +36,7 @@ export function ChangeEmail({ className }: ChangeEmailProps) {
   const form = useAuthForm({
     defaultValues: { email: "" },
     onSubmit: async ({ value }) =>
-      await changeEmail({
+      changeEmail({
         callbackURL: getViewURL(baseURL, basePaths.settings, viewPaths.settings.account),
         newEmail: value.email,
       }),
@@ -77,7 +77,9 @@ export function ChangeEmail({ className }: ChangeEmailProps) {
                           autoComplete="email"
                           value={field.state.value}
                           onBlur={field.handleBlur}
-                          onChange={(event) => field.handleChange(event.target.value)}
+                          onChange={(event) => {
+                            field.handleChange(event.target.value);
+                          }}
                           placeholder={localization.auth.emailPlaceholder}
                           disabled={isPending}
                           required

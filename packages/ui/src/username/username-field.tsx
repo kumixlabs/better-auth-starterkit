@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { getFormFieldErrors } from "@better-auth-ui/core";
 import type { UsernameAuthClient } from "@better-auth-ui/core/plugins/username";
+import { usernamePlugin } from "@better-auth-ui/core/plugins/username";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useIsUsernameAvailable } from "@better-auth-ui/react/plugins/username";
 import { useDebouncer } from "@tanstack/react-pacer";
@@ -12,7 +13,6 @@ import { Field, FieldError, FieldLabel } from "@kumix/ui/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@kumix/ui/ui/input-group";
 import { Spinner } from "@kumix/ui/ui/spinner";
 import type { AdditionalFieldProps } from "../additional-field";
-import { usernamePlugin } from "../lib/username-plugin";
 
 /**
  * Renderer for the `username` additional field. Owns availability checking,
@@ -98,10 +98,12 @@ export function UsernameField({
           readOnly={field.readOnly}
           value={username}
           onBlur={onBlur}
-          onChange={(e) => handleChange(e.target.value)}
+          onChange={(e) => {
+            handleChange(e.target.value);
+          }}
           onInvalid={(e) => {
             e.preventDefault();
-            const el = e.target as HTMLInputElement;
+            const el = e.currentTarget;
             const msg = el.validity.valueMissing
               ? authLocalization.auth.fieldRequired
               : el.validity.tooShort

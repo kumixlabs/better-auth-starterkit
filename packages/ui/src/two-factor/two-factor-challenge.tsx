@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { authQueryKeys, validateStringLength } from "@better-auth-ui/core";
 import type { TwoFactorAuthClient } from "@better-auth-ui/core/plugins/two-factor";
+import { twoFactorPlugin } from "@better-auth-ui/core/plugins/two-factor";
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react";
 import {
   useSendTwoFactorOtp,
@@ -26,7 +27,6 @@ import {
   readTwoFactorMethods,
   type TwoFactorMethod,
 } from "../lib/two-factor-methods";
-import { twoFactorPlugin } from "../lib/two-factor-plugin";
 import { RESEND_COOLDOWN_SECONDS, useResendCooldown } from "../lib/use-resend-cooldown";
 import { OtpField } from "../otp-field";
 
@@ -48,7 +48,8 @@ export type TwoFactorChallengeProps = {
  * @param className - Additional CSS classes applied to the card.
  */
 export function TwoFactorChallenge({ className }: TwoFactorChallengeProps) {
-  const { authClient, basePaths, localization, navigate, redirectTo, viewPaths, Link } = useAuth();
+  const { authClient, basePaths, localization, navigate, redirectTo, viewPaths, Link } =
+    useAuth<TwoFactorAuthClient>();
   const {
     backupCodes: backupCodesEnabled,
     codeLength,
@@ -56,7 +57,7 @@ export function TwoFactorChallenge({ className }: TwoFactorChallengeProps) {
     trustDevice: trustDeviceEnabled,
   } = useAuthPlugin(twoFactorPlugin);
 
-  const twoFactorClient = authClient as TwoFactorAuthClient;
+  const twoFactorClient = authClient;
   const session = useSession(authClient);
   const queryClient = useQueryClient();
   const isHydrated = useHydrated();
@@ -93,14 +94,18 @@ export function TwoFactorChallenge({ className }: TwoFactorChallengeProps) {
   );
 
   const { mutateAsync: verifyTotp, isPending: isVerifyingTotp } = useVerifyTotp(twoFactorClient, {
-    onError: () => form.setFieldValue("code", ""),
+    onError: () => {
+      form.setFieldValue("code", "");
+    },
     onSuccess: onVerified,
   });
 
   const { mutateAsync: verifyTwoFactorOtp, isPending: isVerifyingOtp } = useVerifyTwoFactorOtp(
     twoFactorClient,
     {
-      onError: () => form.setFieldValue("code", ""),
+      onError: () => {
+        form.setFieldValue("code", "");
+      },
       onSuccess: onVerified,
     },
   );
@@ -208,12 +213,13 @@ export function TwoFactorChallenge({ className }: TwoFactorChallengeProps) {
                         id="backupCode"
                         name={field.name}
                         autoComplete="one-time-code"
-                        autoFocus
                         required
                         disabled={isPending}
                         value={field.state.value}
                         onBlur={field.handleBlur}
-                        onChange={(event) => field.handleChange(event.target.value)}
+                        onChange={(event) => {
+                          field.handleChange(event.target.value);
+                        }}
                       />
                     </Field>
                   )}
@@ -222,7 +228,6 @@ export function TwoFactorChallenge({ className }: TwoFactorChallengeProps) {
                 <form.AppField name="code">
                   {(field) => (
                     <OtpField
-                      autoFocus
                       disabled={isPending || needsOtpRequest}
                       label={
                         method === "otp"
@@ -248,7 +253,9 @@ export function TwoFactorChallenge({ className }: TwoFactorChallengeProps) {
                         name={field.name}
                         checked={field.state.value}
                         disabled={isPending}
-                        onCheckedChange={(checked) => field.handleChange(checked === true)}
+                        onCheckedChange={(checked) => {
+                          field.handleChange(typeof checked === "boolean" && checked);
+                        }}
                       />
 
                       <FieldLabel htmlFor="trustDevice" className="font-normal">
@@ -304,7 +311,9 @@ export function TwoFactorChallenge({ className }: TwoFactorChallengeProps) {
                     variant="ghost"
                     key={alternative.key}
                     disabled={isPending}
-                    onClick={() => switchMethod(alternative.key)}
+                    onClick={() => {
+                      switchMethod(alternative.key);
+                    }}
                   >
                     {alternative.label}
                   </Button>

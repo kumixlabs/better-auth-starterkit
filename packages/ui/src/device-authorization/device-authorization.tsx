@@ -5,6 +5,7 @@ import type {
   DeviceAuthorizationAuthClient,
   DeviceAuthorizationLocalization,
 } from "@better-auth-ui/core/plugins/device-authorization";
+import { deviceAuthorizationPlugin } from "@better-auth-ui/core/plugins/device-authorization";
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react";
 import {
   useApproveDevice,
@@ -30,7 +31,6 @@ import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@kumix
 import { Spinner } from "@kumix/ui/ui/spinner";
 import { cn } from "@kumix/utils";
 import { useAuthForm } from "../auth-form";
-import { deviceAuthorizationPlugin } from "../lib/device-authorization-plugin";
 import { UserAvatar } from "../user/user-avatar";
 
 type DeviceAuthorizationStep = "code" | "approval" | "approved" | "denied";
@@ -57,11 +57,13 @@ function deviceAuthorizationReducer(
   action: DeviceAuthorizationAction,
 ): DeviceAuthorizationState {
   switch (action.type) {
-    case "codeChanged":
+    case "codeChanged": {
       return state.codeError ? { ...state, codeError: "" } : state;
-    case "verificationFailed":
+    }
+    case "verificationFailed": {
       return { step: "code", codeError: action.message };
-    case "verificationSucceeded":
+    }
+    case "verificationSucceeded": {
       if (action.status === "approved") {
         return { step: "approved", codeError: "" };
       }
@@ -69,15 +71,21 @@ function deviceAuthorizationReducer(
         return { step: "denied", codeError: "" };
       }
       return { step: "approval", codeError: "" };
-    case "approved":
+    }
+    case "approved": {
       return { step: "approved", codeError: "" };
-    case "denied":
+    }
+    case "denied": {
       return { step: "denied", codeError: "" };
+    }
+    default: {
+      return action satisfies never;
+    }
   }
 }
 
 function normalizeDeviceCode(value: string) {
-  return value.replace(/-/g, "").trim().toUpperCase();
+  return value.replaceAll("-", "").trim().toUpperCase();
 }
 
 function createDeviceCodeSlots(length: number) {
@@ -101,17 +109,19 @@ export type DeviceAuthorizationProps = {
  * @param className - Additional CSS classes applied to the card.
  */
 export function DeviceAuthorization({ className }: DeviceAuthorizationProps) {
-  const { authClient, basePaths, navigate, redirectTo, viewPaths } = useAuth();
+  const { authClient, basePaths, navigate, redirectTo, viewPaths } =
+    useAuth<DeviceAuthorizationAuthClient>();
   const {
     localization,
     userCodeLength,
     viewPaths: deviceAuthorizationViewPaths,
   } = useAuthPlugin(deviceAuthorizationPlugin);
-  const deviceAuthClient = authClient as DeviceAuthorizationAuthClient;
+  const deviceAuthClient = authClient;
   const { data: session, isPending: isSessionPending } = useSession(deviceAuthClient);
   const [userCode, setUserCode] = useState("");
   const [state, dispatch] = useReducer(deviceAuthorizationReducer, initialDeviceAuthorizationState);
   const submittedCodeRef = useRef<string | null>(null);
+  const [authorizedCode, setAuthorizedCode] = useState("");
 
   const handleAuthorizationError = () => {
     dispatch({
@@ -126,7 +136,7 @@ export function DeviceAuthorization({ className }: DeviceAuthorizationProps) {
 
     setUserCode(
       normalizeDeviceCode(code)
-        .replace(/[^A-Z0-9]/g, "")
+        .replaceAll(/[^A-Z0-9]/gu, "")
         .slice(0, userCodeLength),
     );
   }, [userCodeLength]);
@@ -135,7 +145,8 @@ export function DeviceAuthorization({ className }: DeviceAuthorizationProps) {
     deviceAuthClient,
     {
       onError: handleAuthorizationError,
-      onSuccess: ({ status }) => {
+      onSuccess: ({ status }, params) => {
+        setAuthorizedCode(params.query.user_code);
         dispatch({ type: "verificationSucceeded", status });
       },
     },
@@ -143,12 +154,16 @@ export function DeviceAuthorization({ className }: DeviceAuthorizationProps) {
 
   const { mutate: approveDevice, isPending: isApproving } = useApproveDevice(deviceAuthClient, {
     onError: handleAuthorizationError,
-    onSuccess: () => dispatch({ type: "approved" }),
+    onSuccess: () => {
+      dispatch({ type: "approved" });
+    },
   });
 
   const { mutate: denyDevice, isPending: isDenying } = useDenyDevice(deviceAuthClient, {
     onError: handleAuthorizationError,
-    onSuccess: () => dispatch({ type: "denied" }),
+    onSuccess: () => {
+      dispatch({ type: "denied" });
+    },
   });
 
   const submitCode = useCallback(
@@ -205,8 +220,6 @@ export function DeviceAuthorization({ className }: DeviceAuthorizationProps) {
     [localization.invalidDeviceCode, submitCode, userCodeLength],
   );
 
-  const authorizedCode = submittedCodeRef.current ?? "";
-
   const cardClassName = cn("w-full max-w-sm", className);
 
   if (state.step === "approval" && session) {
@@ -218,8 +231,12 @@ export function DeviceAuthorization({ className }: DeviceAuthorizationProps) {
         user={session.user}
         isApproving={isApproving}
         isDenying={isDenying}
-        onApprove={() => approveDevice({ userCode: authorizedCode })}
-        onDeny={() => denyDevice({ userCode: authorizedCode })}
+        onApprove={() => {
+          approveDevice({ userCode: authorizedCode });
+        }}
+        onDeny={() => {
+          denyDevice({ userCode: authorizedCode });
+        }}
       />
     );
   }
@@ -231,7 +248,12 @@ export function DeviceAuthorization({ className }: DeviceAuthorizationProps) {
         localization={localization}
         status={state.step}
         action={
-          <Button className="w-full" onClick={() => navigate({ to: redirectTo })}>
+          <Button
+            className="w-full"
+            onClick={() => {
+              navigate({ to: redirectTo });
+            }}
+          >
             {localization.returnToApplication}
           </Button>
         }
@@ -248,7 +270,9 @@ export function DeviceAuthorization({ className }: DeviceAuthorizationProps) {
       localization={localization}
       initialUserCode={userCode}
       userCodeLength={userCodeLength}
-      onCodeChange={() => dispatch({ type: "codeChanged" })}
+      onCodeChange={() => {
+        dispatch({ type: "codeChanged" });
+      }}
       onSubmitCode={handleSubmit}
     />
   );
@@ -331,7 +355,7 @@ function DeviceCodeForm({
                       value={field.state.value}
                       onChange={(value) => {
                         const nextCode = normalizeDeviceCode(value)
-                          .replace(/[^A-Z0-9]/g, "")
+                          .replaceAll(/[^A-Z0-9]/gu, "")
                           .slice(0, userCodeLength);
                         field.handleChange(nextCode);
                         onCodeChange(nextCode);

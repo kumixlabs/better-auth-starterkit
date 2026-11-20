@@ -7,6 +7,7 @@ import {
 import { ErrorToaster } from "./error-toaster";
 
 declare module "@better-auth-ui/core" {
+  // oxlint-disable-next-line typescript/consistent-type-definitions -- declaration merging needs an interface
   interface AuthConfig {
     /**
      * React component used to render internal navigation links.
@@ -23,13 +24,14 @@ declare module "@better-auth-ui/core" {
   }
 
   /** Widen `AdditionalField.label` to `ReactNode` in the shadcn package. */
+  // oxlint-disable-next-line typescript/consistent-type-definitions -- declaration merging needs an interface
   interface AdditionalFieldRegister {
     label: ReactNode;
   }
 }
 
 /**
- * Provides an authentication context by rendering an auth provider with the error toast handler injected, forwarding remaining configuration and rendering `children` inside it.
+ * Provides an authentication context by rendering an auth provider with the sonner toast handler injected, forwarding remaining configuration and rendering `children` inside it.
  *
  * @param children - React nodes to render inside the authentication provider
  * @returns A React element that renders an authentication provider configured with the provided props and toast handler

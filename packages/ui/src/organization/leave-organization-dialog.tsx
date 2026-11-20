@@ -1,6 +1,7 @@
 "use client";
 
 import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useLeaveOrganization } from "@better-auth-ui/react/plugins/organization";
 import type { Organization } from "better-auth/client";
@@ -20,7 +21,6 @@ import {
 import { Button } from "@kumix/ui/ui/button";
 import { Card, CardContent } from "@kumix/ui/ui/card";
 import { Spinner } from "@kumix/ui/ui/spinner";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { OrganizationView } from "./organization-view";
 
 export type LeaveOrganizationDialogProps = {
@@ -77,7 +77,9 @@ export function LeaveOrganizationDialog({
           <Button
             variant="destructive"
             disabled={isPending}
-            onClick={() => leaveOrganization({ organizationId: organization.id })}
+            onClick={() => {
+              leaveOrganization({ organizationId: organization.id });
+            }}
           >
             {isPending && <Spinner />}
 

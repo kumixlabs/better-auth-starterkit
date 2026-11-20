@@ -1,6 +1,6 @@
 "use client";
 
-import { type MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   createBrowserTablePersistenceAdapters,
   parseTableColumnVisibility,
@@ -50,7 +50,7 @@ function writeUrlState(
   stateKey: string,
   defaultPageSize: number,
   state: OrganizationTableUrlState,
-  syncedSearch: MutableRefObject<string>,
+  syncedSearch: RefObject<string>,
 ) {
   const next = serializeTableUrlState(adapters.search.read(), stateKey, defaultPageSize, state);
   const nextSearch = next.toString();
@@ -161,7 +161,9 @@ export function useOrganizationTableState(
       columnFiltersAtom.subscribe(resetPage),
       globalFilterAtom.subscribe(resetPage),
       sortingAtom.subscribe(resetPage),
-      paginationAtom.subscribe(() => rowSelectionAtom.set({})),
+      paginationAtom.subscribe(() => {
+        rowSelectionAtom.set({});
+      }),
     ];
 
     return () => {

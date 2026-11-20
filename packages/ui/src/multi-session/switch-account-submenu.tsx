@@ -1,10 +1,10 @@
 "use client";
 
+import { multiSessionPlugin } from "@better-auth-ui/core/plugins/multi-session";
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react";
 import { ArrowLeftRight } from "lucide-react";
 
 import { DropdownMenuSub, DropdownMenuSubTrigger } from "@kumix/ui/ui/dropdown-menu";
-import { multiSessionPlugin } from "../lib/multi-session-plugin";
 import { SwitchAccountSubmenuContent } from "./switch-account-submenu-content";
 
 export type SwitchAccountSubmenuProps = {

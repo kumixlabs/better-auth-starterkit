@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { magicLinkPlugin } from "@better-auth-ui/core/plugins/magic-link";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 
 import { useHydrated } from "@kumix/ui/hooks/use-hydrated";
 import { Card, CardContent, CardHeader, CardTitle } from "@kumix/ui/ui/card";
 import { FieldDescription } from "@kumix/ui/ui/field";
 import { cn } from "@kumix/utils";
-import { magicLinkPlugin } from "./lib/magic-link-plugin";
 import { OpenEmailButton } from "./open-email-button";
 
 /** `sessionStorage` key the magic-link form stores the submitted email under. */
@@ -60,7 +60,7 @@ export function MagicLinkSent({ className }: MagicLinkSentProps) {
           {email && <OpenEmailButton email={email} />}
         </div>
 
-        {emailAndPassword?.enabled && (
+        {emailAndPassword.enabled && (
           <div className="mt-4 flex w-full flex-col items-center gap-3">
             <FieldDescription className="text-center">
               {localization.auth.needToCreateAnAccount}{" "}

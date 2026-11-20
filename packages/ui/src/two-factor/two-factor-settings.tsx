@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { twoFactorPlugin } from "@better-auth-ui/core/plugins/two-factor";
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react";
 import { ShieldCheck } from "lucide-react";
 
@@ -16,7 +17,6 @@ import {
 } from "@kumix/ui/ui/empty";
 import { Skeleton } from "@kumix/ui/ui/skeleton";
 import { cn } from "@kumix/utils";
-import { twoFactorPlugin } from "../lib/two-factor-plugin";
 import { DisableTwoFactorDialog } from "./disable-two-factor-dialog";
 import { EnableTwoFactorDialog } from "./enable-two-factor-dialog";
 import { RegenerateBackupCodesDialog } from "./regenerate-backup-codes-dialog";
@@ -40,9 +40,8 @@ export function TwoFactorSettings({ className }: TwoFactorSettingsProps) {
     useAuthPlugin(twoFactorPlugin);
 
   const { data: session, isPending } = useSession(authClient);
-  const isEnabled = Boolean(
-    (session?.user as { twoFactorEnabled?: boolean } | undefined)?.twoFactorEnabled,
-  );
+  const user = session?.user;
+  const isEnabled = Boolean(user && "twoFactorEnabled" in user && user.twoFactorEnabled);
 
   const [enableOpen, setEnableOpen] = useState(false);
   const [disableOpen, setDisableOpen] = useState(false);
@@ -58,7 +57,13 @@ export function TwoFactorSettings({ className }: TwoFactorSettingsProps) {
           size="sm"
           variant={isEnabled ? "destructive" : "default"}
           disabled={isPending}
-          onClick={() => (isEnabled ? setDisableOpen(true) : setEnableOpen(true))}
+          onClick={() => {
+            if (isEnabled) {
+              setDisableOpen(true);
+            } else {
+              setEnableOpen(true);
+            }
+          }}
         >
           {isEnabled
             ? twoFactorLocalization.disableTwoFactor
@@ -78,7 +83,12 @@ export function TwoFactorSettings({ className }: TwoFactorSettingsProps) {
                 <EmptyDescription>{twoFactorLocalization.twoFactorDescription}</EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
-                <Button size="sm" onClick={() => setEnableOpen(true)}>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setEnableOpen(true);
+                  }}
+                >
                   {twoFactorLocalization.enableTwoFactor}
                 </Button>
               </EmptyContent>
@@ -103,7 +113,9 @@ export function TwoFactorSettings({ className }: TwoFactorSettingsProps) {
                 className="self-start"
                 size="sm"
                 variant="outline"
-                onClick={() => setRegenerateOpen(true)}
+                onClick={() => {
+                  setRegenerateOpen(true);
+                }}
               >
                 {twoFactorLocalization.regenerateBackupCodes}
               </Button>

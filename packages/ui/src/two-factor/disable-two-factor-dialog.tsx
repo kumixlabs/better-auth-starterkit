@@ -1,6 +1,7 @@
 "use client";
 
 import type { TwoFactorAuthClient } from "@better-auth-ui/core/plugins/two-factor";
+import { twoFactorPlugin } from "@better-auth-ui/core/plugins/two-factor";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useDisableTwoFactor } from "@better-auth-ui/react/plugins/two-factor";
 import { ShieldAlert } from "lucide-react";
@@ -19,7 +20,6 @@ import {
 import { Field, FieldError, FieldLabel } from "@kumix/ui/ui/field";
 import { Input } from "@kumix/ui/ui/input";
 import { useAuthForm } from "../auth-form";
-import { twoFactorPlugin } from "../lib/two-factor-plugin";
 import { useTwoFactorPasswordRequirement } from "../lib/use-two-factor-password";
 
 export type DisableTwoFactorDialogProps = {
@@ -34,13 +34,13 @@ export type DisableTwoFactorDialogProps = {
  * @param onOpenChange - Called when the dialog requests an open state change.
  */
 export function DisableTwoFactorDialog({ open, onOpenChange }: DisableTwoFactorDialogProps) {
-  const { authClient, localization } = useAuth();
+  const { authClient, localization } = useAuth<TwoFactorAuthClient>();
   const { localization: twoFactorLocalization } = useAuthPlugin(twoFactorPlugin);
   const { isPending: isResolvingPasswordRequirement, requiresPassword } =
     useTwoFactorPasswordRequirement();
 
   const { mutateAsync: disableTwoFactor, isPending: isDisabling } = useDisableTwoFactor(
-    authClient as TwoFactorAuthClient,
+    authClient,
     {
       onSuccess: () => {
         toastSuccess({ message: twoFactorLocalization.twoFactorDisabled });
@@ -54,7 +54,7 @@ export function DisableTwoFactorDialog({ open, onOpenChange }: DisableTwoFactorD
   const form = useAuthForm({
     defaultValues: { password: "" },
     onSubmit: async ({ value }) =>
-      await disableTwoFactor(requiresPassword ? { password: value.password } : {}),
+      disableTwoFactor(requiresPassword ? { password: value.password } : {}),
   });
 
   return (
@@ -89,13 +89,14 @@ export function DisableTwoFactorDialog({ open, onOpenChange }: DisableTwoFactorD
                       name={field.name}
                       type="password"
                       autoComplete="current-password"
-                      autoFocus
                       required
                       placeholder={localization.auth.passwordPlaceholder}
                       disabled={isPending}
                       value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(event) => field.handleChange(event.target.value)}
+                      onChange={(event) => {
+                        field.handleChange(event.target.value);
+                      }}
                     />
 
                     <FieldError />

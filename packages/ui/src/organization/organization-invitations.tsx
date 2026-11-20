@@ -1,11 +1,11 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { type ComponentProps, useState } from "react";
+import { type ComponentProps, type ReactNode, useState } from "react";
 import {
   hasMemberRole,
   type OrganizationAuthClient,
   type OrganizationLocalization,
+  organizationPlugin,
 } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import {
@@ -30,7 +30,6 @@ import {
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@kumix/ui/ui/input-group";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@kumix/ui/ui/table";
 import { cn } from "@kumix/utils";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { InviteMemberDialog } from "./invite-member-dialog";
 import { OrganizationInvitationRow } from "./organization-invitation-row";
 import { OrganizationInvitationsEmpty } from "./organization-invitations-empty";
@@ -78,6 +77,13 @@ export type OrganizationInvitationsProps = {
 /**
  * Organization invitations table with invite control and per-row actions.
  */
+function isOrganizationLocalizationKey(
+  localization: OrganizationLocalization,
+  key: string,
+): key is keyof OrganizationLocalization {
+  return Object.hasOwn(localization, key);
+}
+
 export function OrganizationInvitations({
   className,
   ...props
@@ -116,8 +122,12 @@ export function OrganizationInvitations({
   );
 
   const cancelInvitations = useCancelInvitation(authClient);
-  const roleFilter = String(table.getColumn("role")?.getFilterValue() ?? "all");
-  const statusFilter = String(table.getColumn("status")?.getFilterValue() ?? "all");
+  const roleFilter = toStringValue(table.getColumn("role")?.getFilterValue(), "all");
+  const statusFilter = toStringValue(table.getColumn("status")?.getFilterValue(), "all");
+  const getStatusLabel = (status: string) =>
+    isOrganizationLocalizationKey(organizationLocalization, status)
+      ? organizationLocalization[status]
+      : status;
   const roleFacetRows = table.getColumn("role")?.getFacetedRowModel().flatRows;
   const statusCounts = table.getColumn("status")?.getFacetedUniqueValues();
   const selectedInvitations = table.getSelectedRowModel().rows;
@@ -157,7 +167,9 @@ export function OrganizationInvitations({
           allSelected={table.getIsAllPageRowsSelected()}
           disabled={isPending}
           localization={organizationLocalization}
-          onCheckedChange={(checked) => table.toggleAllPageRowsSelected(checked)}
+          onCheckedChange={(checked) => {
+            table.toggleAllPageRowsSelected(checked);
+          }}
           someSelected={table.getIsSomePageRowsSelected()}
         />
       </TableHead>
@@ -199,7 +211,9 @@ export function OrganizationInvitations({
             <InputGroupInput
               type="search"
               value={globalFilter}
-              onChange={(event) => table.setGlobalFilter(event.target.value)}
+              onChange={(event) => {
+                table.setGlobalFilter(event.target.value);
+              }}
               aria-label={organizationLocalization.search}
               placeholder={organizationLocalization.search}
               disabled={isPending}
@@ -266,8 +280,7 @@ export function OrganizationInvitations({
 
                 {(["pending", "accepted", "rejected", "canceled"] as const).map((status) => (
                   <DropdownMenuRadioItem key={status} value={status}>
-                    {organizationLocalization[status as keyof OrganizationLocalization] ?? status} (
-                    {statusCounts?.get(status) ?? 0})
+                    {organizationLocalization[status]} ({statusCounts?.get(status) ?? 0})
                   </DropdownMenuRadioItem>
                 ))}
               </DropdownMenuRadioGroup>
@@ -309,7 +322,7 @@ export function OrganizationInvitations({
             {roleFilter !== "all" && (
               <Badge variant="secondary" className="gap-1">
                 {organizationLocalization.role}:{" "}
-                <span className="capitalize">{roles?.[roleFilter] ?? roleFilter}</span>
+                <span className="capitalize">{roles[roleFilter] ?? roleFilter}</span>
                 <Button
                   aria-label={organizationLocalization.clear}
                   className="text-muted-foreground size-4 rounded-sm"
@@ -325,9 +338,7 @@ export function OrganizationInvitations({
 
             {statusFilter !== "all" && (
               <Badge variant="secondary" className="gap-1">
-                {organizationLocalization.status}:{" "}
-                {organizationLocalization[statusFilter as keyof OrganizationLocalization] ??
-                  statusFilter}
+                {organizationLocalization.status}: {getStatusLabel(statusFilter)}
                 <Button
                   aria-label={organizationLocalization.clear}
                   className="text-muted-foreground size-4 rounded-sm"
@@ -364,13 +375,17 @@ export function OrganizationInvitations({
             <TableBody>
               {isPending ? (
                 <OrganizationTableRowSkeleton columnIds={columnIds} />
-              ) : !table.getRowModel().rows.length ? (
+              ) : table.getRowModel().rows.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={columnIds.length}>
                     <OrganizationInvitationsEmpty
                       isInvitePending={canInvite.isPending}
                       onInvitePress={
-                        canInvite.data?.success ? () => setInviteOpen(true) : undefined
+                        canInvite.data?.success
+                          ? () => {
+                              setInviteOpen(true);
+                            }
+                          : undefined
                       }
                     />
                   </TableCell>
@@ -396,11 +411,21 @@ export function OrganizationInvitations({
           canPreviousPage={table.getCanPreviousPage()}
           disabled={isPending}
           localization={organizationLocalization}
-          onFirstPage={() => table.firstPage()}
-          onLastPage={() => table.lastPage()}
-          onNextPage={() => table.nextPage()}
-          onPageSizeChange={(pageSize) => table.setPageSize(pageSize)}
-          onPreviousPage={() => table.previousPage()}
+          onFirstPage={() => {
+            table.firstPage();
+          }}
+          onLastPage={() => {
+            table.lastPage();
+          }}
+          onNextPage={() => {
+            table.nextPage();
+          }}
+          onPageSizeChange={(pageSize) => {
+            table.setPageSize(pageSize);
+          }}
+          onPreviousPage={() => {
+            table.previousPage();
+          }}
           pageCount={table.getPageCount()}
           pageIndex={pagination.pageIndex}
           pageSize={pagination.pageSize}
@@ -414,4 +439,11 @@ export function OrganizationInvitations({
       )}
     </div>
   );
+}
+
+/** Reads a primitive filter or payload value as a string, or returns the fallback. */
+function toStringValue(value: unknown, fallback: string) {
+  return typeof value === "string" || typeof value === "number" || typeof value === "boolean"
+    ? String(value)
+    : fallback;
 }

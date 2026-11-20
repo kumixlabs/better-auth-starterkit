@@ -5,6 +5,7 @@ import type {
   ListedUserTeam,
   OrganizationTeamsAuthClient,
 } from "@better-auth-ui/core/plugins/organization";
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react";
 import { useListUserTeams, useSetActiveTeam } from "@better-auth-ui/react/plugins/organization";
 import { Check, ChevronsUpDown, Users } from "lucide-react";
@@ -18,7 +19,6 @@ import {
 } from "@kumix/ui/ui/dropdown-menu";
 import { Skeleton } from "@kumix/ui/ui/skeleton";
 import { cn } from "@kumix/utils";
-import { organizationPlugin } from "../lib/organization-plugin";
 
 export type TeamSwitcherProps = {
   organizationId: string;
@@ -62,7 +62,7 @@ export function TeamSwitcher({
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       {trigger ? (
-        <DropdownMenuTrigger render={trigger} />
+        <DropdownMenuTrigger>{trigger}</DropdownMenuTrigger>
       ) : (
         <DropdownMenuTrigger
           className={cn(buttonVariants({ variant: "outline" }), "justify-between gap-3", className)}
@@ -81,13 +81,22 @@ export function TeamSwitcher({
       )}
       <DropdownMenuContent align={align} className="min-w-56">
         {allowClear && (
-          <DropdownMenuItem onClick={() => selectTeam(null)}>
+          <DropdownMenuItem
+            onClick={() => {
+              selectTeam(null);
+            }}
+          >
             <span className="min-w-0 flex-1 truncate">{localization.allTeams}</span>
             {!teamId && <Check className="size-4" />}
           </DropdownMenuItem>
         )}
         {teams.data?.map((team) => (
-          <DropdownMenuItem key={team.id} onClick={() => selectTeam(team)}>
+          <DropdownMenuItem
+            key={team.id}
+            onClick={() => {
+              selectTeam(team);
+            }}
+          >
             <span className="min-w-0 flex-1 truncate">{team.name}</span>
             {team.id === teamId && <Check className="size-4" />}
           </DropdownMenuItem>

@@ -1,11 +1,11 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { type ComponentProps, useEffect, useRef, useState } from "react";
+import { type ComponentProps, type ReactNode, useEffect, useRef, useState } from "react";
 import { getClampedTablePageIndex } from "@better-auth-ui/core";
 import {
   hasMemberRole,
   type OrganizationAuthClient,
+  organizationPlugin,
 } from "@better-auth-ui/core/plugins/organization";
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react";
 import {
@@ -33,7 +33,6 @@ import {
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@kumix/ui/ui/input-group";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@kumix/ui/ui/table";
 import { cn } from "@kumix/utils";
-import { organizationPlugin } from "../lib/organization-plugin";
 import { InviteMemberDialog } from "./invite-member-dialog";
 import { OrganizationMemberRow } from "./organization-member-row";
 import { OrganizationSortableTableHead } from "./organization-sortable-table-head";
@@ -124,7 +123,10 @@ export function OrganizationMembers({
     MEMBER_COLUMN_IDS,
   );
   const { columnFilters, globalFilter, pagination, sorting } = tableState;
-  const roleFilter = String(columnFilters.find((filter) => filter.id === "role")?.value ?? "all");
+  const roleFilter = toStringValue(
+    columnFilters.find((filter) => filter.id === "role")?.value,
+    "all",
+  );
   const previousOrganizationId = useRef<string | undefined>(undefined);
 
   useEffect(() => {
@@ -295,7 +297,9 @@ export function OrganizationMembers({
           allSelected={table.getIsAllPageRowsSelected()}
           disabled={isPending}
           localization={organizationLocalization}
-          onCheckedChange={(checked) => table.toggleAllPageRowsSelected(checked)}
+          onCheckedChange={(checked) => {
+            table.toggleAllPageRowsSelected(checked);
+          }}
           someSelected={table.getIsSomePageRowsSelected()}
         />
       </TableHead>
@@ -331,7 +335,9 @@ export function OrganizationMembers({
             className="shrink-0"
             size="sm"
             disabled={canInvite.isPending || atMembershipLimit}
-            onClick={() => setInviteOpen(true)}
+            onClick={() => {
+              setInviteOpen(true);
+            }}
           >
             {organizationLocalization.inviteMember}
           </Button>
@@ -347,7 +353,9 @@ export function OrganizationMembers({
               <InputGroupInput
                 type="search"
                 value={globalFilter}
-                onChange={(event) => table.setGlobalFilter(event.target.value)}
+                onChange={(event) => {
+                  table.setGlobalFilter(event.target.value);
+                }}
                 aria-label={organizationLocalization.search}
                 placeholder={organizationLocalization.search}
                 disabled={isPending}
@@ -424,7 +432,7 @@ export function OrganizationMembers({
         {roleFilter !== "all" && (
           <Badge variant="secondary" className="w-fit gap-1">
             {organizationLocalization.role}:{" "}
-            <span className="capitalize">{roles?.[roleFilter] ?? roleFilter}</span>
+            <span className="capitalize">{roles[roleFilter] ?? roleFilter}</span>
             <Button
               aria-label={organizationLocalization.clear}
               className="text-muted-foreground size-4 rounded-sm"
@@ -484,11 +492,21 @@ export function OrganizationMembers({
           canPreviousPage={table.getCanPreviousPage()}
           disabled={isPending}
           localization={organizationLocalization}
-          onFirstPage={() => table.firstPage()}
-          onLastPage={() => table.lastPage()}
-          onNextPage={() => table.nextPage()}
-          onPageSizeChange={(pageSize) => table.setPageSize(pageSize)}
-          onPreviousPage={() => table.previousPage()}
+          onFirstPage={() => {
+            table.firstPage();
+          }}
+          onLastPage={() => {
+            table.lastPage();
+          }}
+          onNextPage={() => {
+            table.nextPage();
+          }}
+          onPageSizeChange={(nextPageSize) => {
+            table.setPageSize(nextPageSize);
+          }}
+          onPreviousPage={() => {
+            table.previousPage();
+          }}
           pageCount={table.getPageCount()}
           pageIndex={pagination.pageIndex}
           pageSize={pagination.pageSize}
@@ -502,4 +520,11 @@ export function OrganizationMembers({
       )}
     </div>
   );
+}
+
+/** Reads a primitive filter or payload value as a string, or returns the fallback. */
+function toStringValue(value: unknown, fallback: string) {
+  return typeof value === "string" || typeof value === "number" || typeof value === "boolean"
+    ? String(value)
+    : fallback;
 }

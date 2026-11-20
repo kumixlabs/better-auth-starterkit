@@ -1,5 +1,11 @@
 # @kumix/better-auth-ui
 
+## 0.1.6
+
+### Patch Changes
+
+- [`1a59438`](https://github.com/kumixlabs/better-auth-starterkit/commit/1a59438fb48da21032f0449b81ea0ac9c72f6816) Thanks [@kumixio](https://github.com/kumixio)! - Sync latest upstream registry updates: refreshed admin users, API keys, delete-user, email-OTP, organization (profile, roles, teams, invitations, members, dialogs), settings (avatar, email, profile, password, sessions), two-factor dialogs, passkey, multi-session, OAuth provider views; add `email/email-colors.ts`, `lib/theme-plugin-base.ts`, and `organization/sanitize-slug.ts` helpers. Rewrite all imports to Kumix conventions (`@kumix/ui/ui/*`, `@kumix/utils`, `@kumix/ui/custom/toast` replacing `sonner`, relative lib/view paths, `useHydrated`) and substitute `getAuthErrorBodyMessage` with `getAuthErrorMessage` for current `@better-auth-ui/core`.
+
 ## 0.1.5
 
 ### Patch Changes
